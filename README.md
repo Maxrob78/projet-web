@@ -1,9 +1,9 @@
 # 🌐 Projet de Programmation WEB - XT1205-DEV
 
-[cite_start]Ce projet consiste en la réalisation d'un **site vitrine** pour le département d'Informatique de l'**EFREI** (Paris Panthéon-Assas Université)[cite: 1, 13, 53]. [cite_start]Il a été développé dans le cadre du module XT1205-DEV pour l'année universitaire 2025-2026[cite: 14, 35].
+[cite_start]Ce projet consiste en la réalisation d'un **site vitrine** pour le département d'Informatique de l'**EFREI** (Paris Panthéon-Assas Université). Il a été développé dans le cadre du module XT1205-DEV pour l'année universitaire 2025-2026.
 
 ## 📋 Présentation du Projet
-[cite_start]L'objectif est de concevoir un site Web interactif, responsive et modulaire mettant en avant les formations et l'équipe du département[cite: 44, 47, 53].
+[cite_start]L'objectif est de concevoir un site Web interactif, responsive et modulaire mettant en avant les formations et l'équipe du département.
 
 ### Contraintes Techniques (Strictes)
 Conformément aux consignes du projet :
