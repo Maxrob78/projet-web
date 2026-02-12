@@ -1,0 +1,90 @@
+/* Import Google Fonts (Garde celui-là ou tes balises <link>, les deux marchent) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+body {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+}
+
+header {
+    display: flex;
+    background-color: whitesmoke;
+    padding: 15px 40px; /* Un peu moins de padding vertical fait souvent plus pro */
+    border-bottom: 2px solid #e0e0e0;
+}
+
+#logoheader {
+    width: 100px;
+    height: auto;
+    margin-right: 50px;
+}
+
+nav {
+    display: flex;
+    gap: 25px; /* Un peu plus d'espace entre les liens */
+}
+
+nav a {
+    text-align: right;
+    text-decoration: none;
+    color: #222;
+    font-weight: 500; /* Le poids 500 (Medium) est très élégant avec Inter */
+    transition: color 0.3s ease; /* Pour que le changement de couleur soit fluide */
+    margin-top: 8px;
+}
+
+#lien {
+    display: inline-flex;  /* Garde le lien sur la ligne mais permet un alignement interne */
+    align-items: center;   /* Centre verticalement le texte par rapport à la bordure */
+    
+    border-left: 3px solid #3D83BF;
+    padding-left: 12px;    /* Espace entre la barre et le texte */
+    height: 20px;          /* On fixe une hauteur pour que la barre ne soit pas trop géante */
+    text-decoration: none;
+    color: #333;
+}
+
+#lienactif {
+    display: inline-flex;  /* Garde le lien sur la ligne mais permet un alignement interne */
+    align-items: center;   /* Centre verticalement le texte par rapport à la bordure */
+    
+    border-left: 3px solid #3D83BF;
+    padding-left: 12px;    /* Espace entre la barre et le texte */
+    height: 20px;          /* On fixe une hauteur pour que la barre ne soit pas trop géante */
+    text-decoration: none;
+    color: #3D83BF;
+}
+
+#lienactif:hover {
+    color: #1a4f7e;
+}
+
+footer {
+    background-color: #1a4f7e;
+    color: #e0e0e0;
+    padding: 60px 100px; /* Un peu moins de padding vertical pour l'équilibre */
+    
+    /* C'est ça qui aligne tes colonnes côte à côte */
+    display: flex;
+    justify-content: space-around; /* Crée un espace égal entre tes deux colonnes */
+    align-items: flex-start;      /* Aligne les blocs par le haut */
+}
+
+.footer {
+    /* On utilise le point car c'est une classe dans ton HTML */
+    margin: 0 20px;
+}
+
+.footer p {
+    margin: 5px 0; /* Réduit l'espace entre les lignes de texte */
+}
+
+a{
+    text-decoration: none;
+    color: #e0e0e0;
+}
+
+#logodufooter{
+    width:200px;
+    margin-right: -265px;
+}
