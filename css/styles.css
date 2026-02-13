@@ -4,13 +4,25 @@
 body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
+    margin: 0;
+    padding: 0;
+    padding-top: 70px;
 }
 
 header {
+    /* Tes styles de mise en forme conservés */
     display: flex;
     background-color: whitesmoke;
-    padding: 15px 40px; /* Un peu moins de padding vertical fait souvent plus pro */
+    padding: 15px 40px;
     border-bottom: 2px solid #e0e0e0;
+
+    /* L'ajout pour le bloquer en haut */
+    position: fixed;       /* Fixe le header */
+    top: 0;                /* Colle au plafond */
+    left: 0;               /* Colle au bord gauche */
+    width: 100%;           /* Prend toute la largeur */
+    z-index: 1000;         /* Reste au-dessus des images/textes */
+    box-sizing: border-box; /* Indispensable : inclut le padding dans les 100% de large */
 }
 
 #logoheader {
@@ -62,31 +74,137 @@ nav a {
 footer {
     background-color: #1a4f7e;
     color: #e0e0e0;
-    padding: 60px 100px; /* Un peu moins de padding vertical pour l'équilibre */
-    
-    /* C'est ça qui aligne tes colonnes côte à côte */
+    padding: 60px 0 20px 0;
     display: flex;
-    justify-content: space-around; /* Crée un espace égal entre tes deux colonnes */
-    align-items: flex-start;      /* Aligne les blocs par le haut */
+    flex-direction: column;
+    align-items: center; /* Pour centrer ton contenu flex */
+    
+    /* AJOUTE CETTE LIGNE : */
+    position: relative;  /* Elle sert de point d'ancrage pour le logo */
+}
+
+#logodufooter {
+    position: absolute; /* Il "vole" au-dessus du flex sans le casser */
+    bottom: 0;          /* Collé au bas du footer */
+    right: 0;           /* Collé à droite du footer */
+    width: 200px;
+    pointer-events: none; /* Pour pouvoir cliquer sur les liens dessous si besoin */
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 50px;
 }
 
 .footer {
-    /* On utilise le point car c'est une classe dans ton HTML */
-    margin: 0 20px;
+    margin: 0px 10px;
 }
 
-.footer p {
-    margin: 5px 0; /* Réduit l'espace entre les lignes de texte */
+#legal {
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 0.9em;
 }
 
-a{
+#legal p {
+    margin: 0;
+}
+
+a {
     text-decoration: none;
-    color: #e0e0e0;
+    color:#e0e0e0;
 }
 
-#logodufooter{
-    width:200px;
-    margin-right: -265px;
+#apropos {
+    width: 60%;          /* Ou une largeur en px, ex: 600px */
+    margin: 100px auto;  /* Le "auto" sur les côtés centre le bloc horizontalement */
+    text-align: center;
+}
+
+#apropos p {
+    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
+    margin-top: 50px;
+    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
+}
+
+fieldset {
+    border: none;
+    padding: 50px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+#informations{
+    width: 400px;
+}
+
+legend{
+    font-weight: bold;
+}
+
+input, textarea {
+    background-color: #ffffff;
+    border: 2px solid #3D83BF; /* Définit l'épaisseur, le style "solid" et la couleur d'un coup */
+    padding: 10px 20px;
+    border-radius: 2px; /* N'oublie pas d'ajouter une valeur ici, ex: 5px */
+    cursor: text; /* Pour un champ de texte, 'text' est plus standard que 'pointer' */
+    outline: none; /* Optionnel : supprime le contour noir/bleu quand on clique dessus */
+    transition: background-color 0.5s ease;
+}
+
+input:hover {
+    background-color: #ceddf6;
+    transition: 0.2s;
+}
+
+label {
+    cursor: pointer;
+    font-size: 16px;
+    
+}
+
+#contactretour{
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+#imgcontact {
+    width: 600px;
+    height: 500px;
+    display: flex;      
+    justify-content: center; 
+    align-items: center;
+}
+
+#tkt {
+    width: 600px;      
+    height: auto;
+    border: 3px solid #1a4f7e;
+    border-radius: 3px;
+}
+
+button[type="submit"] {
+    padding: 5px;
+    border: 1px solid #3670a4;
+    background-color: #4d8dc6;
+    border-radius: 5px;
+    width: 200px;
+    cursor: pointer;
+    margin: 25px auto 50px auto;
+    transition: background-color 0.5s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #27ae60;
+    color: white;
+    transition: 0.2s;
 }
 
 .conteneur-images {
