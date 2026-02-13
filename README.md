@@ -41,7 +41,7 @@ Le site est articulé autour de 4 pages principales:
 
 1.  **Cloner le dépôt :**
     ```bash
-    git clone [https://github.com/votre-nom-utilisateur/XT1205-DEV-Projet.git](https://github.com/votre-nom-utilisateur/XT1205-DEV-Projet.git)
+    git clone [https://github.com/Maxrob78/XT1205-DEV-Projet.git](https://github.com/Maxrob78/XT1205-DEV-Projet.git)
     ```
 2.  **Lancer un serveur PHP :**
     Utilisez un environnement type XAMPP, WAMP, MAMP ou lancez le serveur intégré :
