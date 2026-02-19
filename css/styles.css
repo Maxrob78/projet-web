@@ -1,88 +1,319 @@
-/* Import Google Fonts (Garde celui-là ou tes balises <link>, les deux marchent) */
+/* ==========================================================================
+   1. POLICE & BASES
+   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
     font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
     margin: 0;
     padding: 0;
-    padding-top: 70px;
+    background-color: white;
 }
 
-header {
-    /* Tes styles de mise en forme conservés */
-    display: flex;
-    background-color: whitesmoke;
-    padding: 15px 40px;
-    border-bottom: 2px solid #e0e0e0;
+/* ==========================================================================
+   2. SYSTÈME DE HEADER (NAVIGATION)
+   ========================================================================== */
 
-    /* L'ajout pour le bloquer en haut */
-    position: fixed;       /* Fixe le header */
-    top: 0;                /* Colle au plafond */
-    left: 0;               /* Colle au bord gauche */
-    width: 100%;           /* Prend toute la largeur */
-    z-index: 1000;         /* Reste au-dessus des images/textes */
-    box-sizing: border-box; /* Indispensable : inclut le padding dans les 100% de large */
+/* --- 2.1 Style par défaut (Pages Contact, À Propos, etc.) --- */
+header {
+    display: flex;
+    align-items: center;
+    padding: 15px 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+    background-color: whitesmoke; 
+    border-bottom: 2px solid #e0e0e0;
+    transition: all 0.4s ease-in-out;
 }
 
 #logoheader {
-    width: 100px;
+    width: 110px;
     height: auto;
     margin-right: 50px;
     cursor: pointer;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    filter: none; /* Logo en couleurs originales par défaut */
+    transition: all 0.4s ease;
 }
 
-#logoheader:hover {
-    transform: scale(1.05);
-    opacity: 0.8;
-}
-
-nav {
-    display: flex;
-    gap: 25px; /* Un peu plus d'espace entre les liens */
+nav { 
+    display: flex; 
+    gap: 30px; 
 }
 
 nav a {
-    text-align: right;
     text-decoration: none;
-    color: #222;
-    font-weight: 500; /* Le poids 500 (Medium) est très élégant avec Inter */
-        transition: transform 0.3s ease, opacity 0.3s ease;
+    color: #222; /* Texte noir par défaut */
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.4s ease;
     margin-top: 8px;
 }
 
-nav a:hover {
+nav a:hover { 
+    opacity: 0.6; 
+}
+
+/* --- 2.2 Style Spécifique Accueil (Intro Vidéo) --- */
+header.header-accueil {
+    background-color: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(0px);
+    border-bottom: none;
+}
+
+header.header-accueil #logoheader {
+    filter: brightness(0) invert(1); /* Logo blanc sur la vidéo */
+}
+
+header.header-accueil nav a {
+    color: white; /* Texte blanc sur la vidéo */
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* --- 2.3 Style "Scrolled" (Après 700px sur l'accueil) --- */
+header.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    padding: 10px 40px;
+}
+
+header.scrolled #logoheader {
+    filter: none; /* Retour au logo couleur */
+}
+
+header.scrolled nav a {
+    color: #222; /* Retour au texte noir */
+    text-shadow: none;
+}
+
+/* --- 2.4 Indicateur de lien actif --- */
+#lienactif, #lien {
+    display: inline-flex;
+    align-items: center;
+    border-left: 2px solid #3D83BF;
+    padding-left: 12px;
+    height: 18px;
+}
+
+#lienactif { 
+    color: #3D83BF !important; /* Force la couleur bleue */
+}
+
+/* ==========================================================================
+   3. SECTION (ACCUEIL)
+   ========================================================================== */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+}
+
+.back-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(61, 131, 191, 0.2) 0%, rgba(10, 25, 45, 0.9) 100%);
+    z-index: -1;
+}
+
+.content {
+    animation: fadeInScale 1.2s ease-out;
+}
+
+.content h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    text-shadow: 0px 10px 30px rgba(0,0,0,0.5);
+}
+
+.content p {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 50px;
+    opacity: 0.85;
+    letter-spacing: 2px;
+}
+
+.btn-video {
+    display: inline-block;
+    padding: 18px 45px;
+    border: 2px solid #3D83BF;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.btn-video:hover {
+    background-color: #3D83BF;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.05);
-    opacity: 0.8;
 }
 
-#lien {
-    display: inline-flex;  /* Garde le lien sur la ligne mais permet un alignement interne */
-    align-items: center;   /* Centre verticalement le texte par rapport à la bordure */
-    
-    border-left: 3px solid #3D83BF;
-    padding-left: 12px;    /* Espace entre la barre et le texte */
-    height: 20px;          /* On fixe une hauteur pour que la barre ne soit pas trop géante */
-    text-decoration: none;
-    color: #333;
+#imgcampus {
+    margin: 100px 50px 100px 50px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; 
+    gap: 20px;
+    padding: 20px;
 }
 
-#lienactif {
-    display: inline-flex;  /* Garde le lien sur la ligne mais permet un alignement interne */
-    align-items: center;   /* Centre verticalement le texte par rapport à la bordure */
-    
-    border-left: 3px solid #3D83BF;
-    padding-left: 12px;    /* Espace entre la barre et le texte */
-    height: 20px;          /* On fixe une hauteur pour que la barre ne soit pas trop géante */
-    text-decoration: none;
-    color: #3D83BF;
+#imgcampus img {
+    max-width: 100%; 
+    width: 500px; 
+    height: auto;
+    border-radius: 10px;
+    border: solid 3px #3D7CB3;
+    transition: all 0.3s ease;
 }
 
-#lienactif:hover {
-    color: #1a4f7e;
+#sectioncampus {
+    margin-left: 13.5%;
+    margin-right: 13.5%;
+    text-align: justify;
+    line-height: 1.6;
 }
 
+.map-container {
+    margin: 50px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.map-container iframe {
+    width: 100%;
+    max-width: 1000px;
+    display: block;
+    margin: 0 auto;
+}
+
+#imgcampus img:hover {
+    transform: scale(1.025);
+    transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   4. PAGES DE CONTENU (À PROPOS & CONTACT)
+   ========================================================================== */
+#apropos, #contactretour {
+    padding-top: 120px; /* Espace pour ne pas être caché par le header fixe */
+}
+
+#apropos {
+    width: 60%;
+    margin: 0 auto 100px auto;
+    text-align: center;
+}
+
+#apropos p {
+    margin-top: 50px;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.aproposlegal {
+    width: 60%;
+    margin: 100px auto;
+    text-align: center;
+}
+
+.aproposlegal p, .aproposlegal h2 {
+    margin-top: 50px;
+    text-align: left;
+}
+
+/* --- 4.1 Formulaire de contact --- */
+#contactretour {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+fieldset {
+    border: none;
+    padding: 50px;
+    width: 400px;
+    text-align: center;
+}
+
+legend { font-weight: bold; font-size: 1.2rem; margin-bottom: 20px; }
+
+input, textarea {
+    background-color: #ffffff;
+    border: 2px solid #3D83BF;
+    padding: 10px 20px;
+    width: 90%;
+    border-radius: 4px;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+input:hover, textarea:hover { background-color: #ceddf6; }
+
+label { cursor: pointer; font-size: 16px; display: block; text-align: left; margin-bottom: 5px; }
+
+button[type="submit"] {
+    padding: 12px;
+    border: 1px solid #3670a4;
+    background-color: #4d8dc6;
+    color: white;
+    border-radius: 5px;
+    width: 200px;
+    cursor: pointer;
+    margin-top: 25px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover { background-color: #88b5dd; }
+
+#imgcontact { width: 600px; height: 500px; display: flex; justify-content: center; align-items: center; }
+
+#tkt {
+    width: 100%;
+    height: auto;
+    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
+    border: 3px solid #1a4f7e;
+}
+
+/* ==========================================================================
+   5. FOOTER
+   ========================================================================== */
 footer {
     background-color: #1a4f7e;
     color: #e0e0e0;
@@ -90,16 +321,7 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
     position: relative;
-}
-
-#logodufooter {
-    position: absolute;
-    bottom: 0;
-    right: 0;       
-    width: 200px;
-    pointer-events: none; 
 }
 
 .footer-container {
@@ -110,130 +332,36 @@ footer {
     margin-bottom: 50px;
 }
 
-.footer {
-    margin: 0px 10px;
+.footer p { margin: 5px 0; }
+
+#logodufooter {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 180px;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 #legal {
     width: 100%;
     text-align: center;
     padding-top: 20px;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-#legal p {
-    margin: 0;
-}
+#legal a { color: #e0e0e0; margin: 0 10px; }
 
-a {
+.footer a {
+    color: #e0e0e0;
     text-decoration: none;
-    color:#e0e0e0;
 }
 
-#apropos {
-    width: 60%;          /* Ou une largeur en px, ex: 600px */
-    margin: 100px auto;  /* Le "auto" sur les côtés centre le bloc horizontalement */
-    text-align: center;
-}
-
-#apropos p {
-    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
-    margin-top: 50px;
-    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
-}
-
-.aproposlegal {
-    width: 60%;          /* Ou une largeur en px, ex: 600px */
-    margin: 100px auto;  /* Le "auto" sur les côtés centre le bloc horizontalement */
-    text-align: center;
-}
-
-.aproposlegal p {
-    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
-    margin-top: 50px;
-    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
-    font-size: 95%;
-}
-
-.aproposlegal h2 {
-    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
-    margin-top: 50px;
-    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
-}
-
-fieldset {
-    border: none;
-    padding: 50px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-#informations{
-    width: 400px;
-}
-
-legend{
-    font-weight: bold;
-}
-
-input, textarea {
-    background-color: #ffffff;
-    border: 2px solid #3D83BF; /* Définit l'épaisseur, le style "solid" et la couleur d'un coup */
-    padding: 10px 20px;
-    border-radius: 2px; /* N'oublie pas d'ajouter une valeur ici, ex: 5px */
-    cursor: text; /* Pour un champ de texte, 'text' est plus standard que 'pointer' */
-    outline: none; /* Optionnel : supprime le contour noir/bleu quand on clique dessus */
-    transition: background-color 0.5s ease;
-}
-
-input:hover {
-    background-color: #ceddf6;
-    transition: 0.2s;
-}
-
-label {
-    cursor: pointer;
-    font-size: 16px;
-    
-}
-
-#contactretour{
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    width: 100%;
-    margin-bottom: 50px;
-}
-
-#imgcontact {
-    width: 600px;
-    height: 500px;
-    display: flex;      
-    justify-content: center; 
-    align-items: center;
-}
-
-#tkt {
-    width: 600px;      
-    height: auto;
-    border: 3px solid #1a4f7e;
-    border-radius: 3px;
-    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
-}
-
-button[type="submit"] {
-    padding: 5px;
-    border: 1px solid #3670a4;
-    background-color: #4d8dc6;
-    border-radius: 5px;
-    width: 200px;
-    cursor: pointer;
-    margin: 25px auto 50px auto;
-    transition: background-color 0.5s ease;
-}
-
-button[type="submit"]:hover {
-    background-color: #27ae60;
-    color: white;
-    transition: 0.2s;
+/* ==========================================================================
+   6. ANIMATIONS
+   ========================================================================== */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }

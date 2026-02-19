@@ -13,7 +13,8 @@
 <body>
     <header>
 
-        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI" onclick="window.location.href='index.html'">
+        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI"
+            onclick="window.location.href='index.html'">
 
         <nav>
 
@@ -28,47 +29,45 @@
         </nav>
 
     </header>
-    <div id="apropos">
+    <section id="apropos">
         <h2>À PROPOS</h2>
         <p>En CSS, le padding crée de l'espace entre le contenu d'un élément et sa bordure, influant uniquement sur
             l'intérieur de l'élément. En revanche, le margin détermine l'espace autour de l'élément, séparant celui-ci
             des autres éléments voisins. Le padding affecte la taille totale de l'élément (ajouté au contenu), tandis
             que le margin ne modifie pas la taille mais contrôle l'espacement extérieur. Cela permet une gestion précise
             de l'agencement visuel sans altérer les dimensions ou la position relative des éléments.</p>
-    </div>
-    <div id="contactretour">
+    </section>
+    <section id="contactretour">
         <form action="#" method="post" name="Quiz" id="QuizId" class="box" onsubmit="return false">
-            <text>
-                <fieldset id="informations">
-                    <legend>CONTACT</legend>
+            <fieldset id="informations">
+                <legend>CONTACT</legend>
 
-                    <p>
-                        <label for="nom">Nom</label><br>
-                        <input type="text" id="nom" name="nom">
-                    </p>
+                <p>
+                    <label for="nom">Nom</label><br>
+                    <input type="text" id="nom" name="nom">
+                </p>
 
-                    <p>
-                        <label for="prenom">Adresse Email</label><br>
-                        <input type="email" id="email" name="email">
-                    </p>
+                <p>
+                    <label for="email">Adresse Email</label><br>
+                    <input type="email" id="email" name="email">
+                </p>
 
-                    <p>
-                        <label for="naissance">Sujet</label><br>
-                        <input type="text" id="message" name="message">
-                    </p>
+                <p>
+                    <label for="sujet">Sujet</label><br>
+                    <input type="text" id="sujet" name="sujet">
+                </p>
 
-                    <p>
-                        <label for="message">Message</label><br>
-                        <textarea id="message" name="message" rows="4"></textarea>
-                    </p>
-                    <button id="submitbtn" type="submit">Envoyer</button>
-                </fieldset>
-            </text>
+                <p>
+                    <label for="message">Message</label><br>
+                    <textarea id="message" name="message" rows="4"></textarea>
+                </p>
+                <button id="submitbtn" type="submit">Envoyer</button>
+            </fieldset>
         </form>
         <div id="imgcontact">
-            <img id="tkt" src="../images/tkt.jpg" alt="personne">
+            <img id="tkt" src="../images/tkt.jpg" alt="Photo d'un membre de l'équipe de support">
         </div>
-    </div>
+    </section>
     <footer>
         <div class="footer-container">
             <div class="footer">
@@ -91,16 +90,16 @@
             </div>
             <div class="footer">
                 <a href="contact.html">
-                        <p>A propos</p>
+                    <p>A propos</p>
                 </a>
             </div>
             <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
         </div>
 
         <div id="legal">
-            <p>© 2026 Maxence-Kylian - Tous droits réservés &nbsp;&nbsp;&nbsp;<a href="mentionslegal.html"> Mentions
-                    légales</a> &nbsp;&nbsp;&nbsp;
-                </a> &nbsp;&nbsp;&nbsp;<a href="cookie.html">Cookies</a>
+            <p>© 2026 Maxence-Kylian - Tous droits réservés
+                &nbsp;&nbsp;&nbsp;<a href="mentionslegal.html">Mentions légales</a>
+                &nbsp;&nbsp;&nbsp;<a href="cookie.html">Cookies</a>
             </p>
         </div>
     </footer>
