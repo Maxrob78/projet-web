@@ -29,6 +29,13 @@ header {
     width: 100px;
     height: auto;
     margin-right: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#logoheader:hover {
+    transform: scale(1.05);
+    opacity: 0.8;
 }
 
 nav {
@@ -41,8 +48,13 @@ nav a {
     text-decoration: none;
     color: #222;
     font-weight: 500; /* Le poids 500 (Medium) est très élégant avec Inter */
-    transition: color 0.3s ease; /* Pour que le changement de couleur soit fluide */
+        transition: transform 0.3s ease, opacity 0.3s ease;
     margin-top: 8px;
+}
+
+nav a:hover {
+    transform: scale(1.05);
+    opacity: 0.8;
 }
 
 #lien {
@@ -77,18 +89,17 @@ footer {
     padding: 60px 0 20px 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Pour centrer ton contenu flex */
+    align-items: center;
     
-    /* AJOUTE CETTE LIGNE : */
-    position: relative;  /* Elle sert de point d'ancrage pour le logo */
+    position: relative;
 }
 
 #logodufooter {
-    position: absolute; /* Il "vole" au-dessus du flex sans le casser */
-    bottom: 0;          /* Collé au bas du footer */
-    right: 0;           /* Collé à droite du footer */
+    position: absolute;
+    bottom: 0;
+    right: 0;       
     width: 200px;
-    pointer-events: none; /* Pour pouvoir cliquer sur les liens dessous si besoin */
+    pointer-events: none; 
 }
 
 .footer-container {
@@ -126,6 +137,25 @@ a {
 }
 
 #apropos p {
+    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
+    margin-top: 50px;
+    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
+}
+
+.aproposlegal {
+    width: 60%;          /* Ou une largeur en px, ex: 600px */
+    margin: 100px auto;  /* Le "auto" sur les côtés centre le bloc horizontalement */
+    text-align: center;
+}
+
+.aproposlegal p {
+    margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
+    margin-top: 50px;
+    text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
+    font-size: 95%;
+}
+
+.aproposlegal h2 {
     margin-bottom: 15px; /* Un peu d'espace entre tes paragraphes */
     margin-top: 50px;
     text-align: left;   /* Aligne tout le texte à l'intérieur vers la droite */
@@ -188,6 +218,7 @@ label {
     height: auto;
     border: 3px solid #1a4f7e;
     border-radius: 3px;
+    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
 }
 
 button[type="submit"] {
