@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>EFREI | Accueil</title>
+    <title>EFREI | Contact</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,71 +11,98 @@
 </head>
 
 <body>
-    <!DOCTYPE html>
-    <html lang="fr">
+    <header class="header-accueil">
+        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI"
+            onclick="window.location.href='index.html'">
+        <nav>
+            <a id="lienactif" href="index.html">Accueil</a>
+            <a href="cours.html">Cours et formations</a>
+            <a href="enseignants.html">Equipe d'enseignants</a>
+            <a href="contact.html">A propos</a>
+        </nav>
+    </header>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>EFREI | Contact</title>
-        <link rel="stylesheet" href="../css/styles.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="icon" href="../images/favicon.ico" sizes="32x32">
-    </head>
-
-    <body>
-        <header>
-
-            <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI" onclick="window.location.href='index.html'">
-
-            <nav>
-
-                <a href="index.html">Accueil</a>
-
-                <a href="cours.html">Cours et formations</a>
-
-                <a href="enseignants.html">Equipe d'enseignants</a>
-
-                <a id="lienactif" href="contact.html">A propos</a>
-
-            </nav>
-
-        </header>
-        <footer>
-            <div class="footer-container">
-                <div class="footer">
-                    <p>accueil</p>
-                    <p>+33 188 289 000</p>
-                </div>
-                <div class="footer">
-                    <p>Campus Paris</p>
-                    <p>+33 188 289 001</p>
-                    <p>admissions@efrei.fr</p>
-                    <p>30-32 Av. de la République</p>
-                    <p>94800 Villejuif</p>
-                </div>
-                <div class="footer">
-                    <p>Campus Bordeaux</p>
-                    <p>+33 582 060 162</p>
-                    <p>admissions@efrei.fr</p>
-                    <p>83 Rue Lucien Faure</p>
-                    <p>33000 Bordeaux</p>
-                </div>
-                <div class="footer">
-                    <a href="contact.html">
-                        <p>A propos</p>
-                    </a>
-                </div>
-                <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
+    <section class="hero">
+        <video autoplay muted loop playsinline class="back-video">
+            <source src="../videos/efrei_video.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="content">
+            <h1>L'INGÉNIERIE DE DEMAIN</h1>
+            <p>Découvrez l'excellence technologique de l'EFREI</p>
+            <a href="cours.html" class="btn-video">Voir nos formations</a>
+        </div>
+    </section>
+    <div>
+        <div id="imgcampus">
+            <img id="campus" src="../images/campus.jpg" alt="Photo du campus de l'EFREI">
+            <img id="campus2" src="../images/cmpbordeaux.png" alt="Photo du campus de l'EFREI">
+        </div>
+        <section id="sectioncampus">
+            <h2>UN CAMPUS D'EXCEPTION</h2>
+            <p>Idéalement situé à Villejuif, aux portes du pôle numérique francilien, notre campus offre un
+                environnement résolument moderne et inspirant pour les futurs experts de l'ingénierie. Véritable
+                écosystème dédié à la réussite, il allie des infrastructures de pointe à des espaces de vie conviviaux.
+                Des laboratoires de recherche spécialisés aux zones de collaboration modulables, chaque espace est conçu
+                pour favoriser l'immersion technologique, l'échange d'idées et l'éclosion de projets innovants. Nous
+                offrons ainsi à nos étudiants un cadre d'apprentissage privilégié, où l'excellence académique
+                s'accompagne d'un équipement de haut niveau pour répondre aux défis de demain.</p>
+        </section>
+        <div class="map-container">
+            <iframe
+                src="https://www.google.com/maps/d/u/0/embed?mid=1l3OA8lR1VFPuScNyeKb8i5refkkKsOQ&ehbc=2E312F&noprof=1"
+                width="100%" height="450" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </div>
+    </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer">
+                <p>accueil</p>
+                <p>+33 188 289 000</p>
             </div>
-
-            <div id="legal">
-                <p>© 2026 Maxence-Kylian - Tous droits réservés &nbsp;&nbsp;&nbsp;<a href="mentionslegal.html"> Mentions
-                        légales</a> &nbsp;&nbsp;&nbsp;
-                    </a> &nbsp;&nbsp;&nbsp;<a href="cookie.html">Cookies</a>
-                </p>
+            <div class="footer">
+                <p>Campus Paris</p>
+                <p>+33 188 289 001</p>
+                <p>admissions@efrei.fr</p>
+                <p>30-32 Av. de la République</p>
+                <p>94800 Villejuif</p>
             </div>
-        </footer>
-    </body>
+            <div class="footer">
+                <p>Campus Bordeaux</p>
+                <p>+33 582 060 162</p>
+                <p>admissions@efrei.fr</p>
+                <p>83 Rue Lucien Faure</p>
+                <p>33000 Bordeaux</p>
+            </div>
+            <div class="footer">
+                <a href="contact.html">
+                    <p>A propos</p>
+                </a>
+            </div>
+            <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
+        </div>
 
-    </html>
+        <div id="legal">
+            <p>© 2026 Maxence-Kylian - Tous droits réservés &nbsp;&nbsp;&nbsp;<a href="mentionslegal.html"> Mentions
+                    légales</a> &nbsp;&nbsp;&nbsp;
+                </a> &nbsp;&nbsp;&nbsp;<a href="cookie.html">Cookies</a>
+            </p>
+        </div>
+    </footer>
+    <script>
+        window.onscroll = function () {
+            const header = document.querySelector('header');
+            // On active le mode "fond blanc" dès qu'on a scrollé de 80px
+            if (window.scrollY > 700) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        };
+    </script>
+</body>
+
+</html>

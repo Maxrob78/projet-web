@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Header Vidéo Style Bugatti</title>
+    <style>
+        /* 1. Reset de base pour enlever les marges par défaut */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif; /* Bugatti utilise une police plus luxueuse, mais restons simples */
+        }
+
+        /* 2. Le conteneur principal (Hero Section) */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* 100% de la hauteur de la fenêtre */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        /* 3. La vidéo en arrière-plan */
+        .back-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Crucial pour remplir l'écran sans déformer */
+            z-index: -2; /* Derrière tout le reste */
+        }
+
+        /* 4. L'overlay (le filtre rouge/sombre pour la lisibilité) */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(139, 0, 0, 0.5), rgba(0, 0, 0, 0.8)); /* Dégradé rouge vers noir */
+            z-index: -1;
+        }
+
+        /* 5. Le contenu (Texte et Bouton) */
+        .content h1 {
+            font-size: 3.5rem;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border: 1px solid white;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <video autoplay muted loop playsinline class="back-video">
+            <source src="https://bugatti.imgix.net/697200d8ea8f4186947d9487/fkp-hommage-launchfilm-moodcut-driving-landscape.mp4?fm=mp4&w=1920&video-codec=av1&video-bitrate=2m" type="video/mp4">
+        </video>
+
+        <div class="overlay"></div>
+
+        <div class="content">
+            <h1>LA BUGATTI TEST</h1>
+            <p>UNE EXPÉRIENCE DIGITALE IMMERSIVE</p>
+            <a href="#" class="btn">Découvrez la légende</a>
+        </div>
+    </section>
+
+</body>
+</html>
