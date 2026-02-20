@@ -8,7 +8,7 @@
     --bg-color: white;
     --text-color: #222;
     --header-bg: whitesmoke;
-    --card-bg: white;
+    --card-bg: rgb(239, 239, 239);
     --border-color: #e0e0e0;
 }
 
@@ -25,7 +25,8 @@ body {
     font-family: "Inter", sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color); /* Utilisation de la variable */
+    background-color: var(--bg-color);
+    /* Utilisation de la variable */
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -47,8 +48,10 @@ header {
     box-sizing: border-box;
     background-color: whitesmoke;
     border-bottom: 2px solid #e0e0e0;
-background-color: var(--header-bg); /* Remplace whitesmoke */
-    border-bottom: 2px solid var(--border-color); /* Remplace #e0e0e0 */
+    background-color: var(--header-bg);
+    /* Remplace whitesmoke */
+    border-bottom: 2px solid var(--border-color);
+    /* Remplace #e0e0e0 */
     transition: background-color 0.4s ease, padding 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
@@ -106,7 +109,8 @@ header.header-accueil nav a {
 
 /* --- 2.3 Style "Scrolled" --- */
 header.scrolled {
-    background: var(--header-bg); /* Utilise la couleur du thème actuel */
+    background: var(--header-bg);
+    /* Utilise la couleur du thème actuel */
 }
 
 /* On enlève le gradient qui force le blanc, ou on l'adapte : */
@@ -230,7 +234,9 @@ header.scrolled nav a {
     width: 500px;
     height: auto;
     border-radius: 10px;
-    border: solid 3px #3D7CB3;
+    border: solid 3px #3d7cb367;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
     transition: all 0.3s ease;
 }
 
@@ -269,7 +275,8 @@ header.scrolled nav a {
 }
 
 #imgcampus img:hover {
-    transform: scale(1.025);
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.05);
     transition: all 0.3s ease;
 }
 
@@ -311,7 +318,8 @@ header.scrolled nav a {
 
 .missionimg:hover,
 .valeurimg:hover {
-    transform: scale(1.03);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5);
 }
 
 /* --- SECTION CHIFFRES CLÉS --- */
@@ -341,10 +349,14 @@ header.scrolled nav a {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 1px solid #eef2f6;
-    background: var(--card-bg); /* Remplace white */
-    border: 1px solid var(--border-color); /* Remplace #eef2f6 */
-    color: var(--text-color); /* Ajoutez ceci pour le texte interne */
+    background: var(--card-bg);
+    /* Remplace white */
+    border: 1px solid var(--border-color);
+    /* Remplace #eef2f6 */
+    color: var(--text-color);
+    /* Ajoutez ceci pour le texte interne */
 }
+
 /* Effet au survol */
 .stat-card:hover {
     transform: translateY(-10px);
@@ -361,6 +373,7 @@ header.scrolled nav a {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .stat-value {
@@ -377,7 +390,8 @@ header.scrolled nav a {
     letter-spacing: 1px;
     font-weight: 600;
     color: #555;
-        color: var(--text-color); /* Remplace #555 pour plus de lisibilité */
+    color: var(--text-color);
+    /* Remplace #555 pour plus de lisibilité */
     opacity: 0.8;
 }
 
@@ -566,6 +580,11 @@ header.scrolled nav a {
     margin-top: 50px;
     text-align: left;
     line-height: 1.6;
+    transition: 0.3s ease;
+}
+
+#apropos p:hover {
+    transition: 0.3s ease;
 }
 
 .aproposlegal {
@@ -614,9 +633,11 @@ textarea {
     border-radius: 4px;
     outline: none;
     transition: background-color 0.3s ease;
-background-color: var(--bg-color); /* Le champ s'adapte au thème */
+    background-color: var(--bg-color);
+    /* Le champ s'adapte au thème */
     color: var(--text-color);
-    border: 2px solid #3D83BF; /* On garde le bleu de l'EFREI */
+    border: 2px solid #3D83BF;
+    /* On garde le bleu de l'EFREI */
 }
 
 input:hover,
@@ -664,7 +685,7 @@ button[type="submit"]:hover {
     border: 3px solid #1a4f7e;
 }
 
-#theme-toggle{
+#theme-toggle {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -673,6 +694,81 @@ button[type="submit"]:hover {
     border: none;
     cursor: pointer;
     z-index: 1100;
+}
+
+.conteneur {
+    text-align: center;
+}
+
+.cours {
+    display: flex;
+    justify-content: center; /* Centre les blocs sur la ligne */
+    flex-wrap: wrap;        /* PERMET LE RETOUR À LA LIGNE */
+    gap: 50px;              /* Espace entre les blocs */
+    margin: 50px auto;
+    max-width: 1400px;      /* Largeur max pour éviter que ce soit trop étiré */
+}
+
+.upload-box {
+    width: 100%;
+    min-height: 150px; /* Important : sinon la zone est trop petite */
+    border: 2px dashed #3D83BF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-box.hover {
+    background-color: rgba(61, 131, 191, 0.2);
+    border-style: solid;
+}
+
+.carte {
+    /* Calcul pour 4 colonnes : (100% / 4) - compensation du gap */
+    width: calc(25% - 30px); 
+    min-width: 250px;       /* Sécurité : évite que les blocs soient trop petits */
+    height: 200px;
+    position: relative;
+    border-radius: 10px;
+    border: 3px solid #3D83BF;
+    overflow: hidden;
+}
+
+.carte img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.info {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent, rgba(61, 131, 191, 0.9));
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: bottom 0.4s ease;
+}
+
+.carte:hover .info {
+    bottom: 0;
+}
+
+.carte:hover img {
+    transform: scale(1.1);
+}
+
+.carte:hover {
+    box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5);
 }
 /* ==========================================================================
    5. FOOTER
