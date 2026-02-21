@@ -79,7 +79,7 @@ document.querySelectorAll('.video-hover-container').forEach(container => {
 
 
 
-// À mettre à la fin de votre script.js, en supprimant l'ancien bloc "GESTION DU THEME"
+// --- GESTION THÈME (CLIQUE SUR LE BOUTON) ---
 document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById('theme-toggle');
     const currentTheme = localStorage.getItem('theme');
