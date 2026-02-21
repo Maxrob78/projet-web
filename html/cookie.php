@@ -41,5 +41,5 @@
             https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser pour en savoir plus sur
             les cookies et les moyens de s’y opposer).
     </div>
-    
+
 <?php include 'footer.php'; ?>
