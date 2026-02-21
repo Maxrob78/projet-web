@@ -1,30 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <title>EFREI | Accueil</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" href="../images/favicon.ico" sizes="32x32">
-    <script src="../javascript/script.js" defer></script>
-</head>
-
-<body>
-    <header class="header-accueil">
-        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI"
-            onclick="window.location.href='index.html'">
-        <nav>
-            <a id="lienactif" href="index.html">Accueil</a>
-            <a href="CoursFormations.html">Cours et formations</a>
-            <a href="equipe.html">Equipe d'enseignants</a>
-            <a href="contact.html">A propos</a>
-            <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-right: 5px;">
-                🌙
-            </button>
-        </nav>
-    </header>
+<?php include 'header.php'; ?>
 
     <section class="hero">
         <video autoplay muted loop playsinline class="back-video">
@@ -33,8 +7,8 @@
         <div class="overlay"></div>
         <div class="content">
             <h1>L'INGÉNIERIE DE DEMAIN</h1>
-            <p>Découvrez l'excellence technologique de l'EFREI</p>
-            <a href="CoursFormations.html" class="btn-video">Voir nos formations</a>
+            <p>l'EFREI, grande école du numérique</p>
+            <a href="formations.php" class="btn-video">Voir nos formations</a>
         </div>
     </section>
     <div id="imgcampus">
@@ -42,7 +16,7 @@
         <img id="campus2" src="../images/cmpbordeaux.png" alt="Photo du campus Bordelais de l'EFREI">
     </div>
     <section id="sectioncampus">
-        <h2>UN CAMPUS D'EXCEPTION</h2>
+        <h2>Les campus de l'EFREI</h2>
         <p>Idéalement situé à Villejuif, aux portes du pôle numérique francilien, notre campus offre un
             environnement résolument moderne et inspirant pour les futurs experts de l'ingénierie. Véritable
             écosystème dédié à la réussite, il allie des infrastructures de pointe à des espaces de vie conviviaux.
@@ -62,28 +36,22 @@
             <img class="missionimg" src="../images/cmpbordeaux.png" alt="Photo du campus Parisien de l'EFREI">
         </div>
         <section class="missionpara">
-            <h2>NOTRE MISSION</h2>
-            <p>Notre mission est de former les ingénieurs de demain, capables de relever les défis technologiques
-                et sociétaux avec créativité, éthique et expertise. Nous nous engageons à offrir une éducation
-                d'excellence, axée sur l'innovation, la collaboration et l'ouverture internationale, afin de
-                préparer nos étudiants à devenir des leaders dans le domaine de l'ingénierie.
-                Notre mission est de former les ingénieurs de demain, capables de relever les défis technologiques
-                et sociétaux avec créativité, éthique et expertise. Nous nous engageons à offrir une éducation
-                d'excellence, axée sur l'innovation, la collaboration et l'ouverture internationale, afin de
-                préparer nos étudiants à devenir des leaders dans le domaine de l'ingénierie.</p>
+            <h2>LES MISSIONS</h2>
+            <p>L'objectif de l'établissement est de former des ingénieurs capables de répondre aux enjeux technologiques
+                et sociétaux par l'expertise et la créativité. Le cursus s'articule autour de l'innovation, du travail
+                collaboratif et de l'ouverture internationale afin de préparer les étudiants aux responsabilités du
+                secteur de l'ingénierie.</p>
         </section>
     </div>
     <div class="imageparagraphe">
         <section class="valeurpara">
-            <h2>NOTRE MISSION</h2>
-            <p>Notre mission est de former les ingénieurs de demain, capables de relever les défis technologiques
-                et sociétaux avec créativité, éthique et expertise. Nous nous engageons à offrir une éducation
-                d'excellence, axée sur l'innovation, la collaboration et l'ouverture internationale, afin de
-                préparer nos étudiants à devenir des leaders dans le domaine de l'ingénierie.
-                Notre mission est de former les ingénieurs de demain, capables de relever les défis technologiques
-                et sociétaux avec créativité, éthique et expertise. Nous nous engageons à offrir une éducation
-                d'excellence, axée sur l'innovation, la collaboration et l'ouverture internationale, afin de
-                préparer nos étudiants à devenir des leaders dans le domaine de l'ingénierie.</p>
+            <h2>LES VALEURS</h2>
+            <p>L'identité du département d'informatique de l'EFREI s'articule autour de trois piliers : la maîtrise
+                technique, l'adaptabilité et la responsabilité professionnelle. L'établissement privilégie une approche
+                où l'innovation technologique reste indissociable d'une réflexion éthique sur l'usage du numérique. Le
+                cursus favorise l'immersion dans des projets collaboratifs complexes, visant à développer chez les
+                futurs ingénieurs une vision globale des infrastructures informatiques et une capacité de réponse agile
+                aux mutations constantes du secteur.</p>
         </section>
         <div class="image-container">
             <img class="valeurimg" src="../images/cmpbordeaux.png" alt="Photo du campus Parisien de l'EFREI">
@@ -189,40 +157,4 @@
         <span class="dot" onclick="currentSlide(3)"></span>
     </div>
     
-    <footer>
-        <div class="footer-container">
-            <div class="footer">
-                <p>accueil</p>
-                <p>+33 188 289 000</p>
-            </div>
-            <div class="footer">
-                <p>Campus Paris</p>
-                <p>+33 188 289 001</p>
-                <p>admissions@efrei.fr</p>
-                <p>30-32 Av. de la République</p>
-                <p>94800 Villejuif</p>
-            </div>
-            <div class="footer">
-                <p>Campus Bordeaux</p>
-                <p>+33 582 060 162</p>
-                <p>admissions@efrei.fr</p>
-                <p>83 Rue Lucien Faure</p>
-                <p>33000 Bordeaux</p>
-            </div>
-            <div class="footer">
-                <a href="contact.html">
-                    <p>A propos</p>
-                </a>
-            </div>
-            <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
-        </div>
-
-        <div id="legal">
-            <p>© 2026 Maxence-Kylian - Tous droits réservés &nbsp;&nbsp;&nbsp; <a href="mentionslegal.html">Mentions
-                    légales</a> &nbsp;&nbsp;&nbsp;
-                </a> &nbsp;&nbsp;&nbsp; <a href="cookie.html">Cookies</a>
-            </p>
-        </div>
-    </footer>
-</body>
-</html>
+<?php include 'footer.php'; ?>

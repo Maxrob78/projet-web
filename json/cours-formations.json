@@ -1,0 +1,78 @@
+{
+    "cours": [
+        {
+            "id": 1,
+            "nom": "Développement Web",
+            "description": "Découvrez les fondamentaux du web et apprenez à créer des sites et applications interactives",
+            "image": "../images/cours1.jpg"
+        },
+        {
+            "id": 2,
+            "nom": "Réseaux et Télécommunications",
+            "description": "Apprenez les bases des réseaux informatiques et des télécommunications",
+            "image": "../images/cours2.jpg"
+        },
+        {
+            "id": 3,
+            "nom": "Cybersécurité",
+            "description": "Apprenez à protéger les systèmes informatiques contre les menaces et les attaques",
+            "image": "../images/cours3.webp"
+        },
+        {
+            "id": 4,
+            "nom": "Développement durable",
+            "description": "Explorez les concepts et les techniques de développement durable",
+            "image": "../images/dev-durable.jpg"
+        },
+        {
+            "id": 5,
+            "nom": "Administration système et cloud computing",
+            "description": "Apprenez à gérer et à administrer des systèmes informatiques et des infrastructures cloud",
+            "image": "../images/admin.jpg"
+        },
+        {
+            "id": 6,
+            "nom": "Design UX/UI",
+            "description": "Apprenez à concevoir des interfaces utilisateur intuitives et attrayantes",
+            "image": "../images/design.avif"
+        }
+    ],
+    "formations": [
+        {
+            "id": 1,
+            "nom": "Développement Web",
+            "description": "Découvrez les fondamentaux du web et apprenez à créer des sites et applications interactives",
+            "image": "../images/cours1.jpg"
+        },
+        {
+            "id": 2,
+            "nom": "Réseaux et Télécommunications",
+            "description": "Apprenez les bases des réseaux informatiques et des télécommunications",
+            "image": "../images/cours2.jpg"
+        },
+        {
+            "id": 3,
+            "nom": "Cybersécurité",
+            "description": "Apprenez à protéger les systèmes informatiques contre les menaces et les attaques",
+            "image": "../images/cours3.webp"
+        },
+        {
+            "id": 4,
+            "nom": "Développement durable",
+            "description": "Explorez les concepts et les techniques de développement durable",
+            "image": "../images/dev-durable.jpg"
+        },
+        {
+            "id": 5,
+            "nom": "Administration système et cloud computing",
+            "description": "Apprenez à gérer et à administrer des systèmes informatiques et des infrastructures cloud",
+            "image": "../images/admin.jpg"
+        },
+        {
+            "id": 6,
+            "nom": "Design UX/UI",
+            "description": "Apprenez à concevoir des interfaces utilisateur intuitives et attrayantes",
+            "image": "../images/design.avif"
+        }
+    ]
+}
