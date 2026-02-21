@@ -1,30 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <title>EFREI | Contact</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" href="../images/favicon.ico" sizes="32x32">
-    <script src="../javascript/script.js" defer></script>
-</head>
-
-<body>
-    <header>
-
-        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI"
-            onclick="window.location.href='index.html'">
-        <nav>
-            <a href="index.html">Accueil</a>
-            <a href="CoursFormations.html">Cours et formations</a>
-            <a id="lienactif" href="equipe.html">Equipe d'enseignants</a>
-            <a href="contact.html">A propos</a>
-            <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-right: 5px;">
-                🌙
-            </button>
-        </nav>
+<?php include 'header.php'; ?>
 
     </header>
     <section class="section-chiffres">
@@ -104,41 +78,5 @@
         <video playsinline autoplay loop src="../videos/efrei.mp4" class="preview-video"
             data-playable-observed="true"></video>
     </div>
-    <footer>
-        <div class="footer-container">
-            <div class="footer">
-                <p>accueil</p>
-                <p>+33 188 289 000</p>
-            </div>
-            <div class="footer">
-                <p>Campus Paris</p>
-                <p>+33 188 289 001</p>
-                <p>admissions@efrei.fr</p>
-                <p>30-32 Av. de la République</p>
-                <p>94800 Villejuif</p>
-            </div>
-            <div class="footer">
-                <p>Campus Bordeaux</p>
-                <p>+33 582 060 162</p>
-                <p>admissions@efrei.fr</p>
-                <p>83 Rue Lucien Faure</p>
-                <p>33000 Bordeaux</p>
-            </div>
-            <div class="footer">
-                <a href="contact.html">
-                    <p>A propos</p>
-                </a>
-            </div>
-            <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
-        </div>
 
-        <div id="legal">
-            <p>© 2026 Maxence-Kylian - Tous droits réservés
-                &nbsp;&nbsp;&nbsp; <a href="mentionslegal.html">Mentions légales</a>
-                &nbsp;&nbsp;&nbsp; <a href="cookie.html">Cookies</a>
-            </p>
-        </div>
-    </footer>
-</body>
-
-</html>
+<?php include 'footer.php'; ?>

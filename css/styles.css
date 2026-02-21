@@ -130,16 +130,12 @@ header.scrolled nav a {
 }
 
 /* --- 2.4 Indicateur de lien actif --- */
-#lienactif,
-#lien {
+a.active {
     display: inline-flex;
     align-items: center;
     border-left: 2px solid #3D83BF;
     padding-left: 12px;
     height: 18px;
-}
-
-#lienactif {
     color: #3D83BF !important;
 }
 
