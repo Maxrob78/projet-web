@@ -19,7 +19,7 @@
                 <p>33000 Bordeaux</p>
             </div>
             <div class="footer">
-                <a href="contact.html">
+                <a href="contact.php">
                     <p>A propos</p>
                 </a>
             </div>

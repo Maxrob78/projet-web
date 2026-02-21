@@ -16,7 +16,7 @@ $menu_items = [
 
 <head>
     <meta charset="UTF-8">
-    <title>EFREI | <?php echo $menu_items[$page_actuelle] ?? 'Bienvenue'; ?></title> // Affiche le nom de la page dans le titre, ou "Bienvenue" si la page n'est pas dans le menu
+    <title>EFREI | <?php echo $menu_items[$page_actuelle] ?? 'Bienvenue'; // Affiche le nom de la page dans le titre, ou "Bienvenue" si la page n'est pas dans le menu ?></title> 
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,12 +25,12 @@ $menu_items = [
 </head>
 
 <body>
-    <header class="<?php echo ($page_actuelle == 'index.php') ? 'header-accueil' : ''; ?>"> // Ajoute une classe spéciale pour la page d'accueil
+    <header class="<?php echo ($page_actuelle == 'index.php') ? 'header-accueil' : ''; // Ajoute une classe spéciale pour la page d'accueil ?>"> 
         <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI" onclick="window.location.href='index.php'">
         <nav>
             <?php foreach ($menu_items as $lien => $nom): ?>
                 <a href="<?php echo $lien; ?>" 
-                    class="<?php echo ($lien == $page_actuelle) ? 'active' : ''; ?>"> //on ajoute la classe "active" si c'est la page actuelle
+                    class="<?php echo ($lien == $page_actuelle) ? 'active' : ''; //on ajoute la classe "active" si c'est la page actuelle ?>"> 
                     <?php echo $nom; ?>
                 </a>
             <?php endforeach; ?>
