@@ -39,4 +39,3 @@ $menu_items = [
             </button>
         </nav>
     </header>
-.
