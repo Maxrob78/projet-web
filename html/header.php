@@ -6,8 +6,8 @@ $page_actuelle = basename($_SERVER['PHP_SELF']);
 $menu_items = [
     'index.php'   => 'Accueil',
     'formations.php'   => 'Cours et Formations',
-    'equipe.php'  => 'Équipe',
-    'contact.php' => 'A propos'
+    'equipe.php'  => 'équipe',
+    'contact.php' => 'à propos'
 ];
 ?>
 
