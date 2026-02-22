@@ -2,133 +2,153 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site Dynamique</title>
+    <title>Site Immersif - Mode Veille</title>
     <style>
-        /* 1. RESET DE BASE */
+        /* 1. CONFIGURATION DE BASE */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: #111; /* Couleur de fond quand on travaille */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            font-family: 'Segoe UI', sans-serif;
             color: white;
+            overflow-x: hidden;
         }
 
-        /* 2. LE CONTENU (TEXTE, BOUTONS, ETC.) */
-        #ui-content {
+        /* 2. LE CONTENU DU SITE (À CACHER) */
+        .content {
             position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: all 0.8s ease;
+            z-index: 5;
+            padding: 50px;
+            text-align: center;
+            /* Transition douce pour le flou et l'opacité */
+            transition: filter 1s ease, opacity 1s ease, transform 1s ease;
         }
 
-        h1 { font-size: 3.5rem; margin-bottom: 0; }
-        p { font-size: 1.2rem; opacity: 0.8; }
-
-        /* 3. LA VIDÉO (CACHÉE PAR DÉFAUT) */
+        /* 3. LA VIDÉO DE FOND */
         #bg-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             z-index: 1;
-            opacity: 0; /* Invisible au début */
-            pointer-events: none;
-            transition: opacity 1.5s ease;
+            opacity: 0;
+            object-fit: contain; /* Garde toute la vidéo visible */
+            background-color: black; /* Remplit les bords vides en noir */
+            transition: opacity 1s ease;
         }
 
         /* 4. TON ANIMATION fadeInScale */
         @keyframes fadeInScale {
-            from { 
-                opacity: 0; 
-                transform: scale(0.95); 
-            }
-            to { 
-                opacity: 1; 
-                transform: scale(1); 
-            }
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* 5. ÉTAT INACTIF (QUAND ON NE BOUGE PLUS) */
-        /* La vidéo apparaît avec ton animation */
+        /* 5. LE MESSAGE D'INACTIVITÉ */
+        #idle-message {
+            position: fixed;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: none;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* 6. LES ÉTATS QUAND ON EST INACTIF (IDLE) */
+        
+        /* On floute et on cache le texte du site */
+        body.is-idle .content {
+            filter: blur(15px);
+            opacity: 0;
+            transform: scale(1.05); /* Petit effet de recul */
+        }
+
+        /* On affiche la vidéo */
         body.is-idle #bg-video {
             opacity: 1;
-            animation: fadeInScale 1.2s ease-out forwards;
         }
 
-        /* Le texte devient discret quand la vidéo s'active */
-        body.is-idle #ui-content {
-            opacity: 0.3;
-            transform: scale(0.9);
-            filter: blur(2px);
+        /* On affiche ton message avec ton animation */
+        body.is-idle #idle-message {
+            display: block;
+            animation: fadeInScale 1s ease-out forwards;
         }
 
-        /* Indicateur d'état en bas de page */
-        .status {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.5;
-            z-index: 3;
-        }
     </style>
 </head>
 <body>
 
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="../videos/efrei.mp4" type="video/mp4">
-        Votre navigateur ne supporte pas la vidéo.
+        <source src="../videos/tiktok_thomastfu_7589712529983589653.mp4" type="video/mp4">
     </video>
 
-    <div id="ui-content">
-        <h1>MODE TRAVAIL</h1>
-        <p>Arrête de bouger la souris pendant 3 secondes...</p>
+    <div id="idle-message">
+        <h2 style="font-size: 4rem;">tema le poulet</h2>
     </div>
 
-    <div class="status" id="status-text">Actif</div>
+    <div class="content">
+        <h1>Mon Article de Blog</h1>
+        <p>Ceci est le texte important de mon site web.</p>
+        <div style="margin-top: 50px;">
+            <img src="https://via.placeholder.com/600x300/333/fff?text=Image+du+Site" alt="Exemple">
+            <p style="max-width: 600px; margin: 20px auto;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Si vous arrêtez de bouger, ce texte va disparaître 
+                et laisser place à une magnifique vidéo spatiale.
+            </p>
+        </div>
+    </div>
 
     <script>
-        const body = document.body;
-        const statusText = document.getElementById('status-text');
+        const video = document.getElementById('bg-video');
         let idleTimer;
-        
-        // Temps d'inactivité avant d'afficher la vidéo (en millisecondes)
-        const IDLE_TIME = 3000; 
-
+        const IDLE_TIME = 120000; // 2 minutes d'inactivité
         function setIdle() {
-            body.classList.add('is-idle');
-            statusText.innerText = "En veille (Vidéo active)";
+            document.body.classList.add('is-idle');
+
+            // On tente d'activer le son
+            video.currentTime = 0;
+            video.volume = 0.1;
+            video.muted = false;
+             
+
+            // La lecture d'une vidéo avec son renvoie une "Promesse"
+            let playPromise = video.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Le son est autorisé, on ne fait rien de plus
+                    console.log("Audio activé avec succès");
+                })
+                .catch(error => {
+                    // SI le navigateur bloque (pas d'interaction), on repasse en MUTE
+                    // pour que la vidéo s'affiche quand même !
+                    video.muted = true;
+                    video.play();
+                    console.log("Le son est bloqué par le navigateur, affichage en muet.");
+                });
+            }
         }
 
         function setActive() {
-            // On retire la classe d'inactivité
-            body.classList.remove('is-idle');
-            statusText.innerText = "Actif";
+            document.body.classList.remove('is-idle');
+    
+            // On coupe le son dès que l'utilisateur redevient actif
+            video.muted = true;
 
-            // On réinitialise le compte à rebours
             clearTimeout(idleTimer);
             idleTimer = setTimeout(setIdle, IDLE_TIME);
         }
 
-        // Événements qui indiquent que l'utilisateur est présent
-        window.onmousemove = setActive; // Mouvement souris
-        window.onkeydown = setActive;   // Touche clavier
-        window.onclick = setActive;     // Clic
-        window.ontouchstart = setActive; // Tactile (mobile)
+        // Liste des événements pour détecter l'activité
+        ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(event => {
+            window.addEventListener(event, setActive);
+        });
 
-        // Initialisation au chargement
+        // Initialisation
         setActive();
     </script>
 </body>
