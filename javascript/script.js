@@ -82,30 +82,112 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================
     // 4. CHARGEMENT DYNAMIQUE JSON (COURS/FORMATIONS)
     // ==========================================
+    let donneesGlobales = { cours: [], formations: [] }; // Stockage global
+
     fetch('../json/cours-formations.json')
         .then(response => response.json())
         .then(data => {
-            const conteneurCours = document.getElementById('liste-cours');
-            const conteneurFormations = document.getElementById('liste-formations');
+            donneesGlobales = data; // Sauvegarde des données
+            afficherTout();
+        });
 
-            const creerCarte = (item) => `
-                <div class="carte">
-                    <img src="${item.image}" alt="${item.nom}">
-                    <div class="info">
-                        <h3>${item.nom}</h3>
-                        <p>${item.description}</p>
+    function afficherTout() {
+        const listeCours = document.getElementById('liste-cours');
+        const listeFormations = document.getElementById('liste-formations');
+        
+        if(listeCours) listeCours.innerHTML = "";
+        if(listeFormations) listeFormations.innerHTML = "";
+
+        donneesGlobales.cours.forEach(item => creerCarte(item, 'cours', 'liste-cours'));
+        donneesGlobales.formations.forEach(item => creerCarte(item, 'formations', 'liste-formations'));
+    }
+
+    function creerCarte(item, type, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const id = item.id;
+
+        const htmlCarte = `
+            <div class="carte" id="card-${type}-${id}">
+                <img src="${item.image}" alt="${item.nom}">
+                <div class="info">
+                    <h3>${item.nom}</h3>
+                    <p>${item.description}</p>
+                    <div class="action-buttons">
+                        <button class="btn-edit" onclick="preparerModification(${id}, '${type}')">Modifier ✏️</button>
+                        <button class="btn-delete" onclick="supprimerElement(${id}, '${type}')">Supprimer 🗑️</button>
                     </div>
                 </div>
-            `;
+            </div>`;
+        
+        container.insertAdjacentHTML('beforeend', htmlCarte);
+    }
 
-            if (data.cours && conteneurCours) {
-                data.cours.forEach(item => { conteneurCours.innerHTML += creerCarte(item); });
-            }
-            if (data.formations && conteneurFormations) {
-                data.formations.forEach(item => { conteneurFormations.innerHTML += creerCarte(item); });
-            }
-        })
-        .catch(error => console.error("Erreur de chargement JSON :", error));
+    // 1. Fonction pour annuler
+    window.annulerModification = function() {
+        const form = document.getElementById('QuizId');
+        const submitBtn = document.getElementById('submitbtn');
+        const cancelBtn = document.getElementById('cancelbtn');
+        const dropZone = document.getElementById('drop-zone');
+
+        // Reset du formulaire
+        form.reset();
+        
+        // On retire les infos de modification
+        delete form.dataset.editId;
+        delete form.dataset.editType;
+
+        // On remet les textes et boutons d'origine
+        submitBtn.innerText = "Envoyer";
+        cancelBtn.style.display = "none";
+        
+        // Reset de l'image
+        if(dropZone) {
+            dropZone.style.backgroundImage = "none";
+            dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
+        }
+        imagePreviewUrl = ""; 
+    };
+
+    // 2. Modifier la fonction de préparation pour afficher le bouton
+    window.preparerModification = function(id, type) {
+        const item = donneesGlobales[type].find(i => i.id === id);
+        
+        if (item) {
+            const form = document.getElementById('QuizId');
+            document.getElementById('nom').value = item.nom;
+            document.getElementById('description').value = item.description;
+            document.getElementById('type-choix').value = type;
+            
+            // On stocke l'ID ET le type d'origine
+            form.dataset.editId = id; 
+            form.dataset.editType = type; // <--- TRÈS IMPORTANT
+
+            document.getElementById('submitbtn').innerText = "Enregistrer les modifications";
+            document.getElementById('cancelbtn').style.display = "inline-block";
+            
+            // Gestion image
+            imagePreviewUrl = item.image;
+            const dropZone = document.getElementById('drop-zone');
+            dropZone.style.backgroundImage = `url(${item.image})`;
+            dropZone.innerText = "";
+            
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.supprimerElement = function(id, type) {
+        if (confirm("Es-tu sûr de vouloir supprimer ce cours ?")) {
+            // 1. Filtrer les données pour retirer l'élément
+            donneesGlobales[type] = donneesGlobales[type].filter(item => item.id !== id);
+            
+            // 2. Rafraîchir l'affichage
+            afficherTout();
+            
+            alert("Élément supprimé !");
+        }
+    };
 
     // ==========================================
     // 5. GESTION DE LA DROP ZONE (DRAG & DROP)
@@ -149,38 +231,69 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 6. SOUMISSION DU FORMULAIRE (SIMULATION)
+    // 6. SOUMISSION DU FORMULAIRE (AJOUT OU MODIF)
     // ==========================================
     const quizForm = document.getElementById('QuizId');
     if (quizForm) {
-        quizForm.addEventListener('submit', function(e) {
+        quizForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const nom = document.getElementById('nom').value;
-            const desc = document.getElementById('description').value;
-            const typeChoice = document.getElementById('type-choix');
-            const type = typeChoice ? typeChoice.value : 'cours';
-            const containerId = type === 'cours' ? 'liste-cours' : 'liste-formations';
+            // 1. Récupération des valeurs actuelles du formulaire
+            const leNom = document.getElementById('nom').value;
+            const laDesc = document.getElementById('description').value;
+            const nouveauType = document.getElementById('type-choix').value; // 'cours' ou 'formations'
+            
+            // 2. Récupération des infos de modification (si elles existent)
+            const editId = this.dataset.editId;
+            const typeOrigine = this.dataset.editType;
 
-            if (nom && desc && imagePreviewUrl) {
-                const container = document.getElementById(containerId);
-                const htmlCarte = `
-                    <div class="carte">
-                        <img src="${imagePreviewUrl}" alt="${nom}">
-                        <div class="info">
-                            <h3>${nom}</h3>
-                            <p>${desc}</p>
-                        </div>
-                    </div>`;
+            // 3. Vérification : On a besoin d'un nom, d'une description et d'une image
+            if (leNom && laDesc && imagePreviewUrl) {
                 
-                if (container) container.innerHTML += htmlCarte;
+                if (editId) {
+                    // --- CAS A : MODIFICATION ---
+                    console.log("Modification de l'élément ID:", editId, "depuis", typeOrigine, "vers", nouveauType);
+                    
+                    // On retire d'abord l'ancien élément de sa catégorie d'origine
+                    // (Cela permet de gérer le changement de type automatiquement)
+                    donneesGlobales[typeOrigine] = donneesGlobales[typeOrigine].filter(item => item.id != editId);
 
-                // Reset
-                this.reset();
-                dropZone.style.backgroundImage = "none";
-                dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
-                imagePreviewUrl = "";
-                alert("Cours ajouté (Temporairement en JS) !");
+                    // On crée l'objet mis à jour (on garde le même ID)
+                    const itemMisAJour = {
+                        id: parseInt(editId),
+                        nom: leNom,
+                        description: laDesc,
+                        image: imagePreviewUrl
+                    };
+
+                    // On l'ajoute dans la catégorie cible (nouveauType)
+                    donneesGlobales[nouveauType].push(itemMisAJour);
+                    
+                    alert("Modification enregistrée !");
+
+                } else {
+                    // --- CAS B : NOUVEL AJOUT ---
+                    const nouvelItem = {
+                        id: Date.now(), // Génère un ID unique basé sur l'heure
+                        nom: leNom,
+                        description: laDesc,
+                        image: imagePreviewUrl
+                    };
+
+                    // On l'ajoute dans la catégorie choisie
+                    donneesGlobales[nouveauType].push(nouvelItem);
+                    
+                    alert("Nouvel élément ajouté !");
+                }
+
+                // --- ACTIONS FINALES (COMMUNES AUX DEUX CAS) ---
+                
+                // 1. On rafraîchit tout l'affichage pour voir les changements
+                afficherTout(); 
+                
+                // 2. On remet le formulaire à zéro (et on cache le bouton annuler)
+                annulerModification(); 
+
             } else {
                 alert("Veuillez remplir tous les champs et ajouter une image.");
             }
@@ -188,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 7. GESTION DU MODE VEILLE (INACTIVITÉ)
+    // 7. GESTION DU MODE VEILLE
     // ==========================================
     const idleVideo = document.getElementById('bg-idle-video');
     let idleTimer;

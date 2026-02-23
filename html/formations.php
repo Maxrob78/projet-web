@@ -33,7 +33,7 @@
 
                 <p>
                     <label for="description">Description</label><br>
-                    <input type="text" id="description" name="description">
+                    <textarea id="description" name="description" rows="4"></textarea>
                 </p>
                 <p>
                     <label for="type-choix">Type</label><br>
@@ -46,8 +46,10 @@
                     Glissez votre image ici ou cliquez pour choisir
                     <input type="file" id="file-input" style="display:none">
                 </div>
-                <button id="submitbtn" type="submit">Envoyer</button>
-            </fieldset>
+                <div class="form-actions">
+                    <button id="submitbtn" type="submit">Envoyer</button>
+                    <button id="cancelbtn" type="button" style="display:none" onclick="annulerModification()">Annuler</button>
+                </div>
         </form>
     </section>
 

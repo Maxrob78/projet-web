@@ -26,7 +26,7 @@
             background-color: #000;
             z-index: 1;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 1s ease;
             pointer-events: none;
         }
 
@@ -94,7 +94,7 @@
 <body>
 
     <video muted loop playsinline id="bg-video">
-        <source src="../videos/video_test2.mp4" type="video/mp4">
+        <source src="../videos/test2.mp4" type="video/mp4">
     </video>
 
     <div id="idle-message">
@@ -134,7 +134,7 @@
         const titreOriginal = document.title;
         const video = document.getElementById('bg-video');
         let idleTimer;
-        const IDLE_TIME = 30000; // 30 secondes
+        const IDLE_TIME = 5000; // 5 secondes
 
         function setIdle() {
             document.body.classList.add('is-idle');

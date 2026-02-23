@@ -1,6 +1,5 @@
 <?php include 'header.php'; ?>
 
-    </header>
     <section class="section-chiffres">
         <div class="container-chiffres">
             <h2 class="titre-section">Notre équipe d'enseignants</h2>
