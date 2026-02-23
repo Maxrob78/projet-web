@@ -75,7 +75,7 @@
     <div class="video-hover-container">
         <img src="../images/campus.jpg" alt="Aperçu" class="preview-thumb">
 
-        <video playsinline autoplay loop src="../videos/efrei.mp4" class="preview-video"
+        <video playsinline muted loop src="../videos/efrei.mp4" class="preview-video"
             data-playable-observed="true"></video>
     </div>
 

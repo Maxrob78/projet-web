@@ -186,12 +186,64 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    // ==========================================
+    // 7. GESTION DU MODE VEILLE (INACTIVITÉ)
+    // ==========================================
+    const idleVideo = document.getElementById('bg-idle-video');
+    let idleTimer;
+    const IDLE_TIME = 120000; // 120 secondes d'inactivité avant de lancer la vidéo
+    const originalTitle = document.title; // Sauvegarde le titre original pour le restaurer après le mode veille
+
+    if (idleVideo) {
+        function setIdle() {
+            document.body.classList.add('is-idle');
+            
+            // Change le titre de l'onglet
+            document.title = "t ouuuuuuuu ?";
+
+            // Relance la vidéo du début
+            idleVideo.currentTime = 0;
+            idleVideo.volume = 0.1; // Baisser le son
+            idleVideo.muted = false;
+
+            let playPromise = idleVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // Si le navigateur bloque le son, on la joue en muet
+                    idleVideo.muted = true;
+                    idleVideo.play();
+                });
+            }
+        }
+
+        function setActive() {
+            // Si on sort du mode veille
+            if (document.body.classList.contains('is-idle')) {
+                document.body.classList.remove('is-idle');
+                document.title = originalTitle; // Remet le bon titre
+                idleVideo.pause(); // Met la vidéo en pause pour les perfs
+            }
+
+            // Réinitialise le chrono
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(setIdle, IDLE_TIME);
+        }
+
+        // On écoute l'activité de l'utilisateur (souris, clavier, scroll, tactile)
+        ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(event => {
+            window.addEventListener(event, setActive);
+        });
+
+        // Lancer le timer au chargement de la page
+        setActive();
+    }
 });
 
 // --- GESTION VIDÉO AU SURVOL ---
 document.querySelectorAll('.video-hover-container').forEach(container => {
     const video = container.querySelector('video');
-    if (video) {
+    if (video) { 
         container.addEventListener('mouseenter', () => {
             video.muted = true;
             video.play().catch(error => console.log("Erreur lecture :", error));

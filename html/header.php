@@ -39,3 +39,9 @@ $menu_items = [
             </button>
         </nav>
     </header>
+    <video muted loop playsinline id="bg-idle-video">
+        <source src="../videos/video_veille.mp4" type="video/mp4">
+    </video>
+    <div id="idle-message">
+        <h1 style="font-size: 3rem; color: white; text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);">juste tema ce poulet</h1>
+    </div>

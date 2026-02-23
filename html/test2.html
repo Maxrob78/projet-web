@@ -2,42 +2,55 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Site Immersif - Mode Veille</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Immersif - Test Scroll</title>
     <style>
-        /* 1. CONFIGURATION DE BASE */
+        /* 1. RESET & FOND */
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
-            background-color: #000;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: #0a0a0a;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             color: white;
-            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* 2. LE CONTENU DU SITE (À CACHER) */
-        .content {
-            position: relative;
-            z-index: 5;
-            padding: 50px;
-            text-align: center;
-            /* Transition douce pour le flou et l'opacité */
-            transition: filter 1s ease, opacity 1s ease, transform 1s ease;
-        }
-
-        /* 3. LA VIDÉO DE FOND */
+        /* 2. LA VIDÉO (Position FIXE pour qu'elle nous suive) */
         #bg-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            object-fit: contain;
+            background-color: #000;
             z-index: 1;
             opacity: 0;
-            object-fit: contain; /* Garde toute la vidéo visible */
-            background-color: black; /* Remplit les bords vides en noir */
-            transition: opacity 1s ease;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
+
+        /* 3. LE CONTENU DU SITE */
+        .content {
+            position: relative;
+            z-index: 5;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 20px;
+            line-height: 1.6;
+            transition: filter 1s ease, opacity 1s ease, transform 1s ease;
+        }
+
+        section {
+            margin-bottom: 100px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        h1 { font-size: 3rem; color: #00d4ff; }
+        h2 { font-size: 2rem; color: #00d4ff; }
+        p { font-size: 1.1rem; color: #ccc; }
 
         /* 4. TON ANIMATION fadeInScale */
         @keyframes fadeInScale {
@@ -45,7 +58,7 @@
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* 5. LE MESSAGE D'INACTIVITÉ */
+        /* 5. MESSAGE D'INACTIVITÉ */
         #idle-message {
             position: fixed;
             top: 80%;
@@ -55,100 +68,108 @@
             display: none;
             text-align: center;
             pointer-events: none;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
-        /* 6. LES ÉTATS QUAND ON EST INACTIF (IDLE) */
-        
-        /* On floute et on cache le texte du site */
+        /* 6. ÉTATS QUAND INACTIF */
         body.is-idle .content {
-            filter: blur(15px);
+            filter: blur(25px);
             opacity: 0;
-            transform: scale(1.05); /* Petit effet de recul */
+            transform: scale(0.98);
         }
 
-        /* On affiche la vidéo */
         body.is-idle #bg-video {
             opacity: 1;
         }
 
-        /* On affiche ton message avec ton animation */
         body.is-idle #idle-message {
             display: block;
-            animation: fadeInScale 1s ease-out forwards;
+            animation: fadeInScale 0.8s ease-out forwards;
         }
-
     </style>
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="../videos/tiktok_thomastfu_7589712529983589653.mp4" type="video/mp4">
+    <video muted loop playsinline id="bg-video">
+        <source src="../videos/video_test2.mp4" type="video/mp4">
     </video>
 
     <div id="idle-message">
-        <h2 style="font-size: 4rem;">tema le poulet</h2>
+        <h2 style="margin:0; color:white;">MODE VEILLE</h2>
+        <p style="margin:10px 0 0 0;">Bouge pour revenir au site</p>
     </div>
 
     <div class="content">
-        <h1>Mon Article de Blog</h1>
-        <p>Ceci est le texte important de mon site web.</p>
-        <div style="margin-top: 50px;">
-            <img src="https://via.placeholder.com/600x300/333/fff?text=Image+du+Site" alt="Exemple">
-            <p style="max-width: 600px; margin: 20px auto;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                Si vous arrêtez de bouger, ce texte va disparaître 
-                et laisser place à une magnifique vidéo spatiale.
-            </p>
-        </div>
+        <section>
+            <h1>Bienvenue</h1>
+            <p>Ceci est le haut de ta page. Scrolle vers le bas pour voir l'effet de la vidéo qui reste fixe.</p>
+        </section>
+
+        <section>
+            <h2>Pourquoi ce design ?</h2>
+            <p>En utilisant <strong>position: fixed</strong> sur la vidéo, elle ne bouge pas quand tu défiles. Elle attend patiemment en arrière-plan que tu t'arrêtes de bouger.</p>
+        </section>
+
+        <section>
+            <h2>Un peu de contenu...</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <div style="height: 200px; background: linear-gradient(45deg, #00d4ff, #0055ff); border-radius: 10px; margin: 20px 0;"></div>
+        </section>
+
+        <section>
+            <h2>Le test ultime</h2>
+            <p>Arrête-toi n'importe où sur cette section. Après 3 secondes, tout ce texte va devenir flou et disparaître au profit de ta vidéo verticale centrée.</p>
+        </section>
+
+        <section>
+            <h2>Pied de page</h2>
+            <p>Tu es arrivé en bas ! Même ici, le script fonctionne. Si tu restes immobile, la vidéo se lancera du début avec un son léger (si tu as cliqué avant).</p>
+        </section>
     </div>
 
     <script>
+        const titreOriginal = document.title;
         const video = document.getElementById('bg-video');
         let idleTimer;
-        const IDLE_TIME = 120000; // 2 minutes d'inactivité
+        const IDLE_TIME = 30000; // 30 secondes
+
         function setIdle() {
             document.body.classList.add('is-idle');
-
-            // On tente d'activer le son
+            document.title = "Zzz... Tu dors ? 🌙";
+            
+            // Relance la vidéo du début
             video.currentTime = 0;
-            video.volume = 0.1;
+            video.volume = 1;
             video.muted = false;
-             
 
-            // La lecture d'une vidéo avec son renvoie une "Promesse"
             let playPromise = video.play();
-
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Le son est autorisé, on ne fait rien de plus
-                    console.log("Audio activé avec succès");
-                })
-                .catch(error => {
-                    // SI le navigateur bloque (pas d'interaction), on repasse en MUTE
-                    // pour que la vidéo s'affiche quand même !
+            if (playPromise !== undefined) { 
+                playPromise.catch(() => { // Si la lecture est bloquée (ex: pas de clic préalable), on mute et on joue quand même
                     video.muted = true;
                     video.play();
-                    console.log("Le son est bloqué par le navigateur, affichage en muet.");
                 });
             }
         }
 
         function setActive() {
             document.body.classList.remove('is-idle');
-    
-            // On coupe le son dès que l'utilisateur redevient actif
+            document.title = titreOriginal;
             video.muted = true;
+            video.pause(); 
 
             clearTimeout(idleTimer);
             idleTimer = setTimeout(setIdle, IDLE_TIME);
         }
 
-        // Liste des événements pour détecter l'activité
+        // On écoute tout, y compris le scroll
         ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(event => {
             window.addEventListener(event, setActive);
         });
 
-        // Initialisation
+        // Premier lancement
         setActive();
     </script>
 </body>
