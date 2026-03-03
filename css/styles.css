@@ -366,20 +366,6 @@ header nav a.active {
     transform: translateY(-10px);
 }
 
-/* --- RESPONSIVE : 2 par ligne sur Tablette --- */
-@media (max-width: 1024px) {
-    .grid-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* --- RESPONSIVE : 1 par ligne sur Mobile --- */
-@media (max-width: 600px) {
-    .grid-stats {
-        grid-template-columns: 1fr;
-    }
-}
-
 .stat-icon {
     font-size: 2.5rem;
     margin-bottom: 15px;
@@ -652,8 +638,23 @@ textarea {
     background-color: var(--bg-color);
     /* Le champ s'adapte au thème */
     color: var(--text-color);
-    border: 2px solid #3D83BF;
     /* On garde le bleu de l'EFREI */
+}
+
+/* On cible tous les textarea pour être tranquille */
+textarea {
+    width: 100% !important;       /* Force la largeur pleine */
+    max-width: 100% !important;   /* Interdit de dépasser du parent */
+    min-width: 100% !important;   /* Interdit de devenir plus petit */
+    box-sizing: border-box;       /* Inclus le padding dans le calcul de la taille */
+    resize: vertical;             /* LA règle magique pour n'étirer que vers le bas */
+    min-height: 80px;             /* Hauteur minimale de confort */
+    padding: 12px;
+    border: 2px solid #3D83BF;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: block;               /* Évite les espaces bizarres en dessous */
 }
 
 input:hover,
@@ -921,6 +922,19 @@ footer {
     }
 }
 
+/* 3. Une animation dédiée au centrage */
+@keyframes fadeInScaleCenter {
+    from { 
+        opacity: 0; 
+        /* On remet le translate DANS l'animation pour ne pas le perdre */
+        transform: translate(-50%, -50%) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+}
+
 /* ==========================================================================
    7. MODE VEILLE (INACTIVITÉ)
    ========================================================================== */
@@ -956,19 +970,6 @@ footer {
     backdrop-filter: blur(5px);
 }
 
-/* 3. Une animation dédiée au centrage */
-@keyframes fadeInScaleCenter {
-    from { 
-        opacity: 0; 
-        /* On remet le translate DANS l'animation pour ne pas le perdre */
-        transform: translate(-50%, -50%) scale(0.95); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translate(-50%, -50%) scale(1); 
-    }
-}
-
 /* 4. Actions quand on est inactif */
 body.is-idle #bg-idle-video {
     opacity: 1;
@@ -986,4 +987,22 @@ body.is-idle > *:not(#bg-idle-video):not(#idle-message) {
     opacity: 0.3;
     pointer-events: none;
     transition: filter 1s ease, opacity 1s ease;
+}
+
+/* =======================================================================
+   8. RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* --- RESPONSIVE : 2 par ligne sur Tablette --- */
+@media (max-width: 1024px) {
+    .grid-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- RESPONSIVE : 1 par ligne sur Mobile --- */
+@media (max-width: 600px) {
+    .grid-stats {
+        grid-template-columns: 1fr;
+    }
 }

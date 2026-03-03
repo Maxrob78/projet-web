@@ -124,71 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
         container.insertAdjacentHTML('beforeend', htmlCarte);
     }
 
-    // 1. Fonction pour annuler
-    window.annulerModification = function() {
-        const form = document.getElementById('QuizId');
-        const submitBtn = document.getElementById('submitbtn');
-        const cancelBtn = document.getElementById('cancelbtn');
-        const dropZone = document.getElementById('drop-zone');
-
-        // Reset du formulaire
-        form.reset();
-        
-        // On retire les infos de modification
-        delete form.dataset.editId;
-        delete form.dataset.editType;
-
-        // On remet les textes et boutons d'origine
-        submitBtn.innerText = "Envoyer";
-        cancelBtn.style.display = "none";
-        
-        // Reset de l'image
-        if(dropZone) {
-            dropZone.style.backgroundImage = "none";
-            dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
-        }
-        imagePreviewUrl = ""; 
-    };
-
-    // 2. Modifier la fonction de préparation pour afficher le bouton
-    window.preparerModification = function(id, type) {
-        const item = donneesGlobales[type].find(i => i.id === id);
-        
-        if (item) {
-            const form = document.getElementById('QuizId');
-            document.getElementById('nom').value = item.nom;
-            document.getElementById('description').value = item.description;
-            document.getElementById('type-choix').value = type;
-            
-            // On stocke l'ID ET le type d'origine
-            form.dataset.editId = id; 
-            form.dataset.editType = type; // <--- TRÈS IMPORTANT
-
-            document.getElementById('submitbtn').innerText = "Enregistrer les modifications";
-            document.getElementById('cancelbtn').style.display = "inline-block";
-            
-            // Gestion image
-            imagePreviewUrl = item.image;
-            const dropZone = document.getElementById('drop-zone');
-            dropZone.style.backgroundImage = `url(${item.image})`;
-            dropZone.innerText = "";
-            
-            form.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
-    window.supprimerElement = function(id, type) {
-        if (confirm("Es-tu sûr de vouloir supprimer ce cours ?")) {
-            // 1. Filtrer les données pour retirer l'élément
-            donneesGlobales[type] = donneesGlobales[type].filter(item => item.id !== id);
-            
-            // 2. Rafraîchir l'affichage
-            afficherTout();
-            
-            alert("Élément supprimé !");
-        }
-    };
-
     // ==========================================
     // 5. GESTION DE LA DROP ZONE (DRAG & DROP)
     // ==========================================
@@ -231,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 6. SOUMISSION DU FORMULAIRE (AJOUT OU MODIF)
+    // 6. GESTION  AJOUT/MODIFICATION DES COURS ET FORMATIONS
     // ==========================================
     const quizForm = document.getElementById('QuizId');
     if (quizForm) {
@@ -299,6 +234,71 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+    
+    // 1. Fonction pour annuler
+    window.annulerModification = function() {
+        const form = document.getElementById('QuizId');
+        const submitBtn = document.getElementById('submitbtn');
+        const cancelBtn = document.getElementById('cancelbtn');
+        const dropZone = document.getElementById('drop-zone');
+
+        // Reset du formulaire
+        form.reset();
+        
+        // On retire les infos de modification
+        delete form.dataset.editId;
+        delete form.dataset.editType;
+
+        // On remet les textes et boutons d'origine
+        submitBtn.innerText = "Envoyer";
+        cancelBtn.style.display = "none";
+        
+        // Reset de l'image
+        if(dropZone) {
+            dropZone.style.backgroundImage = "none";
+            dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
+        }
+        imagePreviewUrl = ""; 
+    };
+
+    // 2. Modifier la fonction de préparation pour afficher le bouton
+    window.preparerModification = function(id, type) {
+        const item = donneesGlobales[type].find(i => i.id === id);
+        
+        if (item) {
+            const form = document.getElementById('QuizId');
+            document.getElementById('nom').value = item.nom;
+            document.getElementById('description').value = item.description;
+            document.getElementById('type-choix').value = type;
+            
+            // On stocke l'ID ET le type d'origine
+            form.dataset.editId = id; 
+            form.dataset.editType = type; // <--- TRÈS IMPORTANT
+
+            document.getElementById('submitbtn').innerText = "Enregistrer les modifications";
+            document.getElementById('cancelbtn').style.display = "inline-block";
+            
+            // Gestion image
+            imagePreviewUrl = item.image;
+            const dropZone = document.getElementById('drop-zone');
+            dropZone.style.backgroundImage = `url(${item.image})`;
+            dropZone.innerText = "";
+            
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.supprimerElement = function(id, type) {
+        if (confirm("Es-tu sûr de vouloir supprimer ce cours ?")) {
+            // 1. Filtrer les données pour retirer l'élément
+            donneesGlobales[type] = donneesGlobales[type].filter(item => item.id !== id);
+            
+            // 2. Rafraîchir l'affichage
+            afficherTout();
+            
+            alert("Élément supprimé !");
+        }
+    };
 
     // ==========================================
     // 7. GESTION DU MODE VEILLE

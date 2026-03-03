@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie Flash Responsive</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --input-border: #cccccc;
+            --accent-color: #007bff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --input-border: #444444;
+            --accent-color: #bb86fc;
+        }
+
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 20px;
+            border: 1px solid var(--input-border);
+            background: var(--container-bg);
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .chat-container {
+            background: var(--container-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 320px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            box-sizing: border-box;
+            background: var(--container-bg);
+            color: var(--text-color);
+        }
+
+        button.send-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* --- CONFIGURATION DU FLASH --- */
+        #flash-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flash-overlay img {
+            /* Ces 3 lignes assurent que l'image est entière et ne dépasse pas */
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; 
+        }
+
+        p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<button class="theme-toggle" onclick="toggleTheme()" id="btnTheme">🌙 Mode Sombre</button>
+
+<div class="chat-container">
+    <h3>Envoyer un message</h3>
+    <input type="text" id="msg" placeholder="Tapez votre message ici...">
+    <button class="send-btn" onclick="lancerFlash()">Envoyer</button>
+    <p id="status"></p>
+</div>
+
+<div id="flash-overlay">
+    <img src="../images/scp-067.jpg" alt="Image Flash">
+</div>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('btnTheme');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            btn.innerText = "🌙 Mode Sombre";
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            btn.innerText = "☀️ Mode Clair";
+        }
+    }
+
+    function lancerFlash() {
+        const input = document.getElementById('msg');
+        const overlay = document.getElementById('flash-overlay');
+        const status = document.getElementById('status');
+        
+        if (input.value.toLowerCase().includes("67")) {
+            overlay.style.display = 'flex';
+            
+            // On cache après 200ms
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 200);
+        } else if (input.value.trim() !== "") {
+            status.innerText = "Message envoyé : " + input.value
+            setTimeout(() => {
+                status.innerText = "";
+            }, 3000);
+        }
+        input.value = "";
+    }
+
+    // Support de la touche Entrée
+    document.getElementById('msg').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') lancerFlash();
+    });
+</script>
+
+</body>
+</html>
