@@ -587,6 +587,12 @@ header nav a.active {
     width: 60px;
 }
 
+#lienactif {
+    border-left: #005eb0 solid 2px;
+    padding-left: 12px;
+    color: #3D83BF;
+}
+
 /* ==========================================================================
    4. PAGES DE CONTENU (À PROPOS & CONTACT)
    ========================================================================== */
