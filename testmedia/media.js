@@ -3,13 +3,17 @@ let mediaConfig = {
     video: "",
     image: "",
     texte: "",
-    duree: "auto",
-    enAudio: false,
     vitesse: 1,
-    volume: 1
+    volume: 1,
+    duree: "auto",
+    delaiBtn: "auto",
+    enAudio: false,
+    pleinEcran: false,
+    btnFermer: false,
 };
 
 let mediaTimeout;
+let btnTimeout;
 
 // ÉLÉMENTS DU DOM
 const container = document.getElementById('media-container');
@@ -17,6 +21,7 @@ const videoEl = document.getElementById('media-video');
 const imageEl = document.getElementById('media-img');
 const titreEl = document.getElementById('media-title');
 const wrapperEl = document.querySelector('.media-wrapper');
+const btnFermerEl = document.querySelector('.close-btn');
 
 // 1. FONCTION DE VALIDATION DE LA CONFIG
 function validateConfig() {
@@ -34,7 +39,6 @@ function validateConfig() {
             logs.push(`Audio forcé (format ${extension} détecté)`);
         } 
         else {
-            // 1. Validation audio
             if (mediaConfig.image && mediaConfig.video) {
                 mediaConfig.enAudio = false;
                 logs.push(`Audio : reset à false (image + vidéo détecté)`);
@@ -43,11 +47,11 @@ function validateConfig() {
                 mediaConfig.enAudio = false;
                 logs.push(`Audio : reset à false (mauvais format)`);
             }
-            else logs.push(`Média visuel détecté (${extension}), mode audio : ${mediaConfig.enAudio}`);
         }
-    } else {
+    }
+    else {
         mediaConfig.enAudio = false;
-        logs.push(`Audio : reset à false (aucun fichier vidéo détecté)`);
+        logs.push(`Audio : reset à false (pas de vidéo)`);
     }
 
     // 2. VOLUME (Sécurité entre 0 et 1)
@@ -68,25 +72,47 @@ function validateConfig() {
     mediaConfig.image = fixUrl(mediaConfig.image);
     mediaConfig.texte = (mediaConfig.texte || "").trim();
 
-    // 6. NOUVEAU : VALIDATION DE LA DURÉE ---
-    let d = String(mediaConfig.duree || "").trim().toLowerCase();
-
-    if (d === "" || d === "auto") {
-        mediaConfig.duree = "auto";
-    } 
-    else if (d === "inf") {
-        mediaConfig.duree = "inf";
-    } 
-    else {
-        let num = Number(d);
-        // Si c'est pas un nombre ou un nombre négatif -> on remet en auto
-        if (isNaN(num) || num <= 0) {
-            logs.push(`Durée "${d}" invalide, passage en mode "auto"`);
-            mediaConfig.duree = "auto";
-        } else {
-            mediaConfig.duree = num;
+    // VALIDATION AUDIO, PLEIN ECRAN + BOUTON FERMER
+    ['enAudio', 'pleinEcran', 'btnFermer'].forEach(key => {
+        if (typeof mediaConfig[key] !== "boolean") {
+            mediaConfig[key] = false;
+            logs.push(`${key} : reset à false (mauvais format)`);
         }
-    }
+    });
+
+    // VALIDATION DELAI BOUTON + DUREE
+    ['duree', 'delaiBtn'].forEach(key => {
+        
+        // CAS SPÉCIAL : Si on traite le bouton mais qu'il est désactivé
+        if (key === 'delaiBtn' && !mediaConfig.btnFermer) {
+            mediaConfig.delaiBtn = "auto";
+            logs.push(`${key} : reset à "auto" (bouton désactivé)`);
+            return; // On passe au tour suivant
+        }
+
+        // Nettoyage de la valeur brute
+        let raw = String(mediaConfig[key] || "").trim().toLowerCase();
+
+        if (raw === "" || raw === "auto") {
+            mediaConfig[key] = "auto";
+        } 
+        else if (raw === "inf" && key === 'duree') {
+            mediaConfig[key] = "inf";
+        } 
+        else if (raw === 'onloop' && key === 'delaiBtn') {
+            mediaConfig[key] = "onloop";
+        }
+        else {
+            let num = Number(raw);
+            // Si pas un nombre ou <= 0 -> on retombe en "auto"
+            if (isNaN(num) || num <= 0) {
+                logs.push(`Valeur "${raw}" pour ${key} incorrecte. Switch en "auto".`);
+                mediaConfig[key] = "auto";
+            } else {
+                mediaConfig[key] = num;
+            }
+        }
+    });
 
     // 7. VÉRIFICATION FINALE : Y a-t-il quelque chose à lancer ?
     if (!mediaConfig.video && !mediaConfig.image && !mediaConfig.texte) {
@@ -113,6 +139,8 @@ function mediaStart() {
 
     // --- NETTAYAGE COMPLET + RESET AFFICHAGES ---
     clearTimeout(mediaTimeout); 
+    clearTimeout(btnTimeout);
+
     videoEl.onended = null;
     videoEl.onerror = null;
     imageEl.onerror = null;
@@ -126,6 +154,13 @@ function mediaStart() {
     imageEl.style.display = "none";
     titreEl.style.display = "none";
     wrapperEl.style.display = "flex";
+    btnFermerEl.style.display = "none";
+
+    videoEl.style.width = "";
+    videoEl.style.height = "";
+    imageEl.style.width = "";
+    imageEl.style.height = "";
+
 
     let imageErreur = false;
     let videoErreur = false;
@@ -208,7 +243,7 @@ function mediaStart() {
         videoEl.volume = mediaConfig.volume;
         if (!mediaConfig.enAudio) { 
             videoEl.style.display = "block";
-            videoEl.onloadedmetadata = () => ajusterTailleMedia(videoEl, true);
+            videoEl.addEventListener('loadedmetadata', () => ajusterTailleMedia(videoEl, true), { once: true });
         }
 
         videoEl.onerror = () => {
@@ -229,7 +264,7 @@ function mediaStart() {
         });
     }
 
-    // --- LOGIQUE DE FIN UNIQUE ---
+    // --- LOGIQUE DE FIN UNIQUE MEDIA ---
     if (mode === 'inf') {
         // MODE INFINI : La vidéo boucle, l'image reste. Pas de timer.
         if (mediaConfig.video) videoEl.loop = true;
@@ -237,7 +272,7 @@ function mediaStart() {
     } 
     else if (typeof mode === 'number') {
         // MODE TIMER : On force l'arrêt après X ms. 
-        // Note: On met la vidéo en loop pour éviter un écran noir si le timer est plus long que la vidéo.
+        // Note: On met la vidéo en boucle pour éviter un écran noir si le timer est plus long que la vidéo.
         if (mediaConfig.video) videoEl.loop = true; 
         mediaTimeout = setTimeout(() => mediaStop(), mode);
         console.log(`Comportement : Arrêt programmé dans ${mode}ms`);
@@ -254,26 +289,61 @@ function mediaStart() {
         }
     }
 
+    // --- LOGIQUE BOUTON FERMER ---  
+      
+    if (mediaConfig.btnFermer) {
+        const delai = mediaConfig.delaiBtn;
+
+        if (mediaConfig.video && delai === 'onloop') {
+            if (videoEl.loop) {
+                // Si ya une vidéo bouclée, on attend la fin de la première lecture
+                videoEl.addEventListener('loadedmetadata', () => {
+                    btnTimeout = setTimeout(() => {
+                        btnFermerEl.style.display = "block";
+                    }, videoEl.duration * 1000 / mediaConfig.vitesse); 
+                }, { once: true });
+            }
+        }
+        else if (typeof delai === 'number') {
+            // CAS : Délai manuel défini
+            btnTimeout = setTimeout(() => {
+                btnFermerEl.style.display = "block";
+            }, delai);
+        } 
+        // CAS : auto
+        else btnFermerEl.style.display = "block";
+    }
+
     container.style.display = "flex";
 }
 
 // 3. FONCTION STOP : On ferme et on coupe tout
 function mediaStop() {
     // Nettoyage de tous les timers et écouteurs
+    clearTimeout(mediaTimeout); 
+    clearTimeout(btnTimeout);
+
+    videoEl.onended = null;
     videoEl.onerror = null;
     imageEl.onerror = null;
-    videoEl.onended = null;
-    clearTimeout(mediaTimeout);
 
-    container.style.display = "none";
-    wrapperEl.classList.remove('title-only');
-
-    
-    // On coupe proprement le média
     videoEl.pause();
     videoEl.currentTime = 0;
+    videoEl.muted = false;
+    videoEl.loop = false;
+
+    container.style.display = "none";
+    videoEl.style.display = "none";
+    imageEl.style.display = "none";
+    btnFermerEl.style.display = "none";
+
     videoEl.src = "";
     imageEl.src = "";
+    videoEl.style.width = "";
+    videoEl.style.height = "";
+    imageEl.style.width = "";
+    imageEl.style.height = "";
+
 
     console.log("Média arrêté et nettoyé.");
 }
@@ -292,22 +362,40 @@ function syncDOMFromConfig() {
     console.log("[SYSTEM] Synchronisation terminée.");
 }
 
+function resetDOMStyles() {
+    console.log("[SYSTEM] Reset complet des styles JS (Retour aux règles CSS)");
+    
+    // Liste des éléments recevant des styles inline via ajusterTailleMedia
+    const elementsToReset = [container, imageEl, videoEl, titreEl, wrapperEl, btnFermerEl];
+    
+    elementsToReset.forEach(el => {
+        if (el) {
+            el.removeAttribute('style'); 
+        }
+    });
+}
+
 function resetConfig() {
+    console.log("[SYSTEM] Reset complet de la configuration");
     mediaConfig = {
         video: "",
         image: "",
         texte: "",
-        duree: "auto",
-        enAudio: false,
         vitesse: 1,
-        volume: 1
+        volume: 1,
+        duree: "auto",
+        delaiBtn: "auto",
+        enAudio: false,
+        pleinEcran: false,
+        btnFermer: false,
     };
 }
 
-function mediaResetall() {
+function mediaResetAll() {
     mediaStop();
     resetConfig();
     syncDOMFromConfig();
+    resetDOMStyles();
 }
 
 // FONCTION DE REDIMENSIONNEMENT PARFAIT (Plein écran sans vide)
@@ -321,6 +409,8 @@ function ajusterTailleMedia(element, isVideo) {
     
     // Sécurité si l'image n'a pas eu le temps de charger ses métadonnées
     if (!wOrigine || !hOrigine) return; 
+
+    if (!mediaConfig.pleinEcran) return;
 
     // 2. Calcul du multiplicateur pour remplir l'écran (Simulation de object-fit: contain)
     const ratioLargeur = window.innerWidth / wOrigine;

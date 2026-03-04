@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système Media : page de test</title>
+    <style>
+        /* ========== DEBUT CSS CONTENEUR MEDIA ========== */
+        /* LE CONTENEUR NOIR (Plein écran) */
+        #media-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        /* ZONE DE CENTRAGE */
+        .media-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .media-wrapper {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center
+        }
+
+        /* LE WRAPPER (Épouse la forme de l'image/vidéo) */
+        #media-container img, 
+        #media-container video {
+            display: block;
+
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+            box-shadow: 0px 0px 50px rgba(0,0,0,1);
+        }
+
+        .media-wrapper.title-only {
+            width: 100vw;
+            height: 100vh;
+            box-shadow: none;
+        }
+
+        .media-wrapper.title-only h1 {
+            bottom: 50% !important;
+            transform: translate(-50%, 50%) !important;
+            font-size: 3.5rem; /* On peut même le grossir un peu puisqu'il est seul */
+        }
+
+        /* LE TITRE (Stylisé avec ombre et contour) */
+        #media-container h1 {
+            position: absolute;
+            bottom: 8%; /* Placé sur le bord bas du média */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            
+            /* Taille fluide selon l'écran */
+            font-size: clamp(1.5rem, 10vmin, 5rem);
+
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            text-align: center;
+            
+            /* Contour proportionnel sans Container Queries */
+            -webkit-text-stroke: 0.3vmin black; 
+            paint-order: stroke fill;
+            text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.8);
+            
+            line-height: 1.1;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* LE BOUTON FERMER (Créé par JS) */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            padding: 12px 24px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: red;
+            transform: scale(1.05);
+        }
+
+
+        @media (max-width: 600px) {
+            
+            /* Le titre en plein écran doit être plus petit pour ne pas masquer tout l'écran */
+            #media-container h1 {
+                padding: 8 15px;
+                font-size: 1rem;
+                bottom: 20%;
+                max-width: 95%;
+                line-height: 1.3;
+                -webkit-text-stroke: 4px black;
+                max-width: 98%;
+                letter-spacing: 2px;
+            }
+
+            .close-btn { 
+                padding: 8px 15px;
+                font-size: 0.9rem;
+                top: 10px;
+                right: 10px;
+            }
+        }
+        /* ========== FIN CSS CONTENEUR MEDIA ========== */
+
+        /* RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: sans-serif; 
+            background: #f0f0f0; 
+            height: 200vh; /* Pour tester le scroll */
+            padding: 50px;
+        }
+
+        /* INTERFACE DE TEST (Panneau de contrôle) */
+        .demo-ui {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .demo-ui label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+        }
+         /* On ajuste aussi le label du titre pour qu'il soit bien aligné */
+        .demo-ui label[style*="flex-direction: column"] {
+            align-items: stretch !important; /* Force le contenu à s'étirer */
+            background: transparent;        /* Enlève le gris pour le titre si tu préfères */
+            padding: 0;
+        }
+        h2 { margin-bottom: 15px; }
+        
+        .drop-zone { transition: all 0.3s ease; padding-right: 35px; position: relative;}
+        .drop-zone.hover { border-color: #27ae60 !important; background: #e8f5e9; }
+        .drop-zone.success { border-style: solid; border-color: #27ae60 !important; color: #27ae60 !important; background: #fafffa; }
+
+        .reset-btn {
+            display: none;
+            position: absolute;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 12px;
+            z-index: 10;
+            line-height: 1;
+            transition: all 0.2s;
+
+            /* COMPORTEMENT PAR DÉFAUT (Écrans larges / PC) */
+            top: 8px;    /* Calé en haut */
+            right: 8px;  /* Calé à droite */
+            transform: none; 
+        }
+
+        .reset-btn:hover {
+            background: #c0392b !important;
+            transform: scale(1.1);
+        }
+
+        #input-texte {
+            width: 100%;             /* Prend toute la largeur disponible */
+            padding: 12px;           /* Plus de confort pour écrire */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 5px;
+            display: block;          /* Force le champ à prendre sa propre ligne */
+        }
+
+        /* Nouveau style pour le bouton START */
+        #start-btn:disabled {
+            background: #ccc !important; /* Gris */
+            cursor: not-allowed;        /* Curseur "interdit" */
+            opacity: 0.6;               /* Un peu transparent */
+            transform: none !important; /* Pas d'effet de clic */
+        }
+        #start-btn {
+            background: #27ae60; color: white; border: none; width: 100%; 
+            padding: 15px; cursor: pointer; font-weight: bold; border-radius: 5px;
+        }
+        #start-btn:hover { background: #219150; }
+
+        /* Le conteneur du bouton */
+        .tooltip-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* L'infobulle (Le rectangle noir) */
+        .tooltip-wrapper::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 135%; /* On le monte un peu pour laisser de la place à la flèche */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            /* Ajout de la transition ici pour que le délai fonctionne */
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition-delay: 0s;
+            z-index: 1001;
+            pointer-events: none;
+        }
+
+        /* La flèche (Le triangle) */
+        .tooltip-wrapper::before {
+            content: "";
+            position: absolute;
+            bottom: 110%; /* Positionnée entre le bouton et le tooltip */
+            left: 50%;
+            transform: translateX(-50%);
+            
+            /* CONSTRUCTION DU TRIANGLE VERS LE BAS */
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #333; /* Couleur sur le bord HAUT pour pointer vers le BAS */
+            
+            opacity: 0;
+            visibility: hidden;
+            /* Ajout de la transition ici aussi pour que le délai soit identique */
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition-delay: 0s;
+            z-index: 1000;
+        }
+
+        /* Affichage au survol avec le délai de 0.5s */
+        .tooltip-wrapper:hover::after,
+        .tooltip-wrapper:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0.5s; 
+        }
+
+        /* Sécurité : si le bouton est activé, on cache l'infobulle */
+        .tooltip-wrapper:has(button:not(:disabled))::after,
+        .tooltip-wrapper:has(button:not(:disabled))::before {
+            display: none;
+        }
+
+        /* SECTION GUIDE */
+        .external-docs {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .container-presentation p {
+            margin: 10px 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .layers-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .layer-item {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            background: #f0f4f8;
+            border-radius: 4px;
+            color: #444;
+        }
+
+        .layer-item strong {
+            color: #2980b9;
+        }
+
+        .guide-grid, .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .guide-item, .tech-box {
+            padding: 12px;
+            background: #fdfdfd;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .tech-box {
+            border-left-color: #2980b9; /* Bleu pour distinguer la partie technique */
+        }
+
+        .doc-divider {
+            margin: 25px 0;
+            border: 0;
+            border-top: 1px solid #eee;
+        }
+
+        h3 { color: #2c3e50; font-size: 1.1rem; }
+        h4 { font-size: 0.9rem; margin-bottom: 5px; color: #34495e; }
+        p { font-size: 0.85rem; color: #666; line-height: 1.4; }
+
+        /* --- STYLES DU TERMINAL DE LOG --- */
+        #log-terminal {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            padding: 0;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        #log-header {
+            background: #333;
+            padding: 5px 15px;
+            font-size: 0.7rem;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #log-content {
+            height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column-reverse; /* Les nouveaux logs apparaissent en bas mais défilent vers le haut */
+        }
+        .log-entry { margin-bottom: 4px; line-height: 1.4; border-bottom: 1px solid #2a2a2a; }
+        .log-entry.warn { color: #ffcc00; }
+        .log-entry.error { color: #ff5555; }
+        .log-entry.system { color: #44ff44; font-weight: bold; }
+        .log-entry.input-cmd { color: #3498db; border-bottom: none; }
+
+        #console-input-area {
+            display: flex;
+            background: #252526;
+            padding: 10px;
+            border-top: 1px solid #333;
+        }
+        #console-input-area span { color: #3498db; margin-right: 10px; font-weight: bold; }
+        #console-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: inherit;
+            width: 100%;
+            outline: none;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 15px; /* On réduit l'espace autour sur mobile */
+            }
+
+            .demo-ui {
+                padding: 15px;
+            }
+
+            /* Les zones de Drag & Drop passent l'une sous l'autre */
+            .demo-ui div[style*="display: flex; gap: 10px"] {
+                flex-direction: column !important;
+            }
+
+            /* On adapte les sliders : le texte au-dessus, le slider dessous */
+            .demo-ui label {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .demo-ui label div[style*="flex-grow: 1"] {
+                order: 2; /* On déplace le chiffre à droite du nom */
+                flex-grow: 0 !important;
+            }
+
+            .demo-ui input[type="range"] {
+                width: 100%; /* Le slider prend toute la largeur sur sa propre ligne */
+                order: 3;
+            }
+
+            .reset-btn {
+                top: 50%;               /* Centré verticalement */
+                right: 8px;            /* Un peu plus d'espace du bord */
+                transform: translateY(-50%); /* Ajustement pour le centrage parfait */
+
+                padding: 4px 8px;      /* Bouton légèrement plus gros pour le toucher (doigt) */
+                font-size: 10px;
+                border-radius: 3px;
+            }
+
+            .drop-zone {
+                height: 80px; /* Un peu moins haut pour gagner de la place */
+                padding-right: 30px;
+            }
+
+            .guide-grid, .tech-stack { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ========== DEBUT HTML CONTENEUR MEDIA ========== -->
+    <div id="media-container" style="display: none;">
+        <button class="close-btn" onclick="mediaStop()">X</button>
+        <div class="media-content">
+            <div class="media-wrapper">
+                <img id="media-img">
+                <video id="media-video"></video>
+                <h1 id="media-title"></h1> 
+            </div>
+        </div>
+    </div>
+    <!-- ========== FIN HTML CONTENEUR MEDIA ========== -->
+
+    <div id="log-terminal">
+        <div id="log-header">
+            <span>DEV TERMINAL (Interactive JS)</span>
+            <button onclick="document.getElementById('log-content').innerHTML=''" style="background:none; border:none; color:#888; cursor:pointer;">Clear</button>
+        </div>
+        <div id="log-content"></div>
+        <div id="console-input-area">
+            <span>&gt;</span>
+            <input type="text" id="console-input" placeholder="Taper une commande JS (ex: mediaStart() ou mediaConfig)...">
+        </div>
+    </div>
+
+    <div class="demo-ui">
+        <h2>Panneau de contrôle</h2>
+        
+        <p>1. Règle les options :</p>
+        <div style="margin: 15px 0; display: flex; flex-direction: column; gap: 10px;">
+            <label style="cursor: pointer;">
+                Mode Audio uniquement (cache la vidéo)
+                <input type="checkbox" id="audio-toggle"> 
+            </label>
+            <label>
+                <span>Vitesse :</span>
+                <span style="flex-grow: 1; text-align: right; margin-right: 10px;">
+                    <span id="speed-val">1</span>x
+                </span>
+                <input type="range" id="speed-slider" min="0.5" max="4" step="0.1" value="1" style="vertical-align: middle;">
+            </label>
+            
+            <label>
+                <span>Volume :</span>
+                <span style="flex-grow: 1; text-align: right; margin-right: 10px;">
+                    <span id="volume-val">100</span>%
+                </span>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" style="vertical-align: middle;">
+            </label>
+        </div>
+
+        <p>2. Configuration des médias :</p>
+        <div style="display: flex; gap: 10px; margin: 15px 0;">
+            <div id="drop-image" class="drop-zone" style="position: relative; flex: 1; height: 100px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; border-radius: 8px; font-size: 0.8rem; color: #666;">
+                <span class="label-text">Glissez l'IMAGE ici<br>(ou cliquez)</span>
+                <button class="reset-btn" onclick="clearMedia('image', event)">X</button>
+                <input type="file" id="file-image" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="drop-video" class="drop-zone" style="position: relative; flex: 1; height: 100px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; border-radius: 8px; font-size: 0.8rem; color: #666;">
+                <span class="label-text">Glissez la VIDÉO ici<br>(ou cliquez)</span>
+                <button class="reset-btn" onclick="clearMedia('video', event)">X</button>
+                <input type="file" id="file-video" accept="video/*" style="display: none;">
+            </div>
+        </div>
+
+        <label style="display: flex; flex-direction: column; gap: 5px;">
+            Titre du média :
+            <input type="text" id="input-texte" placeholder="Entrez votre titre ici..." style="padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+        </label>
+        
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+                Forcer la durée (en ms ou 'inf') :
+                <input type="text" id="start-duration" placeholder="Ex: 5000" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            </label>
+            <label style="cursor: pointer;">
+                Forcer le Plein Écran (Agrandissement JS)
+                <input type="checkbox" id="fullscreen-toggle"> 
+            </label>
+            <div id="start-wrapper" class="tooltip-wrapper" data-tooltip="bah met un truc au moins">
+                <button id="start-btn" onclick="lancerAvecDuree()" disabled>▶ LANCER LE MÉDIA</button>
+            </div>
+            <button onclick="resetUI()" style="margin-top: 10px; background: #95a5a6; color: white; border: none; width: 100%; padding: 10px; cursor: pointer; border-radius: 5px; font-size: 0.8rem;">
+                🗑️ RÉINITIALISER TOUTE L'INTERFACE
+            </button>
+        </div>
+    </div>
+
+    <div class="external-docs">
+        <section class="container-presentation">
+            <h3>🖥️ Présentation du Conteneur Média</h3>
+            <p>Ce système est une interface d'overlay dynamique conçue pour l'affichage de contenus multimédias hybrides. Il gère l'empilement intelligent des couches selon les fichiers fournis.</p>
+            <div class="layers-info">
+                <div class="layer-item"><strong>Couche Fond :</strong> Conteneur <code>fixed</code> plein écran avec gestion du rafraîchissement au redimensionnement.</div>
+                <div class="layer-item"><strong>Couche Visuelle :</strong> Rendu adaptatif (Image ou Vidéo) avec calcul de ratio pixel-parfait via <code>ajusterTailleMedia</code>.</div>
+                <div class="layer-item"><strong>Couche Textuelle :</strong> Titre "Impact" auto-centré si aucun visuel n'est présent via la classe <code>title-only</code>.</div>
+            </div>
+        </section>
+
+        <hr class="doc-divider">
+
+        <section class="guide-usage">
+            <h3>💡 Guide de fonctionnement</h3>
+            <div class="guide-grid">
+                <div class="guide-item">
+                    <strong>⏱️ Gestion de la Durée</strong>
+                    <p><code>auto</code> : Se base sur la fin de la vidéo ou 10s pour une image. <br><code>inf</code> : Boucle infinie. <br><code>Nombre</code> : Arrêt forcé en millisecondes.</p>
+                </div>
+                <div class="guide-item">
+                    <strong>🎵 Mode Mixte & Audio</strong>
+                    <p>Si Image + Vidéo : l'image s'affiche tandis que la vidéo sert de piste sonore (le son est maintenu même si l'image échoue).</p>
+                </div>
+                <div class="guide-item">
+                    <strong>⚡ Vitesse & Volume</strong>
+                    <p>Contrôle du <code>playbackRate</code> (0.5x à 4x) et du gain audio via l'API HTML5, validés par le script avant chaque lancement.</p>
+                </div>
+                <div class="guide-item">
+                    <strong>🖱️ Interaction UI</strong>
+                    <p>Le bouton "Lancer" s'active dynamiquement dès qu'une source (Texte, Image ou Vidéo) est détectée dans la configuration.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="doc-divider">
+
+        <section class="tech-analysis">
+            <h3>⚙️ Analyse technique du système</h3>
+            <div class="tech-stack">
+                <div class="tech-box">
+                    <h4>1. Validation (validateConfig)</h4>
+                    <p>Détecte l'audio par extension, sécurise les valeurs numériques et nettoie les entrées textuelles avant le rendu.</p>
+                </div>
+                <div class="tech-box">
+                    <h4>2. Moteur de Rendu (mediaStart)</h4>
+                    <p>Gère les promesses <code>play()</code> pour contrer le blocage "Autoplay" en passant en muet si nécessaire.</p>
+                </div>
+                <div class="tech-box">
+                    <h4>3. Cycle de Vie (mediaStop)</h4>
+                    <p>Assure l'arrêt total : coupe le son, vide les <code>src</code> pour la RAM, et annule les <code>timeouts</code>.</p>
+                </div>
+                <div class="tech-box">
+                    <h4>4. UI Réactive</h4>
+                    <p>Utilise <code>URL.createObjectURL</code> pour prévisualiser les fichiers locaux sans upload, avec un système de reset complet du DOM.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="doc-divider">
+
+        <section class="debug-console" style="background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px;">
+            <h3 style="color: #3498db; margin-top: 0;">🛠️ Section Debug (Console F12)</h3>
+            <p style="color: #bdc3c7; font-size: 0.85rem; margin-bottom: 10px;">Le système logue ses actions en temps réel. Appuyez sur <strong>F12</strong> pour voir :</p>
+            <ul style="list-style: none; padding-left: 0; font-size: 0.8rem;">
+                <li style="margin-bottom: 8px;">🚀 <strong>Lancement :</strong> Vérifiez le groupe <em>"Validation Media Pro"</em> pour voir les ajustements automatiques.</li>
+                <li style="margin-bottom: 8px;">⚠️ <strong>Erreurs :</strong> Le script affiche des alertes si une image est introuvable ou si l'autoplay est bloqué.</li>
+                <li style="margin-bottom: 8px;">📏 <strong>Resize :</strong> Les logs <em>"[RESIZE]"</em> confirment les dimensions exactes appliquées au média.</li>
+            </ul>
+            
+            <button onclick="simulateError()" style="margin-top: 10px; background: #e67e22; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 0.75rem; width: 100%;">
+                🔥 SIMULER UNE ERREUR DE CHARGEMENT (DEBUG)
+            </button>
+        </section>
+    </div>
+
+    <script>
+        const logContent = document.getElementById('log-content');
+        const consoleInput = document.getElementById('console-input');
+
+        // Interception des fonctions natives
+        const captureLog = (type) => (...args) => {
+            const msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            if (msg.includes('[RESIZE]') || msg.includes('[SYSTEM]')) entry.classList.add('system');
+            
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<small style="color:#555">${time}</small> ${msg}`;
+            logContent.prepend(entry);
+            window['original' + type.charAt(0).toUpperCase() + type.slice(1)](...args);
+        };
+
+        window.originalLog = console.log;
+        window.originalWarn = console.warn;
+        window.originalError = console.error;
+
+        console.log = captureLog('log');
+        console.warn = captureLog('warn');
+        console.error = captureLog('error');
+
+        // Gestion de l'input Console
+        consoleInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = consoleInput.value;
+                if (!command) return;
+
+                // Affichage de la commande dans le terminal
+                const cmdEntry = document.createElement('div');
+                cmdEntry.className = 'log-entry input-cmd';
+                cmdEntry.innerHTML = `<strong>> ${command}</strong>`;
+                logContent.prepend(cmdEntry);
+
+                try {
+                    // Exécution de la commande
+                    const result = eval(command);
+                    if (result !== undefined) console.log(result);
+                } catch (err) {
+                    console.error(err.message);
+                }
+
+                consoleInput.value = '';
+            }
+        });
+
+        function simulateError() {
+            console.warn("[DEBUG] Simulation d'une erreur de source...");
+            // On injecte des URLs invalides pour forcer les déclenchements onerror
+            mediaConfig.image = "https://erreur-404-image.jpg";
+            mediaConfig.video = "https://erreur-404-video.mp4";
+            mediaConfig.texte = "ERREUR SIMULÉE";
+            mediaStart();
+        }
+    </script>
+
+    <script>
+        // ========== DEBUT JAVASCRIPT CONTENEUR MEDIA ==========
+        // MÉMOIRE DE CONFIG
+        let mediaConfig = {
+            video: "",
+            image: "",
+            texte: "",
+            duree: "auto",
+            pleinEcran: false,
+            enAudio: false,
+            vitesse: 1,
+            volume: 1
+        };
+
+        let mediaTimeout;
+
+        // ÉLÉMENTS DU DOM
+        const container = document.getElementById('media-container');
+        const videoEl = document.getElementById('media-video');
+        const imageEl = document.getElementById('media-img');
+        const titreEl = document.getElementById('media-title');
+        const wrapperEl = document.querySelector('.media-wrapper');
+
+        // 1. FONCTION DE VALIDATION DE LA CONFIG
+        function validateConfig() {
+            const logs = []; 
+            console.log("[SYSTEM] Validation de la configuration...");
+
+            // DÉTECTION AUTOMATIQUE DE L'AUDIO (Basée sur l'extension)
+            if (mediaConfig.video) {
+                const extension = mediaConfig.video.split('.').pop().toLowerCase();
+                const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+                
+                // Si c'est un fichier audio, on FORCE le mode audio à true
+                if (formatsAudio.includes(extension)) {
+                    mediaConfig.enAudio = true;
+                    logs.push(`Audio forcé (format ${extension} détecté)`);
+                } 
+                else {
+                    // 1. Validation audio
+                    if (mediaConfig.image && mediaConfig.video) {
+                        mediaConfig.enAudio = false;
+                        logs.push(`Audio : reset à false (image + vidéo détecté)`);
+                    }
+                    else if (typeof mediaConfig.enAudio !== "boolean") {
+                        mediaConfig.enAudio = false;
+                        logs.push(`Audio : reset à false (mauvais format)`);
+                    }
+                    else logs.push(`Média visuel détecté (${extension}), mode audio : ${mediaConfig.enAudio}`);
+                }
+            } else {
+                mediaConfig.enAudio = false;
+                logs.push(`Audio : reset à false (aucun fichier vidéo détecté)`);
+            }
+
+            // 2. VALIDATION BOOLEENS
+            const oldPleinEcran = mediaConfig.pleinEcran;
+            if (typeof mediaConfig.pleinEcran !== "boolean") {
+                mediaConfig.pleinEcran = false;
+                logs.push(`Plein écran : reset à false (mauvais format)`);
+            }
+
+            // 2. VOLUME (Sécurité entre 0 et 1)
+            const oldVol = mediaConfig.volume;
+            let vol = parseFloat(mediaConfig.volume);
+            mediaConfig.volume = isNaN(vol) ? 1 : Math.min(Math.max(vol, 0), 1);
+            if (mediaConfig.volume !== oldVol) logs.push(`Volume ajusté: ${oldVol} -> ${mediaConfig.volume}`);
+
+            // 3. VITESSE (Sécurité > 0)
+            const oldVit = mediaConfig.vitesse;
+            let vit = parseFloat(mediaConfig.vitesse);
+            mediaConfig.vitesse = (isNaN(vit) || vit <= 0) ? 1 : vit;
+            if (mediaConfig.vitesse !== oldVit) logs.push(`Vitesse ajustée: ${oldVit} -> ${mediaConfig.vitesse}`);
+
+            // 5. URLS & TEXTE (Nettoyage des espaces)
+            const fixUrl = (p) => encodeURI((p || "").trim());
+            mediaConfig.video = fixUrl(mediaConfig.video);
+            mediaConfig.image = fixUrl(mediaConfig.image);
+            mediaConfig.texte = (mediaConfig.texte || "").trim();
+
+            // 6. NOUVEAU : VALIDATION DE LA DURÉE ---
+            let d = String(mediaConfig.duree || "").trim().toLowerCase();
+
+            if (d === "" || d === "auto") {
+                mediaConfig.duree = "auto";
+            } 
+            else if (d === "inf") {
+                mediaConfig.duree = "inf";
+            } 
+            else {
+                let num = Number(d);
+                // Si c'est pas un nombre ou un nombre négatif -> on remet en auto
+                if (isNaN(num) || num <= 0) {
+                    logs.push(`Durée "${d}" invalide, passage en mode "auto"`);
+                    mediaConfig.duree = "auto";
+                } else {
+                    mediaConfig.duree = num;
+                }
+            }
+
+            // 7. VÉRIFICATION FINALE : Y a-t-il quelque chose à lancer ?
+            if (!mediaConfig.video && !mediaConfig.image && !mediaConfig.texte) {
+                console.error("Erreur : La configuration est totalement vide.");
+                return false;
+            }
+
+            // --- AFFICHAGE DES RÉSULTATS DANS LA CONSOLE ---
+            if (logs.length > 0) {
+                console.groupCollapsed("Validation Media Pro : " + logs.length + " points vérifiés");
+                logs.forEach(msg => console.log(`• ${msg}`));
+                console.groupEnd();
+            }
+
+            return true; // Tout est prêt pour mediaStart()
+        }
+
+        // 2. FONCTION START : On affiche selon la logique demandée
+        function mediaStart() {
+            if (!validateConfig()) {
+                console.error("Configuration invalide !");
+                return;
+            }
+
+            // --- NETTAYAGE COMPLET + RESET AFFICHAGES ---
+            clearTimeout(mediaTimeout); 
+            videoEl.onended = null;
+            videoEl.onerror = null;
+            imageEl.onerror = null;
+
+            videoEl.pause();
+            videoEl.currentTime = 0;
+            videoEl.muted = false;
+            videoEl.loop = false;
+
+            videoEl.style.display = "none";
+            imageEl.style.display = "none";
+            titreEl.style.display = "none";
+            wrapperEl.style.display = "flex";
+
+            imageEl.style.width = "";
+            imageEl.style.height = "";
+            videoEl.style.width = "";
+            videoEl.style.height = "";
+
+            let imageErreur = false;
+            let videoErreur = false;
+
+            const mode = mediaConfig.duree;
+
+            // --- LOGIQUE DE LANCEMENT ---
+            if (mediaConfig.texte) {
+                titreEl.textContent = mediaConfig.texte;
+                titreEl.style.display = "block";
+            }
+
+            // Détection du mode "Texte Seul"
+            if (mediaConfig.enAudio || (mediaConfig.texte && !mediaConfig.image && !mediaConfig.video)) {
+                wrapperEl.classList.add('title-only');
+            } else {
+                wrapperEl.classList.remove('title-only');
+            }
+
+            // 3 CAS POSSIBLES : MIXTE, IMAGE ou VIDEO
+            if (mediaConfig.image && mediaConfig.video) {
+                // Chargement ressources
+                imageEl.src = mediaConfig.image;
+                imageEl.style.display = "block";
+                imageEl.onload = () => ajusterTailleMedia(imageEl, false);
+
+                videoEl.src = mediaConfig.video;
+                videoEl.playbackRate = mediaConfig.vitesse;
+                videoEl.volume = mediaConfig.volume;
+                videoEl.muted = false;
+
+                // Gestion des erreurs
+                // 1. erreur de sources
+                imageEl.onerror = () => {
+                    imageErreur = true;
+                    imageEl.style.display = "none"; 
+                    console.warn("Image du mix introuvable. On garde le son.");
+                    
+                    // Si la vidéo a AUSSI crashé avant ou en même temps
+                    if (videoErreur) {
+                        console.error("Échec total (Image + Son) : Arrêt du média.");
+                        mediaStop();
+                    }
+                };
+                videoEl.onerror = () => {
+                    videoErreur = true;
+                    console.warn("Fichier vidéo (audio) introuvable. On garde l'image.");
+                    
+                    // Si l'image a AUSSI crashé
+                    if (imageErreur) {
+                        console.error("Échec total (Son + Image) : Arrêt du média.");
+                        mediaStop();
+                    }
+                };
+
+                // erreur de lecture vidéo
+                videoEl.play().catch(error => {
+                    if (error.name === "NotAllowedError") {
+                        console.warn("Autoplay bloqué par le navigateur : L'image reste, mais sans son.");
+                    } else {
+                        videoErreur = true;
+                        console.error("Erreur de lecture vidéo :", error.message);
+                        if (imageErreur) mediaStop();
+                    }
+                });
+            } 
+            else if (mediaConfig.image) {
+                imageEl.src = mediaConfig.image;
+                imageEl.style.display = "block";
+                imageEl.onload = () => ajusterTailleMedia(imageEl, false);
+
+                imageEl.onerror = () => {
+                    console.error("Image seule introuvable.");
+                    mediaStop();
+                };
+            } 
+            else if (mediaConfig.video) {
+                videoEl.src = mediaConfig.video;
+                videoEl.playbackRate = mediaConfig.vitesse;
+                videoEl.volume = mediaConfig.volume;
+                if (!mediaConfig.enAudio) { 
+                    videoEl.style.display = "block";
+                    videoEl.onloadedmetadata = () => ajusterTailleMedia(videoEl, true);
+                }
+
+                videoEl.onerror = () => {
+                    console.error("Vidéo seule introuvable.");
+                    mediaStop();
+                };
+
+                videoEl.play().catch(error => {
+                    if (error.name === "NotAllowedError" && !mediaConfig.enAudio) {
+                        console.warn("Autoplay bloqué : Passage en muet pour afficher la vidéo.");
+                        // on essaye de jouer la vidéo en muet qd elle est toute seule
+                        videoEl.muted = true;
+                        videoEl.play().catch(e2 => mediaStop());
+                    } else {
+                        console.error("Erreur lecture vidéo seule.");
+                        mediaStop();
+                    }
+                });
+            }
+
+            // --- LOGIQUE DE FIN UNIQUE ---
+            if (mode === 'inf') {
+                // MODE INFINI : La vidéo boucle, l'image reste. Pas de timer.
+                if (mediaConfig.video) videoEl.loop = true;
+                console.log("Comportement : Persistant (∞)");
+            } 
+            else if (typeof mode === 'number') {
+                // MODE TIMER : On force l'arrêt après X ms. 
+                // Note: On met la vidéo en loop pour éviter un écran noir si le timer est plus long que la vidéo.
+                if (mediaConfig.video) videoEl.loop = true; 
+                mediaTimeout = setTimeout(() => mediaStop(), mode);
+                console.log(`Comportement : Arrêt programmé dans ${mode}ms`);
+            } 
+            else {
+                // MODE AUTO : Le comportement intelligent par défaut
+                console.log("Comportement : Automatique");
+                if (mediaConfig.video) {
+                    // Une vidéo en auto s'arrête à la fin de sa lecture
+                    videoEl.onended = () => mediaStop();
+                } else {
+                    // Une image en auto reste 10 secondes
+                    mediaTimeout = setTimeout(() => mediaStop(), 10000);
+                }
+            }
+
+            container.style.display = "flex";
+        }
+
+        // 3. FONCTION STOP : On ferme et on coupe tout
+        function mediaStop() {
+            // Nettoyage de tous les timers et écouteurs
+            videoEl.onerror = null;
+            imageEl.onerror = null;
+            videoEl.onended = null;
+            clearTimeout(mediaTimeout);
+
+            container.style.display = "none";
+            wrapperEl.classList.remove('title-only');
+
+            
+            // On coupe proprement le média
+            videoEl.pause();
+            videoEl.currentTime = 0;
+            videoEl.src = "";
+            imageEl.src = "";
+
+            console.log("Média arrêté et nettoyé.");
+        }
+
+        function syncDOMFromConfig() {
+            console.log("[SYSTEM] Synchronisation du DOM...")
+
+            videoEl.src = mediaConfig.video;
+            videoEl.volume = mediaConfig.volume;
+            videoEl.playbackRate = mediaConfig.vitesse;
+
+            imageEl.src = mediaConfig.image;
+
+            titreEl.textContent = mediaConfig.texte;
+        }
+
+        function resetConfig() {
+            mediaConfig = {
+                video: "",
+                image: "",
+                texte: "",
+                duree: "auto",
+                enAudio: false,
+                vitesse: 1,
+                volume: 1
+            };
+        }
+
+        function resetDOMStyles() {
+            console.log("[SYSTEM] Reset complet des styles JS (Retour aux règles CSS)");
+            
+            // Liste des éléments recevant des styles inline via ajusterTailleMedia
+            const elementsToReset = [imageEl, videoEl, titreEl, wrapperEl];
+            
+            elementsToReset.forEach(el => {
+                if (el) {
+                    el.removeAttribute('style'); 
+                }
+            });
+        }
+
+        function mediaResetAll() {
+            mediaStop();
+            resetConfig();
+            syncDOMFromConfig();
+            resetDOMStyles();
+        }
+
+        // FONCTION DE REDIMENSIONNEMENT PARFAIT (Plein écran sans vide)
+        function ajusterTailleMedia(element, isVideo) {
+            // Si l'élément n'est pas affiché, on ne fait rien
+            if (!element || element.style.display === "none" || !element.src) return;
+
+            // 1. Reset des styles JS pour laisser le CSS agir par défaut
+            element.style.width = "";
+            element.style.height = "";
+
+            // 2. Si l'option n'est pas cochée, on s'arrête là (le CSS gère le reste)
+            if (!mediaConfig.pleinEcran) return;
+
+            // 1. Récupération des dimensions d'origine du fichier
+            const wOrigine = isVideo ? element.videoWidth : element.naturalWidth;
+            const hOrigine = isVideo ? element.videoHeight : element.naturalHeight;
+            if (!wOrigine || !hOrigine) return; 
+
+            // 2. Calcul du multiplicateur pour remplir l'écran (Simulation de object-fit: contain)
+            const ratioLargeur = window.innerWidth / wOrigine;
+            const ratioHauteur = window.innerHeight / hOrigine;
+            const echelle = Math.min(ratioLargeur, ratioHauteur); // On prend le plus petit pour ne pas dépasser
+
+            // 3. Application des dimensions exactes en pixels
+            if (echelle > 1) {
+                element.style.width = Math.floor(wOrigine * echelle) + "px";
+                element.style.height = Math.floor(hOrigine * echelle) + "px";
+                console.log("[RESIZE] Upscale JS appliqué pour le plein écran.");
+            } else {
+                console.log("[RESIZE] Downscale CSS utilisé (image plus grande que l'écran).");
+            }
+        }
+
+        // 4. Écouteur pour recalculer si l'utilisateur redimensionne sa fenêtre
+        window.addEventListener("resize", () => {
+            if (container.style.display === "flex") {
+                ajusterTailleMedia(imageEl, false);
+                ajusterTailleMedia(videoEl, true);
+            }
+        });
+        // ========== FIN JAVASCRIPT CONTENEUR MEDIA ==========
+
+        // Affiche la valeur du slider en temps réel vitesse
+        const speedSlider = document.getElementById('speed-slider');
+        const speedDisplay = document.getElementById('speed-val');
+
+        speedSlider.addEventListener('input', () => {
+            speedDisplay.textContent = speedSlider.value;
+        });
+
+        // Affichage du pourcentage en temps réel volume
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeDisplay = document.getElementById('volume-val');
+
+        volumeSlider.addEventListener('input', () => {
+            volumeDisplay.textContent = Math.round(volumeSlider.value * 100);
+        });
+
+        // Gestion du Drag & Drop et du texte
+        const zones = [
+            { id: 'drop-image', inputId: 'file-image', type: 'image' },
+            { id: 'drop-video', inputId: 'file-video', type: 'video' }
+        ];
+
+        // Vérifie le bouton dès qu'on tape du texte
+        document.getElementById('input-texte').addEventListener('input', verifierEtatBouton);
+
+        zones.forEach(zone => {
+            const el = document.getElementById(zone.id);
+            const input = document.getElementById(zone.inputId);
+
+            // Clic pour ouvrir l'explorateur
+            el.onclick = () => input.click();
+
+            // Changement de fichier
+            input.onchange = (e) => chargerFichier(e.target.files[0], zone);
+
+            // Drag & Drop events
+            el.ondragover = (e) => { e.preventDefault(); el.classList.add('hover'); };
+            el.ondragleave = () => el.classList.remove('hover');
+            el.ondrop = (e) => {
+                e.preventDefault();
+                el.classList.remove('hover');
+                chargerFichier(e.dataTransfer.files[0], zone);
+            };
+        });
+
+        // MODIFICATION de chargerFichier pour afficher le bouton reset
+        function chargerFichier(file, zone) {
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            mediaConfig[zone.type] = url;
+            
+            const el = document.getElementById(zone.id);
+            el.classList.add('success');
+            el.querySelector('.label-text').innerHTML = `✅ ${file.name.substring(0, 12)}...`;
+            el.querySelector('.reset-btn').style.display = 'block'; // On montre le X
+            verifierEtatBouton();
+        }
+
+        // NOUVELLE FONCTION pour vider le média
+        function clearMedia(type, event) {
+            event.stopPropagation(); // Empêche d'ouvrir l'explorateur de fichiers en cliquant sur le X
+
+            if (mediaConfig[type]) URL.revokeObjectURL(mediaConfig[type]);
+            
+            mediaConfig[type] = ""; // On vide la config
+            
+            const zoneId = (type === 'image') ? 'drop-image' : 'drop-video';
+            const inputId = (type === 'image') ? 'file-image' : 'file-video';
+            const labelDefault = (type === 'image') ? "Glissez l'IMAGE ici<br>(ou cliquez)" : "Glissez la VIDÉO ici<br>(ou cliquez)";
+            
+            const el = document.getElementById(zoneId);
+            el.classList.remove('success');
+            el.querySelector('.label-text').innerHTML = labelDefault;
+            el.querySelector('.reset-btn').style.display = 'none'; // On cache le X
+            document.getElementById(inputId).value = ""; // Reset de l'input HTML
+            verifierEtatBouton();
+        }
+
+        // Fonction pour lancer le média avec une durée forcée (en ms ou 'inf')
+        function lancerAvecDuree() {
+            // On récupère le texte du champ input
+            mediaConfig.texte = document.getElementById('input-texte').value.trim();
+
+            // synchronise la config avec l'UI au dernier moment
+            mediaConfig.enAudio = document.getElementById('audio-toggle').checked;
+            mediaConfig.vitesse = parseFloat(document.getElementById('speed-slider').value);
+            mediaConfig.volume = parseFloat(document.getElementById('volume-slider').value);
+            mediaConfig.duree = document.getElementById('start-duration').value.trim();
+            mediaConfig.pleinEcran = document.getElementById('fullscreen-toggle').checked;
+            
+            mediaStart();
+        }
+
+        function verifierEtatBouton() {
+            const btn = document.getElementById('start-btn');
+            const texte = document.getElementById('input-texte').value.trim();
+            
+            // On active si on a une image OU une vidéo OU du texte
+            const aDuContenu = mediaConfig.image || mediaConfig.video || texte;
+            
+            btn.disabled = !aDuContenu;
+        }
+
+        function resetUI() {
+            // 1. Appel du moteur de reset média (Mémoire + DOM invisible)
+            mediaResetall();
+
+            console.log("[UI] Réinitialisation des contrôles...");
+
+            // 2. Reset du Texte et de la Durée
+            document.getElementById('input-texte').value = "";
+            document.getElementById('start-duration').value = "";
+
+            // 3. Reset des Sliders et Checkbox
+            document.getElementById('audio-toggle').checked = false;
+            
+            const sSlider = document.getElementById('speed-slider');
+            sSlider.value = 1;
+            document.getElementById('speed-val').textContent = "1";
+
+            const vSlider = document.getElementById('volume-slider');
+            vSlider.value = 1;
+            document.getElementById('volume-val').textContent = "100";
+
+            // 4. Reset visuel des zones de Drag & Drop
+            // On réutilise tes fonctions existantes pour nettoyer les zones Image et Vidéo
+            // On passe un faux événement pour éviter l'erreur sur stopPropagation()
+            const fakeEvent = { stopPropagation: () => {} };
+            clearMedia('image', fakeEvent);
+            clearMedia('video', fakeEvent);
+
+            // 5. Mise à jour de l'état du bouton START (il doit se griser)
+            verifierEtatBouton();
+
+            console.log("[UI] Interface prête.");
+        }
+        
+    </script>
+
+</body>
+</html>

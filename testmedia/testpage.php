@@ -281,6 +281,10 @@
         
         <p>1. Règle les options :</p>
         <div style="margin: 15px 0; display: flex; flex-direction: column; gap: 10px;">
+            <label style="cursor: pointer">
+                Plein Ecran
+                <input type="checkbox" id="fullscreen-toggle">
+            </label>
             <label style="cursor: pointer;">
                 Mode Audio uniquement (cache la vidéo)
                 <input type="checkbox" id="audio-toggle"> 
@@ -323,6 +327,14 @@
         </label>
         
         <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <label style="cursor: pointer;">
+                Afficher Bouton Fermer
+                <input type="checkbox" id="input-btnFermer">
+            </label>
+            <label id="label-delaiBtn" style="display: flex; justify-content: space-between; align-items: center; opacity: 0.5;">
+                Délai Bouton (en ms)
+                <input type="text" id="input-delaiBtn" placeholder="ex: 3000" disabled style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; cursor: not-allowed;">
+            </label>
             <label style="display: flex; justify-content: space-between; align-items: center;">
                 Forcer la durée (en ms ou 'inf') :
                 <input type="text" id="start-duration" placeholder="Ex: 5000" style="width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
@@ -446,6 +458,29 @@
             };
         });
 
+        // Gestion de l'activation du champ délai bouton
+        const checkBtnFermer = document.getElementById('input-btnFermer');
+        const inputDelaiBtn = document.getElementById('input-delaiBtn');
+        const labelDelaiBtn = document.getElementById('label-delaiBtn');
+
+        checkBtnFermer.addEventListener('change', () => {
+            const isChecked = checkBtnFermer.checked;
+            
+            // 1. Activer/Désactiver l'input
+            inputDelaiBtn.disabled = !isChecked;
+            
+            // 2. Changer le style visuel pour montrer que c'est bloqué
+            if (isChecked) {
+                labelDelaiBtn.style.opacity = "1";
+                inputDelaiBtn.style.cursor = "text";
+                inputDelaiBtn.placeholder = "ex: 3000";
+            } else {
+                labelDelaiBtn.style.opacity = "0.5";
+                inputDelaiBtn.style.cursor = "not-allowed";
+                inputDelaiBtn.value = ""; // Optionnel : on vide si on décoche
+            }
+        });
+
         // MODIFICATION de chargerFichier pour afficher le bouton reset
         function chargerFichier(file, zone) {
             if (!file) return;
@@ -485,11 +520,14 @@
             mediaConfig.texte = document.getElementById('input-texte').value.trim();
 
             // synchronise la config avec l'UI au dernier moment
+            mediaConfig.btnFermer = document.getElementById('input-btnFermer').checked;
             mediaConfig.enAudio = document.getElementById('audio-toggle').checked;
+            mediaConfig.pleinEcran = document.getElementById('fullscreen-toggle').checked;
             mediaConfig.vitesse = parseFloat(document.getElementById('speed-slider').value);
             mediaConfig.volume = parseFloat(document.getElementById('volume-slider').value);
 
-            const dureeSaisie = document.getElementById('start-duration').value.trim();
+            mediaConfig.duree = document.getElementById('start-duration').value.trim();
+            mediaConfig.delaiBtn = document.getElementById('input-delaiBtn').value.trim();
             
             mediaStart();
         }
@@ -506,16 +544,20 @@
 
         function resetUI() {
             // 1. Appel du moteur de reset média (Mémoire + DOM invisible)
-            mediaReset();
+            mediaResetAll();
 
             console.log("[UI] Réinitialisation des contrôles...");
 
             // 2. Reset du Texte et de la Durée
             document.getElementById('input-texte').value = "";
             document.getElementById('start-duration').value = "";
+            document.getElementById('input-delaiBtn').value = "";
+
 
             // 3. Reset des Sliders et Checkbox
             document.getElementById('audio-toggle').checked = false;
+            document.getElementById('fullscreen-toggle').checked = false;
+            document.getElementById('input-btnFermer').checked = false;
             
             const sSlider = document.getElementById('speed-slider');
             sSlider.value = 1;

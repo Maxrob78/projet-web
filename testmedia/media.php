@@ -1,5 +1,6 @@
-<div id="media-container" style="display: none;">
+<div id="media-container">
     <button class="close-btn" onclick="mediaStop()">X</button>
+
     <div class="media-content">
         <div class="media-wrapper">
             <img id="media-img">
