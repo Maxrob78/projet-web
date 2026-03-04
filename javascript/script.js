@@ -1,4 +1,3 @@
-// On attend que le HTML soit chargé pour initialiser les éléments
 document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================================
@@ -38,14 +37,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showSlides(n) {
-        let i;
+        if (slides.length === 0) return;
         if (n > slides.length) { slideIndex = 1; }
         if (n < 1) { slideIndex = slides.length; }
 
-        for (i = 0; i < slides.length; i++) {
+        for (let i = 0; i < slides.length; i++) {
             slides[i].style.display = "none";
         }
-        for (i = 0; i < dots.length; i++) {
+        for (let i = 0; i < dots.length; i++) {
             dots[i].className = dots[i].className.replace(" active", "");
         }
 
@@ -57,14 +56,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // 3. GESTION DU THÈME (DARK MODE)
     // ==========================================
     const toggleBtn = document.getElementById('theme-toggle');
-    const currentTheme = localStorage.getItem('theme');
-
-    if (currentTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        if (toggleBtn) toggleBtn.textContent = '☀️';
-    }
-
     if (toggleBtn) {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+
         toggleBtn.addEventListener('click', () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             if (isDark) {
@@ -80,45 +78,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 4. CHARGEMENT DYNAMIQUE JSON (COURS/FORMATIONS)
+    // 4. CHARGEMENT DYNAMIQUE JSON
     // ==========================================
-    fetch('../json/cours-formations.json')
-        .then(response => response.json())
-        .then(data => {
-            const conteneurCours = document.getElementById('liste-cours');
-            const conteneurFormations = document.getElementById('liste-formations');
+    const conteneurCours = document.getElementById('liste-cours');
+    const conteneurFormations = document.getElementById('liste-formations');
 
-            const creerCarte = (item) => `
-                <div class="carte">
-                    <img src="${item.image}" alt="${item.nom}">
-                    <div class="info">
-                        <h3>${item.nom}</h3>
-                        <p>${item.description}</p>
+    if (conteneurCours || conteneurFormations) {
+        fetch('../json/cours-formations.json')
+            .then(response => response.json())
+            .then(data => {
+                const creerCarte = (item) => `
+                    <div class="carte">
+                        <img src="${item.image}" alt="${item.nom}">
+                        <div class="info" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                            <h3>${item.nom}</h3>
+                            <p>${item.description}</p>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
 
-            if (data.cours && conteneurCours) {
-                data.cours.forEach(item => { conteneurCours.innerHTML += creerCarte(item); });
-            }
-            if (data.formations && conteneurFormations) {
-                data.formations.forEach(item => { conteneurFormations.innerHTML += creerCarte(item); });
-            }
-        })
-        .catch(error => console.error("Erreur de chargement JSON :", error));
+                if (data.cours && conteneurCours) {
+                    conteneurCours.innerHTML = "";
+                    data.cours.forEach(item => { conteneurCours.innerHTML += creerCarte(item); });
+                }
+                if (data.formations && conteneurFormations) {
+                    conteneurFormations.innerHTML = "";
+                    data.formations.forEach(item => { conteneurFormations.innerHTML += creerCarte(item); });
+                }
+            })
+            .catch(error => console.error("Erreur de chargement JSON :", error));
+    }
 
     // ==========================================
     // 5. GESTION DE LA DROP ZONE (DRAG & DROP)
     // ==========================================
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
-    let imagePreviewUrl = ""; 
 
     if (dropZone && fileInput) {
-        // Cliquer pour ouvrir l'explorateur
         dropZone.addEventListener('click', () => fileInput.click());
 
-        // Empêcher le comportement par défaut du navigateur
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault();
@@ -126,79 +125,86 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Effets visuels
         dropZone.addEventListener('dragover', () => dropZone.classList.add('hover'));
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
 
-        // Gérer le fichier reçu (Aperçu)
         const handleFile = (file) => {
             if (file && file.type.startsWith('image/')) {
-                imagePreviewUrl = URL.createObjectURL(file);
+                const imagePreviewUrl = URL.createObjectURL(file);
                 dropZone.style.backgroundImage = `url(${imagePreviewUrl})`;
                 dropZone.style.backgroundSize = "cover";
                 dropZone.style.backgroundPosition = "center";
-                dropZone.innerText = ""; 
+                const dropText = document.getElementById('drop-text');
+                if (dropText) dropText.style.display = "none";
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                console.log("Fichier injecté :", fileInput.files[0].name);
             }
         };
 
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
         dropZone.addEventListener('drop', (e) => {
             dropZone.classList.remove('hover');
-            handleFile(e.dataTransfer.files[0]);
+            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
         });
     }
 
     // ==========================================
-    // 6. SOUMISSION DU FORMULAIRE (SIMULATION)
+    // 6. SOUMISSION DU FORMULAIRE (PHP)
     // ==========================================
-    const quizForm = document.getElementById('QuizId');
+    const quizForm = document.getElementById('QuizId'); // AJOUTÉ : Déclaration de la variable
+
     if (quizForm) {
-        quizForm.addEventListener('submit', function(e) {
+        quizForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log("Diagnostic : Formulaire soumis !");
 
-            const nom = document.getElementById('nom').value;
-            const desc = document.getElementById('description').value;
-            const typeChoice = document.getElementById('type-choix');
-            const type = typeChoice ? typeChoice.value : 'cours';
-            const containerId = type === 'cours' ? 'liste-cours' : 'liste-formations';
+            const formData = new FormData(this);
 
-            if (nom && desc && imagePreviewUrl) {
-                const container = document.getElementById(containerId);
-                const htmlCarte = `
-                    <div class="carte">
-                        <img src="${imagePreviewUrl}" alt="${nom}">
-                        <div class="info">
-                            <h3>${nom}</h3>
-                            <p>${desc}</p>
-                        </div>
-                    </div>`;
-                
-                if (container) container.innerHTML += htmlCarte;
+            // On s'assure que le fichier est bien pris en compte
+            const fileCheck = formData.get('image');
+            console.log("Fichier prêt à l'envoi :", fileCheck ? fileCheck.name : "Aucun");
 
-                // Reset
-                this.reset();
-                dropZone.style.backgroundImage = "none";
-                dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
-                imagePreviewUrl = "";
-                alert("Cours ajouté (Temporairement en JS) !");
-            } else {
-                alert("Veuillez remplir tous les champs et ajouter une image.");
+            if (!fileCheck || fileCheck.size === 0) {
+                alert("Erreur : Aucune image sélectionnée.");
+                return;
             }
-        });
-    }
-});
 
-// --- GESTION VIDÉO AU SURVOL ---
-document.querySelectorAll('.video-hover-container').forEach(container => {
-    const video = container.querySelector('video');
-    if (video) {
-        container.addEventListener('mouseenter', () => {
-            video.muted = true;
-            video.play().catch(error => console.log("Erreur lecture :", error));
-        });
-        container.addEventListener('mouseleave', () => {
-            video.pause();
-            video.currentTime = 0;
+            fetch('../includes/ajouter_cours.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Enregistré avec succès !");
+                        location.reload();
+                    } else {
+                        alert("Erreur PHP : " + data.message);
+                    }
+                })
+                .catch(error => console.error("Échec du fetch :", error));
         });
     }
-});
+
+    // ==========================================
+    // 7. GESTION VIDÉO AU SURVOL
+    // ==========================================
+    document.querySelectorAll('.video-hover-container').forEach(container => {
+        const video = container.querySelector('video');
+        if (video) {
+            container.addEventListener('mouseenter', () => {
+                video.muted = true;
+                video.play().catch(err => console.log("Lecture bloquée :", err));
+            });
+            container.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+        }
+    });
+}); // Cette accolade ferme DOMContentLoaded. Il n'y en a plus d'autres après.

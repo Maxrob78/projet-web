@@ -257,12 +257,40 @@ header.scrolled nav a {
     border-radius: 10px;
 }
 
+
 .map-container iframe {
     width: 100%;
     height: 550px;
     margin-top: -70px;
     border: none;
+    pointer-events: none;
     filter: grayscale(0.3) contrast(1.1);
+}
+.map-container.active iframe {
+    pointer-events: auto;
+}
+
+#type-choix {
+    color: #ffffff;
+    font-weight: 600;
+    background-color: #000;
+    border: 2px solid #3D83BF;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+#type-choix option {
+    background-color: #000;
+    color: white;
+}
+
+#type-choix:hover {
+    background-color: #005eb0;
+    color: white;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
 }
 
 .titre-section {
@@ -567,7 +595,6 @@ header.scrolled nav a {
 #apropos,
 #contactretour {
     padding-top: 120px;
-    /* Espace pour ne pas être caché par le header fixe */
 }
 
 #apropos {
@@ -578,8 +605,8 @@ header.scrolled nav a {
 
 #apropos p {
     margin-top: 50px;
-    text-align: left;
     line-height: 1.6;
+    text-align: justify;
     transition: 0.3s ease;
 }
 
@@ -632,7 +659,7 @@ textarea {
     width: 90%;
     border-radius: 4px;
     outline: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     background-color: var(--bg-color);
     /* Le champ s'adapte au thème */
     color: var(--text-color);
@@ -642,7 +669,9 @@ textarea {
 
 input:hover,
 textarea:hover {
-    background-color: #ceddf6;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
 }
 
 label {
@@ -667,7 +696,10 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #88b5dd;
+    background-color: #469ae3;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
 }
 
 #imgcontact {
@@ -725,10 +757,22 @@ button[type="submit"]:hover {
     border-style: solid;
 }
 
+
+#drop-zone{
+    background-color: var(--card-bg);
+}
+
+#drop-zone:hover {
+    background-color: rgba(61, 131, 191, 0.2);
+    border-style: solid;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.025);
+    transition: all 0.3s ease;
+}
+
 .carte {
-    /* Calcul pour 4 colonnes : (100% / 4) - compensation du gap */
     width: calc(25% - 30px); 
-    min-width: 250px;       /* Sécurité : évite que les blocs soient trop petits */
+    min-width: 250px;
     height: 200px;
     position: relative;
     border-radius: 10px;
