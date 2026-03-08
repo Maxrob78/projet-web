@@ -26,8 +26,8 @@ include '../includes/header.php';
 <section id="contactretour">
     <form action="ajouter_cours.php" method="POST" name="Quiz" id="QuizId" class="box" enctype="multipart/form-data">
         <fieldset id="informations">
-            <legend>AJOUTER UN COURS OU UNE FORMATION</legend>
-
+            <legend>AJOUTER / MODIFIER UN COURS OU UNE FORMATION</legend>
+            <input type="hidden" id="item-id" name="id" value="">
             <p>
                 <label for="nom">Nom</label><br>
                 <input type="text" id="nom" name="nom" required>

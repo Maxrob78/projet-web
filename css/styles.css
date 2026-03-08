@@ -2,6 +2,7 @@
    1. POLICE & BASES
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Modifiez le début de votre CSS */
 :root {
@@ -164,6 +165,75 @@ header nav a.active {
     height: 18px;
     text-shadow: none !important;
     opacity: 1 !important;
+}
+
+/* --- flash --- */
+#flashMedia {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+}
+
+.mediaWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+#flashMedia img,
+#flashMedia video {
+    display: none;
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: contain;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.98);
+}
+
+#flashMedia h1 {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    text-align: center;
+    max-width: 95vw;
+    margin: 0;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    paint-order: stroke fill;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+    line-height: 1.2;
+    letter-spacing: 3px;
+    z-index: 10;
+}
+
+#flashMedia.titreSeul {
+    background-color: transparent;
+    backdrop-filter: none;
+    pointer-events: none;
+}
+
+#flashMedia.titreSeul .mediaWrapper {
+    width: 100%;
+    height: 100%;
+}
+
+#flashMedia.titreSeul h1 {
+    bottom: 5%;
 }
 
 /* ==========================================================================
@@ -695,6 +765,11 @@ textarea {
     color: var(--text-color);
     border: 2px solid #3D83BF;
     /* On garde le bleu de l'EFREI */
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 input:hover,

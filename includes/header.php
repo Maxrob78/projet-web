@@ -21,3 +21,10 @@
             <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-right: 5px;">🌙</button>
         </nav>
     </header>
+    <div id="flashMedia">
+        <div class="mediaWrapper">
+            <video id="flashVideo"></video>
+            <img id="flashImg">
+            <h1 id="flashTitre"></h1>
+        </div>
+    </div>
