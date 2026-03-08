@@ -1,5 +1,10 @@
-<?php include 'header.php'; ?>
+<?php 
+// Configuration de la page
+$pageTitle = "Equipe"; 
+$currentPage = "equipe";
 
+include '../includes/header.php'; 
+?>
     <section class="section-chiffres">
         <div class="container-chiffres">
             <h2 class="titre-section">Notre équipe d'enseignants</h2>
@@ -71,11 +76,4 @@
             </div>
         </div>
     </section>
-    <div class="video-hover-container">
-        <img src="../images/campus.jpg" alt="Aperçu" class="preview-thumb">
-
-        <video playsinline muted loop src="../videos/efrei.mp4" class="preview-video"
-            data-playable-observed="true"></video>
-    </div>
-
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

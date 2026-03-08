@@ -1,5 +1,9 @@
-<?php include 'header.php'; ?>
-
+<?php 
+// Configuration de la page
+$pageTitle = "Cookies"; 
+$currentPage = "contact"; 
+include '../includes/header.php'; 
+?>
     <div class="aproposlegal">
         <h2>Données personnelles</h2>
         <p>L’Efrei s’engage à ce que la collecte et le traitement de vos données, effectués à partir du site
@@ -41,5 +45,4 @@
             https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser pour en savoir plus sur
             les cookies et les moyens de s’y opposer).
     </div>
-
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

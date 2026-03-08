@@ -1,43 +1,57 @@
-<?php include 'header.php'; ?>
+<?php
+// Configuration de la page
+$pageTitle = "Contact";
+$currentPage = "contact";
 
-    <section id="apropos">
-        <h2>À PROPOS</h2>
-        <p>En CSS, le padding crée de l'espace entre le contenu d'un élément et sa bordure, influant uniquement sur
-            l'intérieur de l'élément. En revanche, le margin détermine l'espace autour de l'élément, séparant celui-ci
-            des autres éléments voisins. Le padding affecte la taille totale de l'élément (ajouté au contenu), tandis
-            que le margin ne modifie pas la taille mais contrôle l'espacement extérieur. Cela permet une gestion précise
-            de l'agencement visuel sans altérer les dimensions ou la position relative des éléments.</p>
-    </section>
-    <section id="contactretour">
-        <form action="#" method="post" name="Quiz" id="QuizId" class="box" onsubmit="return false">
-            <fieldset id="informations">
-                <legend>CONTACT</legend>
+// Traitement du formulaire
+$messageSucces = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit-form'])) {
+    $nom = htmlspecialchars($_POST['nom']);
+    $messageSucces = "Merci $nom, votre message a bien été reçu !";
+}
 
-                <p>
-                    <label for="nom">Nom</label><br>
-                    <input type="text" id="nom" name="nom">
-                </p>
+include '../includes/header.php';
+?>
 
-                <p>
-                    <label for="email">Adresse Email</label><br>
-                    <input type="email" id="email" name="email">
-                </p>
+<section id="apropos">
+    <h2>À PROPOS</h2>
+    <p>Le département informatique de l’EFREI constitue le moteur d’innovation de l’école, où l'excellence académique rencontre les défis technologiques de demain. Composé d'enseignants-chercheurs passionnés et d'experts du secteur, notre département se dédie à la formation d'ingénieurs agiles, capables de jongler entre architecture logicielle, cybersécurité, intelligence artificielle et systèmes embarqués. En nous contactant, vous entrez en relation avec un écosystème dynamique tourné vers l'avenir : nous sommes à votre entière disposition pour discuter de vos projets de partenariats, de l'intégration de nos talents au sein de vos équipes ou pour vous éclairer sur la richesse de nos parcours pédagogiques. Ensemble, faisons de la technologie un levier de transformation durable.</p>
+</section>
+<?php if ($messageSucces): ?>
+    <p style="color: #00bafe;font-weight: bold;text-align: center;"><?php echo $messageSucces; ?></p>
+<?php endif; ?>
 
-                <p>
-                    <label for="sujet">Sujet</label><br>
-                    <input type="text" id="sujet" name="sujet">
-                </p>
+<section id="contactretour">
 
-                <p>
-                    <label for="message">Message</label><br>
-                    <textarea id="message" name="message" rows="4"></textarea>
-                </p>
-                <button id="submitbtn" type="submit">Envoyer</button>
-            </fieldset>
-        </form>
-        <div id="imgcontact">
-            <img id="tkt" src="../images/tkt.jpg" alt="Photo d'un membre de l'équipe de support">
-        </div>
-    </section>
- 
-<?php include 'footer.php'; ?>
+    <form action="contact.php" method="post" name="Quiz" id="contactID" class="box">
+        <fieldset id="informations">
+            <legend>CONTACT</legend>
+
+            <p>
+                <label for="nom">Nom</label><br>
+                <input type="text" id="nom" name="nom" required>
+            </p>
+
+            <p>
+                <label for="email">Adresse Email</label><br>
+                <input type="email" id="email" name="email" required>
+            </p>
+
+            <p>
+                <label for="sujet">Sujet</label><br>
+                <input type="text" id="sujet" name="sujet" required>
+            </p>
+
+            <p>
+                <label for="message">Message</label><br>
+                <textarea id="message" name="message" rows="4" required></textarea>
+            </p>
+            <button id="submitbtn" type="submit" name="submit-form">Envoyer</button>
+        </fieldset>
+    </form>
+    <div id="imgcontact">
+        <img id="tkt" src="../images/tkt.jpg" alt="Support">
+    </div>
+</section>
+
+<?php include '../includes/footer.php'; ?>

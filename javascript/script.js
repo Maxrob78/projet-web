@@ -1,4 +1,3 @@
-// On attend que le HTML soit chargé pour initialiser les éléments
 document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================================
@@ -38,14 +37,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showSlides(n) {
-        let i;
+        if (slides.length === 0) return;
         if (n > slides.length) { slideIndex = 1; }
         if (n < 1) { slideIndex = slides.length; }
 
-        for (i = 0; i < slides.length; i++) {
+        for (let i = 0; i < slides.length; i++) {
             slides[i].style.display = "none";
         }
-        for (i = 0; i < dots.length; i++) {
+        for (let i = 0; i < dots.length; i++) {
             dots[i].className = dots[i].className.replace(" active", "");
         }
 
@@ -57,14 +56,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // 3. GESTION DU THÈME (DARK MODE)
     // ==========================================
     const toggleBtn = document.getElementById('theme-toggle');
-    const currentTheme = localStorage.getItem('theme');
-
-    if (currentTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        if (toggleBtn) toggleBtn.textContent = '☀️';
-    }
-
     if (toggleBtn) {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+
         toggleBtn.addEventListener('click', () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             if (isDark) {
@@ -80,48 +78,104 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 4. CHARGEMENT DYNAMIQUE JSON (COURS/FORMATIONS)
+    // 4. CHARGEMENT DYNAMIQUE JSON
     // ==========================================
-    let donneesGlobales = { cours: [], formations: [] }; // Stockage global
+    const conteneurCours = document.getElementById('liste-cours');
+    const conteneurFormations = document.getElementById('liste-formations');
 
-    fetch('../json/cours-formations.json')
-        .then(response => response.json())
-        .then(data => {
-            donneesGlobales = data; // Sauvegarde des données
-            afficherTout();
-        });
+    if (conteneurCours || conteneurFormations) {
+        fetch('../json/cours-formations.json')
+            .then(response => response.json())
+            .then(data => {
+                // On ajoute le 'type' en paramètre pour savoir si c'est un cours ou une formation
+                const creerCarte = (item, type) => `
+                    <div class="carte" onclick="preparerModification('${item.id}', '${item.nom}', \`${item.description.replace(/'/g, "\\'")}\`, '${type}', '${item.image}')" style="cursor: pointer;">
+                        <img src="${item.image}" alt="${item.nom}">
+                        <div class="info" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                            <h3>${item.nom}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    </div>
+                `;
 
-    function afficherTout() {
-        const listeCours = document.getElementById('liste-cours');
-        const listeFormations = document.getElementById('liste-formations');
-        
-        if(listeCours) listeCours.innerHTML = "";
-        if(listeFormations) listeFormations.innerHTML = "";
-
-        donneesGlobales.cours.forEach(item => creerCarte(item, 'cours', 'liste-cours'));
-        donneesGlobales.formations.forEach(item => creerCarte(item, 'formations', 'liste-formations'));
+                if (data.cours && conteneurCours) {
+                    conteneurCours.innerHTML = "";
+                    data.cours.forEach(item => { conteneurCours.innerHTML += creerCarte(item, 'cours'); });
+                }
+                if (data.formations && conteneurFormations) {
+                    conteneurFormations.innerHTML = "";
+                    data.formations.forEach(item => { conteneurFormations.innerHTML += creerCarte(item, 'formations'); });
+                }
+            })
+            .catch(error => console.error("Erreur de chargement JSON :", error));
     }
 
-    function creerCarte(item, type, containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        const id = item.id;
-
-        const htmlCarte = `
-            <div class="carte" id="card-${type}-${id}">
-                <img src="${item.image}" alt="${item.nom}">
-                <div class="info">
-                    <h3>${item.nom}</h3>
-                    <p>${item.description}</p>
-                    <div class="action-buttons">
-                        <button class="btn-edit" onclick="preparerModification(${id}, '${type}')">Modifier ✏️</button>
-                        <button class="btn-delete" onclick="supprimerElement(${id}, '${type}')">Supprimer 🗑️</button>
-                    </div>
-                </div>
-            </div>`;
+    // Fonctions globales pour les boutons (doivent être accessibles dans le HTML)
+    window.preparerModification = function(id, nom, description, type, image) {
+        // Remplir le formulaire
+        document.getElementById('item-id').value = id;
+        document.getElementById('nom').value = nom;
+        document.getElementById('description').value = description;
+        document.getElementById('type-choix').value = type;
         
-        container.insertAdjacentHTML('beforeend', htmlCarte);
+        // AFFICHER LE BOUTON SUPPRIMER
+        document.getElementById('deletebtn').style.display = "block";
+        document.getElementById('submitbtn').textContent = "Mettre à jour";
+
+        // Afficher l'image dans la dropzone
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.style.backgroundImage = `url(${image})`;
+        dropZone.style.backgroundSize = "cover";
+        dropZone.style.backgroundPosition = "center";
+        document.getElementById('drop-text').style.display = "none";
+
+        // Défiler jusqu'au formulaire
+        document.getElementById('contactretour').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.supprimerItem = function(id, type) {
+        if(confirm("Voulez-vous vraiment supprimer cet élément ?")) {
+            fetch('../includes/supprimer_cours.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, type: type })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload(); // Recharger la page pour voir les changements
+                } else {
+                    alert("Erreur : " + data.message);
+                }
+            });
+        }
+    };
+
+    window.resetFormulaire = function() {
+        // Vide les champs
+        document.getElementById('QuizId').reset();
+        document.getElementById('item-id').value = "";
+        
+        // Cache le bouton supprimer
+        document.getElementById('deletebtn').style.display = "none";
+        document.getElementById('submitbtn').textContent = "Envoyer";
+
+        // Reset de la dropzone
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.style.backgroundImage = "none";
+        document.getElementById('drop-text').style.display = "block";
+    };
+
+    // On lie le bouton "Supprimer" du formulaire à la fonction existante
+    const btnSupprForm = document.getElementById('deletebtn');
+    if (btnSupprForm) {
+        btnSupprForm.addEventListener('click', function() {
+            const id = document.getElementById('item-id').value;
+            const type = document.getElementById('type-choix').value;
+            if (id && type) {
+                window.supprimerItem(id, type);
+            }
+        });
     }
 
     // ==========================================
@@ -129,13 +183,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
-    let imagePreviewUrl = ""; 
 
     if (dropZone && fileInput) {
-        // Cliquer pour ouvrir l'explorateur
         dropZone.addEventListener('click', () => fileInput.click());
 
-        // Empêcher le comportement par défaut du navigateur
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault();
@@ -143,227 +194,368 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Effets visuels
         dropZone.addEventListener('dragover', () => dropZone.classList.add('hover'));
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
 
-        // Gérer le fichier reçu (Aperçu)
         const handleFile = (file) => {
             if (file && file.type.startsWith('image/')) {
-                imagePreviewUrl = URL.createObjectURL(file);
+                const imagePreviewUrl = URL.createObjectURL(file);
                 dropZone.style.backgroundImage = `url(${imagePreviewUrl})`;
                 dropZone.style.backgroundSize = "cover";
                 dropZone.style.backgroundPosition = "center";
-                dropZone.innerText = ""; 
+                const dropText = document.getElementById('drop-text');
+                if (dropText) dropText.style.display = "none";
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                console.log("Fichier injecté :", fileInput.files[0].name);
             }
         };
 
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
         dropZone.addEventListener('drop', (e) => {
             dropZone.classList.remove('hover');
-            handleFile(e.dataTransfer.files[0]);
+            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
         });
     }
 
     // ==========================================
-    // 6. GESTION  AJOUT/MODIFICATION DES COURS ET FORMATIONS
+    // 6. MODIF DU JSON AVEC LE PHP (COURS FORMATIONS)
     // ==========================================
-    const quizForm = document.getElementById('QuizId');
+    const quizForm = document.getElementById('QuizId'); // AJOUTÉ : Déclaration de la variable
+
     if (quizForm) {
         quizForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log("Diagnostic : Formulaire soumis !");
 
-            // 1. Récupération des valeurs actuelles du formulaire
-            const leNom = document.getElementById('nom').value;
-            const laDesc = document.getElementById('description').value;
-            const nouveauType = document.getElementById('type-choix').value; // 'cours' ou 'formations'
-            
-            // 2. Récupération des infos de modification (si elles existent)
-            const editId = this.dataset.editId;
-            const typeOrigine = this.dataset.editType;
+            const formData = new FormData(this);
 
-            // 3. Vérification : On a besoin d'un nom, d'une description et d'une image
-            if (leNom && laDesc && imagePreviewUrl) {
-                
-                if (editId) {
-                    // --- CAS A : MODIFICATION ---
-                    console.log("Modification de l'élément ID:", editId, "depuis", typeOrigine, "vers", nouveauType);
-                    
-                    // On retire d'abord l'ancien élément de sa catégorie d'origine
-                    // (Cela permet de gérer le changement de type automatiquement)
-                    donneesGlobales[typeOrigine] = donneesGlobales[typeOrigine].filter(item => item.id != editId);
+            // On s'assure que le fichier est bien pris en compte
+            const fileCheck = formData.get('image');
+            console.log("Fichier prêt à l'envoi :", fileCheck ? fileCheck.name : "Aucun");
 
-                    // On crée l'objet mis à jour (on garde le même ID)
-                    const itemMisAJour = {
-                        id: parseInt(editId),
-                        nom: leNom,
-                        description: laDesc,
-                        image: imagePreviewUrl
-                    };
+            /*if (!fileCheck || fileCheck.size === 0) {
+                alert("Erreur : Aucune image sélectionnée.");
+                return;
+            }*/ // jsp pk gemini a dit d'enlever ça pr les modifs/supprs
 
-                    // On l'ajoute dans la catégorie cible (nouveauType)
-                    donneesGlobales[nouveauType].push(itemMisAJour);
-                    
-                    alert("Modification enregistrée !");
-
-                } else {
-                    // --- CAS B : NOUVEL AJOUT ---
-                    const nouvelItem = {
-                        id: Date.now(), // Génère un ID unique basé sur l'heure
-                        nom: leNom,
-                        description: laDesc,
-                        image: imagePreviewUrl
-                    };
-
-                    // On l'ajoute dans la catégorie choisie
-                    donneesGlobales[nouveauType].push(nouvelItem);
-                    
-                    alert("Nouvel élément ajouté !");
-                }
-
-                // --- ACTIONS FINALES (COMMUNES AUX DEUX CAS) ---
-                
-                // 1. On rafraîchit tout l'affichage pour voir les changements
-                afficherTout(); 
-                
-                // 2. On remet le formulaire à zéro (et on cache le bouton annuler)
-                annulerModification(); 
-
-            } else {
-                alert("Veuillez remplir tous les champs et ajouter une image.");
-            }
+            fetch('../includes/ajouter_cours.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Enregistré avec succès !");
+                        location.reload();
+                    } else {
+                        alert("Erreur PHP : " + data.message);
+                    }
+                })
+                .catch(error => console.error("Échec du fetch :", error));
         });
+    }
+
+    // ==========================================
+    // 7. GESTION VIDÉO AU SURVOL
+    // ==========================================
+    document.querySelectorAll('.video-hover-container').forEach(container => {
+        const video = container.querySelector('video');
+        if (video) {
+            container.addEventListener('mouseenter', () => {
+                video.muted = true;
+                video.play().catch(err => console.log("Lecture bloquée :", err));
+            });
+            container.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+        }
+    });
+}); // Cette accolade ferme DOMContentLoaded. Il n'y en a plus d'autres après.
+
+// ===========================================
+// FLASH MEDIA (oe tkt frro)
+// ===========================================
+const flash = document.querySelector('#flashMedia');
+const flashVideo = document.querySelector('#flashVideo');
+const flashImage = document.querySelector('#flashImg');
+const flashTitre = document.querySelector('#flashTitre');
+const flashWrapper = document.querySelector('.mediaWrapper');
+
+let flashConfig = {
+    video: "",
+    image: "",
+    texte: "",
+    duree: "auto",
+    volume: 1,
+    vitesse: 1,
+    audioSeul: false
+}
+function flashVerifConfig() {
+    // Validation de la durée
+    if (flashConfig.duree !== 'inf') {
+        const parsedDuree = parseInt(flashConfig.duree);
+        if (isNaN(parsedDuree) || parsedDuree <= 0) flashConfig.duree = 'auto';
+        else flashConfig.duree = parsedDuree;
     }
     
-    // 1. Fonction pour annuler
-    window.annulerModification = function() {
-        const form = document.getElementById('QuizId');
-        const submitBtn = document.getElementById('submitbtn');
-        const cancelBtn = document.getElementById('cancelbtn');
-        const dropZone = document.getElementById('drop-zone');
+    if (!flashConfig.video) {
+        flashConfig.volume = 1;
+        flashConfig.vitesse = 1;
+        flashConfig.audioSeul = false;
+    } else {
+        // Validation de la vitesse (>0)
+        const parsedVitesse = parseFloat(flashConfig.vitesse);
+        if (isNaN(parsedVitesse) || parsedVitesse <= 0) flashConfig.vitesse = 1;
+        else flashConfig.vitesse = parsedVitesse;
 
-        // Reset du formulaire
-        form.reset();
-        
-        // On retire les infos de modification
-        delete form.dataset.editId;
-        delete form.dataset.editType;
+        // Validation du volume (entre 0 et 1)
+        let parsedVolume = parseFloat(flashConfig.volume);
+        if (isNaN(parsedVolume)) flashConfig.volume = 1;
+        else flashConfig.volume = Math.min(Math.max(parsedVolume, 0), 1);
 
-        // On remet les textes et boutons d'origine
-        submitBtn.innerText = "Envoyer";
-        cancelBtn.style.display = "none";
-        
-        // Reset de l'image
-        if(dropZone) {
-            dropZone.style.backgroundImage = "none";
-            dropZone.innerText = "Glissez votre image ici ou cliquez pour choisir";
+        // Validation audioSeul
+        if (flashConfig.image) flashConfig.audioSeul = false;
+        else {
+            const extension = flashConfig.video.split('.').pop().toLowerCase();
+            const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+            if (formatsAudio.includes(extension)) flashConfig.audioSeul = true;
+            else flashConfig.audioSeul = typeof flashConfig.audioSeul === 'boolean' ? flashConfig.audioSeul : false;
         }
-        imagePreviewUrl = ""; 
-    };
+    }
 
-    // 2. Modifier la fonction de préparation pour afficher le bouton
-    window.preparerModification = function(id, type) {
-        const item = donneesGlobales[type].find(i => i.id === id);
+    // Nettoyage + encodage URLs
+    flashConfig.video = typeof flashConfig.video === 'string' ? encodeURI(flashConfig.video.trim()) : "";
+    flashConfig.image = typeof flashConfig.image === 'string' ? encodeURI(flashConfig.image.trim()) : "";
+    flashConfig.texte = typeof flashConfig.texte === 'string' ? flashConfig.texte.trim() : "";
+
+    console.log("Config Flash validée :", flashConfig);
+}
+
+let flashTimeout;
+function flashStart() {
+    flashStop();
+    flashVerifConfig();
+
+    const video = !!flashVideo && flashConfig.video !== "";
+    const image = !!flashImage && flashConfig.image !== "";
+
+    if (flashConfig.audioSeul || (!video && !image)) {
+        flash.classList.add('titreSeul');
+        if (flashConfig.texte) flashAjusterTitre(window.innerWidth, window.innerHeight);
+    } else flash.classList.remove('titreSeul');
+
+    if (!video && !image && !flashConfig.texte) return; 
+
+    flashSyncDOMfromConfig();
+    if (flashConfig.texte) flashTitre.style.display = "block";
+    flash.style.display = "flex";
+
+    // gestion affichage + lecture vidéo
+    if (video) {
+        flashVideo.volume = flashConfig.volume;
+        flashVideo.playbackRate = flashConfig.vitesse;
+
+        let errImg = false;
+        let errVid = false;
         
-        if (item) {
-            const form = document.getElementById('QuizId');
-            document.getElementById('nom').value = item.nom;
-            document.getElementById('description').value = item.description;
-            document.getElementById('type-choix').value = type;
-            
-            // On stocke l'ID ET le type d'origine
-            form.dataset.editId = id; 
-            form.dataset.editType = type; // <--- TRÈS IMPORTANT
+        if (image) {
+            flashImage.style.display = "block";
 
-            document.getElementById('submitbtn').innerText = "Enregistrer les modifications";
-            document.getElementById('cancelbtn').style.display = "inline-block";
-            
-            // Gestion image
-            imagePreviewUrl = item.image;
-            const dropZone = document.getElementById('drop-zone');
-            dropZone.style.backgroundImage = `url(${item.image})`;
-            dropZone.innerText = "";
-            
-            form.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
-    window.supprimerElement = function(id, type) {
-        if (confirm("Es-tu sûr de vouloir supprimer ce cours ?")) {
-            // 1. Filtrer les données pour retirer l'élément
-            donneesGlobales[type] = donneesGlobales[type].filter(item => item.id !== id);
-            
-            // 2. Rafraîchir l'affichage
-            afficherTout();
-            
-            alert("Élément supprimé !");
-        }
-    };
-
-    // ==========================================
-    // 7. GESTION DU MODE VEILLE
-    // ==========================================
-    const idleVideo = document.getElementById('bg-idle-video');
-    let idleTimer;
-    const IDLE_TIME = 120000; // 120 secondes d'inactivité avant de lancer la vidéo
-    const originalTitle = document.title; // Sauvegarde le titre original pour le restaurer après le mode veille
-
-    if (idleVideo) {
-        function setIdle() {
-            document.body.classList.add('is-idle');
-            
-            // Change le titre de l'onglet
-            document.title = "t ouuuuuuuu ?";
-
-            // Relance la vidéo du début
-            idleVideo.currentTime = 0;
-            idleVideo.volume = 0.1; // Baisser le son
-            idleVideo.muted = false;
-
-            let playPromise = idleVideo.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    // Si le navigateur bloque le son, on la joue en muet
-                    idleVideo.muted = true;
-                    idleVideo.play();
-                });
+            flashImage.onerror = () => {
+                console.warn("Erreur lecture image, audio seul");
+                flashImage.style.display = "none";
+                errImg = true;
+                if (errVid) flashStop();
             }
-        }
-
-        function setActive() {
-            // Si on sort du mode veille
-            if (document.body.classList.contains('is-idle')) {
-                document.body.classList.remove('is-idle');
-                document.title = originalTitle; // Remet le bon titre
-                idleVideo.pause(); // Met la vidéo en pause pour les perfs
+            flashVideo.onerror = () => {
+                console.warn("Erreur lecture vidéo, image seule");
+                errVid = true;
+                if (errImg) flashStop();
             }
 
-            // Réinitialise le chrono
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(setIdle, IDLE_TIME);
+            flashVideo.play().catch(err => console.warn("Erreur lecture mixte:", err));
+            flashImage.onload = () => flashUpscale(flashImage);
+            if (flashImage.complete) flashUpscale(flashImage);
+        } else {
+            if (!flashConfig.audioSeul) {
+                flashVideo.style.display = "block";
+                if (flashVideo.readyState >= 1) flashUpscale(flashVideo);
+                flashVideo.onloadedmetadata = () => flashUpscale(flashVideo);
+            }
+
+            flashVideo.onerror = () => {
+                console.error("Erreur lecture vidéo");
+                flashStop();
+            }
+
+            flashVideo.play().catch(err => {
+                if (err.name === 'NotAllowedError' && !flashConfig.audioSeul) {
+                    console.warn("Autoplay bloqué avec son, passage en mute");
+                    flashVideo.muted = true;
+                    flashVideo.play();
+                } else {
+                    console.error("Erreur lecture vidéo:", err);
+                    flashStop();
+                }
+            });
         }
-
-        // On écoute l'activité de l'utilisateur (souris, clavier, scroll, tactile)
-        ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(event => {
-            window.addEventListener(event, setActive);
-        });
-
-        // Lancer le timer au chargement de la page
-        setActive();
+    } else if (image) {
+        flashImage.style.display = "block";
+        flashImage.onload = () => flashUpscale(flashImage);
+        if (flashImage.complete) flashUpscale(flashImage);
+        flashImage.onerror = () => {
+            console.error("Erreur lecture image");
+            flashStop();
+        }
     }
-});
 
-// --- GESTION VIDÉO AU SURVOL ---
-document.querySelectorAll('.video-hover-container').forEach(container => {
-    const video = container.querySelector('video');
-    if (video) { 
-        container.addEventListener('mouseenter', () => {
-            video.muted = true;
-            video.play().catch(error => console.log("Erreur lecture :", error));
-        });
-        container.addEventListener('mouseleave', () => {
-            video.pause();
-            video.currentTime = 0;
-        });
+    // gestion fermeture
+    if (flashConfig.duree === 'inf') flashVideo.loop = video ? true : false;
+    else if (typeof flashConfig.duree === 'number') {
+        if (video) flashVideo.loop = true;
+        flashTimeout = setTimeout(() => flashStop(), flashConfig.duree);
+    } else {
+        if (video) flashVideo.onended = () => flashStop();
+        else flashTimeout = setTimeout(() => flashStop(), 5000);
     }
+}
+
+function flashStop() {
+    clearTimeout(flashTimeout);
+    flashVideo.onloadedmetadata = null;
+    flashVideo.onerror = null;
+    flashVideo.onended = null;
+    flashImage.onload = null;
+    flashImage.onerror = null;
+
+    flashVideo.pause();
+    flashVideo.currentTime = 0;
+    flashVideo.muted = false;
+    flashVideo.loop = false;
+
+    flashVideo.style.display = "none";
+    flashImage.style.display = "none";
+    flashTitre.style.display = "none";
+    flash.style.display = "none";
+    flashWrapper.style.width = "";
+    flashWrapper.style.height = "";
+
+    flashVideo.removeAttribute('src');
+    flashImage.removeAttribute('src');
+    flashTitre.innerHTML = "";
+    flashVideo.load();
+}
+
+function flashUpscale(media) {
+    if (!media || media.style.display === "none") return;
+
+    // 1. Récupérer les dimensions réelles (intrinsèques) du média
+    const originalW = media.tagName === 'IMG' ? media.naturalWidth : media.videoWidth;
+    const originalH = media.tagName === 'IMG' ? media.naturalHeight : media.videoHeight;
+    if (originalW === 0 || originalH === 0) return;
+
+    // 2. Calculer le ratio pour que le média occupe le max d'espace (mode "contain")
+    const ratioW = window.innerWidth / originalW;
+    const ratioH = window.innerHeight / originalH;
+    
+    // On choisit le ratio le plus petit pour ne jamais couper l'image/vidéo
+    const scale = Math.min(ratioW, ratioH);
+    const finalW = Math.floor(originalW * scale);
+    const finalH = Math.floor(originalH * scale);
+
+    flashWrapper.style.width = `${finalW}px`;
+    flashWrapper.style.height = `${finalH}px`;
+    media.style.width = "100%";
+    media.style.height = "100%";
+    flashAjusterTitre(finalW, finalH);
+}
+
+function flashAjusterTitre(w, h, charsPerLine = 35) {
+    if (!flashTitre || !flashConfig.texte) return;
+
+    // 1. On définit la largeur de référence (le plus petit entre le média et l'écran)
+    const plusGrandCote = Math.max(w, h);
+    const largeurReference = Math.min(plusGrandCote, window.innerWidth);
+    
+    // 2. On applique cette largeur au conteneur (95%)
+    const largeurFinale = largeurReference * 0.95;
+    flashTitre.style.width = `${largeurFinale}px`;
+
+    // 3. On calcule la police sur cette MÊME base pour garder tes 35 caractères
+    let taillePolice = largeurFinale / (charsPerLine * 0.58);
+    flashTitre.style.fontSize = `${taillePolice}px`;
+
+    // 4. Sécu : Réduire si la hauteur dépasse 80% de la hauteur du média
+    const hauteurMaxAutorisee = h * 0.8;
+    while (flashTitre.offsetHeight > hauteurMaxAutorisee && taillePolice > 10) {
+        taillePolice -= 2;
+        flashTitre.style.fontSize = `${taillePolice}px`;
+    }
+
+    const epaisseurContour = taillePolice / 10;
+    flashTitre.style.webkitTextStroke = `${epaisseurContour}px black`;
+}
+
+function flashSyncDOMfromConfig() {
+    if (flashConfig.video) flashVideo.src = flashConfig.video;
+    else flashVideo.removeAttribute('src');
+
+    if (flashConfig.image) flashImage.src = flashConfig.image;
+    else flashImage.removeAttribute('src'); 
+
+    flashTitre.innerHTML = flashConfig.texte || "";
+    flashVideo.load();
+}
+
+function flashResetDOMStyles() {
+    [flash, flashVideo, flashImage, flashTitre, flashWrapper].forEach(el => el.removeAttribute('style'));    
+}
+
+function flashResetConfig() {
+    flashConfig = {
+        video: "",
+        image: "",
+        texte: "",
+        duree: "auto",
+        volume: 1,
+        vitesse: 1,
+        audioSeul: false
+    }
+}
+
+function flashResetAll() {
+    flashStop();
+    flashResetConfig();
+    flashSyncDOMfromConfig();
+    flashResetDOMStyles();
+}
+
+function flashTest() {
+    flashConfig = {
+        video: "",
+        image: "../images/jeanmichel.png",
+        texte: "slt les enfants",
+        duree: "auto",
+        volume: 1,
+        vitesse: 2,
+        audioSeul: false
+    }
+    flashStart();
+}
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (flash.style.display === "flex") {
+            const mediaActif = flashVideo.style.display !== "none" ? flashVideo : (flashImage.style.display !== "none" ? flashImage : null);
+            if (mediaActif) flashUpscale(mediaActif);
+        }
+    }, 100); // petit délai pour les perfs
 });

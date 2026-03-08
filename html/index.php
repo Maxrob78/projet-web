@@ -1,4 +1,10 @@
-<?php include 'header.php'; ?>
+<?php 
+// Configuration de la page
+$pageTitle = "Accueil"; 
+$currentPage = "index";
+
+include '../includes/header.php'; 
+?>
 
     <section class="hero">
         <video autoplay muted loop playsinline class="back-video">
@@ -8,7 +14,7 @@
         <div class="content">
             <h1>L'INGÉNIERIE DE DEMAIN</h1>
             <p>l'EFREI, grande école du numérique</p>
-            <a href="formations.php" class="btn-video">Voir nos formations</a>
+            <a href="CoursFormations.php" class="btn-video">Voir nos formations</a>
         </div>
     </section>
     <div id="imgcampus">
@@ -25,9 +31,10 @@
             offrons ainsi à nos étudiants un cadre d'apprentissage privilégié, où l'excellence académique
             s'accompagne d'un équipement de haut niveau pour répondre aux défis de demain.</p>
     </section>
-    <div class="map-container">
+    <div class="map-container" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
+
         <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1l3OA8lR1VFPuScNyeKb8i5refkkKsOQ&ehbc=2E312F&noprof=1"
-            width="100%" height="450" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy"
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade">
         </iframe>
     </div>
@@ -37,7 +44,7 @@
         </div>
         <section class="missionpara">
             <h2>LES MISSIONS</h2>
-            <p>L'objectif de l'établissement est de former des ingénieurs capables de répondre aux enjeux technologiques
+            <p style="text-align: justify;">L'objectif de l'établissement est de former des ingénieurs capables de répondre aux enjeux technologiques
                 et sociétaux par l'expertise et la créativité. Le cursus s'articule autour de l'innovation, du travail
                 collaboratif et de l'ouverture internationale afin de préparer les étudiants aux responsabilités du
                 secteur de l'ingénierie.</p>
@@ -46,7 +53,7 @@
     <div class="imageparagraphe">
         <section class="valeurpara">
             <h2>LES VALEURS</h2>
-            <p>L'identité du département d'informatique de l'EFREI s'articule autour de trois piliers : la maîtrise
+            <p style="text-align: justify;">L'identité du département d'informatique de l'EFREI s'articule autour de trois piliers : la maîtrise
                 technique, l'adaptabilité et la responsabilité professionnelle. L'établissement privilégie une approche
                 où l'innovation technologique reste indissociable d'une réflexion éthique sur l'usage du numérique. Le
                 cursus favorise l'immersion dans des projets collaboratifs complexes, visant à développer chez les
@@ -156,5 +163,4 @@
         <span class="dot" onclick="currentSlide(2)"></span>
         <span class="dot" onclick="currentSlide(3)"></span>
     </div>
-    
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

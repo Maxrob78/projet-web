@@ -41,44 +41,38 @@
         {
             "id": 1,
             "nom": "D\u00e9veloppeur Web et IA",
-            "description": "Il apporte les connaissances n\u00e9cessaires pour d\u00e9velopper un site web, une application mobile ou n\u2019importe quel logiciel",
+            "description": "Il apporte les connaissances nécessaires pour développer un site web, une application mobile ou n’importe quel logiciel",
             "image": "..\/images\/web-et-ia-formation.jpg"
         },
         {
             "id": 2,
-            "nom": "Cyber s\u00e9curit\u00e9 et r\u00e9seaux",
-            "description": "apporte un solide socle scientifique autour de la s\u00e9curit\u00e9 informatique et de ses applications techniques multiformes.",
+            "nom": "Cyber sécurité et réseaux",
+            "description": "apporte un solide socle scientifique autour de la sécurité informatique et de ses applications techniques multiformes.",
             "image": "..\/images\/cyber-formation.jpg"
         },
         {
             "id": 3,
             "nom": "Green IT",
-            "description": "Il vise \u00e0 former des professionnels capables de concevoir, d\u00e9velopper et g\u00e9rer des solutions informatiques respectueuses de l'environnement.",
+            "description": "Il vise à former des professionnels capables de concevoir, développer et gérer des solutions informatiques respectueuses de l'environnement.",
             "image": "..\/images\/green-formation.png"
         },
         {
             "id": 4,
             "nom": "Data Engineering & IA",
-            "description": "Centr\u00e9es autour de la gestion de donn\u00e9es, de l\u2019intelligence artificielle et du cloud pour r\u00e9pondre aux besoins des entreprises en pleine transformation digitale.",
+            "description": "Centrées autour de la gestion de données, de l’intelligence artificielle et du cloud pour répondre aux besoins des entreprises en pleine transformation digitale.",
             "image": "..\/images\/data-formation.webp"
         },
         {
             "id": 5,
             "nom": "Marketing Digital & Communication",
-            "description": "Apprenez les techniques de communication et les techniques de marketing utilis\u00e9es sur des supports en ligne.",
+            "description": "Apprenez les techniques de communication et les techniques de marketing utilisées sur des supports en ligne.",
             "image": "..\/images\/mark-formation.jpg"
         },
         {
             "id": 6,
             "nom": "Chef de projet e-commerce",
-            "description": "Apprenez \u00e0 concevoir, g\u00e9rer et optimiser une plateforme e-commerce en pilotant la strat\u00e9gie digitale et le d\u00e9veloppement commercial d\u2019une entreprise.",
+            "description": "Apprenez à concevoir, gérer et optimiser une plateforme e-commerce en pilotant la stratégie digitale et le développement commercial d’une entreprise.",
             "image": "..\/images\/ecommerce-formation.png"
-        },
-        {
-            "id": "69adf4fe2f538",
-            "nom": "bien g\u00e9rer son cortisol",
-            "description": "bah ta vu la minia je pense",
-            "image": "..\/images\/1773008126_Low cortisol meme.jpg"
         }
     ]
 }
