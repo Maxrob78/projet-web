@@ -5,7 +5,7 @@ $currentPage = "contact";
 
 // Traitement du formulaire
 $messageSucces = "";
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nom'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit-form'])) {
     $nom = htmlspecialchars($_POST['nom']);
     $messageSucces = "Merci $nom, votre message a bien été reçu !";
 }
@@ -29,24 +29,24 @@ include '../includes/header.php';
 
             <p>
                 <label for="nom">Nom</label><br>
-                <input type="text" id="nom" name="nom">
+                <input type="text" id="nom" name="nom" required>
             </p>
 
             <p>
                 <label for="email">Adresse Email</label><br>
-                <input type="email" id="email" name="email">
+                <input type="email" id="email" name="email" required>
             </p>
 
             <p>
                 <label for="sujet">Sujet</label><br>
-                <input type="text" id="sujet" name="sujet">
+                <input type="text" id="sujet" name="sujet" required>
             </p>
 
             <p>
                 <label for="message">Message</label><br>
-                <textarea id="message" name="message" rows="4"></textarea>
+                <textarea id="message" name="message" rows="4" required></textarea>
             </p>
-            <button id="submitbtn" type="submit">Envoyer</button>
+            <button id="submitbtn" type="submit" name="submit-form">Envoyer</button>
         </fieldset>
     </form>
     <div id="imgcontact">

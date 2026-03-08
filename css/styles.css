@@ -807,6 +807,64 @@ button[type="submit"]:hover {
     transition: all 0.3s ease;
 }
 
+/* --- CONTENEUR POUR ALIGNER LES BOUTONS --- */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    align-items: center;
+}
+
+/* --- LE MODÈLE DE BASE (Stricte copie de ton submit) --- */
+#submitbtn, #deletebtn, #resetbtn {
+    padding: 12px !important;
+    border-radius: 5px !important;
+    width: 200px !important;
+    margin: 0 !important;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    color: white;
+    border: 1px solid; /* La couleur de bordure sera définie par bouton */
+}
+
+/* --- 1. BOUTON ENVOYER / MODIFIER (Bleu) --- */
+#submitbtn {
+    background-color: #4d8dc6;
+    border-color: #3670a4;
+}
+
+#submitbtn:hover {
+    background-color: #469ae3;
+    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
+    transform: scale(1.05);
+}
+
+/* --- 2. BOUTON SUPPRIMER (Rouge) --- */
+#deletebtn {
+    background-color: #e74c3c;
+    border-color: #c0392b;
+    display: none; /* Toujours caché par défaut au chargement */
+}
+
+#deletebtn:hover {
+    background-color: #ff5e4d;
+    box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);
+    transform: scale(1.05);
+}
+
+/* --- 3. BOUTON ANNULER (Gris Anthracite) --- */
+#resetbtn {
+    background-color: #5d6d7e;
+    border-color: #34495e;
+}
+
+#resetbtn:hover {
+    background-color: #7f8c8d;
+    box-shadow: 0 0 30px rgba(93, 109, 126, 0.6);
+    transform: scale(1.05);
+}
+
 #imgcontact {
     width: 600px;
     height: 500px;

@@ -35,7 +35,7 @@ include '../includes/header.php';
 
             <p>
                 <label for="description">Description</label><br>
-                <input type="text" id="description" name="description" required>
+                <textarea id="description" name="description" rows="5" required></textarea>
             </p>
 
             <p>
@@ -51,7 +51,15 @@ include '../includes/header.php';
             </div>
             <input type="file" id="file-input" name="image" style="display:none" accept="image/*">
 
-            <button id="submitbtn" type="submit">Envoyer</button>
+            <div class="form-actions">
+                <button id="submitbtn" type="submit">Enregistrer</button>
+                <button type="button" id="deletebtn" class="btn-danger" style="display:none;">
+                    Supprimer
+                </button>
+                <button type="button" id="resetbtn" class="btn-secondary" onclick="resetFormulaire()">
+                    Annuler
+                </button>
+            </div>
         </fieldset>
     </form>
 </section>

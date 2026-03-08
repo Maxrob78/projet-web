@@ -89,15 +89,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 // On ajoute le 'type' en paramètre pour savoir si c'est un cours ou une formation
                 const creerCarte = (item, type) => `
-                    <div class="carte">
+                    <div class="carte" onclick="preparerModification('${item.id}', '${item.nom}', \`${item.description.replace(/'/g, "\\'")}\`, '${type}', '${item.image}')" style="cursor: pointer;">
                         <img src="${item.image}" alt="${item.nom}">
                         <div class="info" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                             <h3>${item.nom}</h3>
                             <p>${item.description}</p>
-                            <div style="margin-top: 10px;">
-                                <button onclick="preparerModification('${item.id}', '${item.nom}', \`${item.description}\`, '${type}', '${item.image}')" style="margin-right: 5px; cursor: pointer;">✏️ Modifier</button>
-                                <button onclick="supprimerItem('${item.id}', '${type}')" style="cursor: pointer; color: red;">🗑️ Supprimer</button>
-                            </div>
                         </div>
                     </div>
                 `;
@@ -122,6 +118,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('description').value = description;
         document.getElementById('type-choix').value = type;
         
+        // AFFICHER LE BOUTON SUPPRIMER
+        document.getElementById('deletebtn').style.display = "block";
+        document.getElementById('submitbtn').textContent = "Mettre à jour";
+
         // Afficher l'image dans la dropzone
         const dropZone = document.getElementById('drop-zone');
         dropZone.style.backgroundImage = `url(${image})`;
@@ -150,6 +150,33 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     };
+
+    window.resetFormulaire = function() {
+        // Vide les champs
+        document.getElementById('QuizId').reset();
+        document.getElementById('item-id').value = "";
+        
+        // Cache le bouton supprimer
+        document.getElementById('deletebtn').style.display = "none";
+        document.getElementById('submitbtn').textContent = "Envoyer";
+
+        // Reset de la dropzone
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.style.backgroundImage = "none";
+        document.getElementById('drop-text').style.display = "block";
+    };
+
+    // On lie le bouton "Supprimer" du formulaire à la fonction existante
+    const btnSupprForm = document.getElementById('deletebtn');
+    if (btnSupprForm) {
+        btnSupprForm.addEventListener('click', function() {
+            const id = document.getElementById('item-id').value;
+            const type = document.getElementById('type-choix').value;
+            if (id && type) {
+                window.supprimerItem(id, type);
+            }
+        });
+    }
 
     // ==========================================
     // 5. GESTION DE LA DROP ZONE (DRAG & DROP)
@@ -196,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ==========================================
-    // 6. SOUMISSION DU FORMULAIRE (PHP)
+    // 6. MODIF DU JSON AVEC LE PHP (COURS FORMATIONS)
     // ==========================================
     const quizForm = document.getElementById('QuizId'); // AJOUTÉ : Déclaration de la variable
 
@@ -214,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
             /*if (!fileCheck || fileCheck.size === 0) {
                 alert("Erreur : Aucune image sélectionnée.");
                 return;
-            }*/
+            }*/ // jsp pk gemini a dit d'enlever ça pr les modifs/supprs
 
             fetch('../includes/ajouter_cours.php', {
                 method: 'POST',
@@ -252,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
 }); // Cette accolade ferme DOMContentLoaded. Il n'y en a plus d'autres après.
 
 // ===========================================
-// FLASH MEDIA
+// FLASH MEDIA (oe tkt frro)
 // ===========================================
 const flash = document.querySelector('#flashMedia');
 const flashVideo = document.querySelector('#flashVideo');
