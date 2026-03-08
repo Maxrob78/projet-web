@@ -35,49 +35,44 @@
             "nom": "Design UX\/UI",
             "description": "Apprenez \u00e0 concevoir des interfaces utilisateur intuitives et attrayantes",
             "image": "..\/images\/design.avif"
-        },
-        {
-            "nom": "Maxence Robert",
-            "description": "hurehfujrbgrjgbffnjf fufeijkfje",
-            "image": "..\/images\/1772293103_favicon.png"
         }
     ],
     "formations": [
         {
             "id": 1,
-            "nom": "D\u00e9veloppement Web",
-            "description": "D\u00e9couvrez les fondamentaux du web et apprenez \u00e0 cr\u00e9er des sites et applications interactives",
-            "image": "..\/images\/cours1.jpg"
+            "nom": "D\u00e9veloppeur Web et IA",
+            "description": "Il apporte les connaissances nécessaires pour développer un site web, une application mobile ou n’importe quel logiciel",
+            "image": "..\/images\/web-et-ia-formation.jpg"
         },
         {
             "id": 2,
-            "nom": "R\u00e9seaux et T\u00e9l\u00e9communications",
-            "description": "Apprenez les bases des r\u00e9seaux informatiques et des t\u00e9l\u00e9communications",
-            "image": "..\/images\/cours2.jpg"
+            "nom": "Cyber sécurité et réseaux",
+            "description": "apporte un solide socle scientifique autour de la sécurité informatique et de ses applications techniques multiformes.",
+            "image": "..\/images\/cyber-formation.jpg"
         },
         {
             "id": 3,
-            "nom": "Cybers\u00e9curit\u00e9",
-            "description": "Apprenez \u00e0 prot\u00e9ger les syst\u00e8mes informatiques contre les menaces et les attaques",
-            "image": "..\/images\/cours3.webp"
+            "nom": "Green IT",
+            "description": "Il vise à former des professionnels capables de concevoir, développer et gérer des solutions informatiques respectueuses de l'environnement.",
+            "image": "..\/images\/green-formation.png"
         },
         {
             "id": 4,
-            "nom": "D\u00e9veloppement durable",
-            "description": "Explorez les concepts et les techniques de d\u00e9veloppement durable",
-            "image": "..\/images\/dev-durable.jpg"
+            "nom": "Data Engineering & IA",
+            "description": "Centrées autour de la gestion de données, de l’intelligence artificielle et du cloud pour répondre aux besoins des entreprises en pleine transformation digitale.",
+            "image": "..\/images\/data-formation.webp"
         },
         {
             "id": 5,
-            "nom": "Administration syst\u00e8me et cloud computing",
-            "description": "Apprenez \u00e0 g\u00e9rer et \u00e0 administrer des syst\u00e8mes informatiques et des infrastructures cloud",
-            "image": "..\/images\/admin.jpg"
+            "nom": "Marketing Digital & Communication",
+            "description": "Apprenez les techniques de communication et les techniques de marketing utilisées sur des supports en ligne.",
+            "image": "..\/images\/mark-formation.jpg"
         },
         {
             "id": 6,
-            "nom": "Design UX\/UI",
-            "description": "Apprenez \u00e0 concevoir des interfaces utilisateur intuitives et attrayantes",
-            "image": "..\/images\/design.avif"
+            "nom": "Chef de projet e-commerce",
+            "description": "Apprenez à concevoir, gérer et optimiser une plateforme e-commerce en pilotant la stratégie digitale et le développement commercial d’une entreprise.",
+            "image": "..\/images\/ecommerce-formation.png"
         }
     ]
 }

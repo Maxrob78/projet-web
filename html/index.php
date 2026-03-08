@@ -14,7 +14,7 @@ include '../includes/header.php';
         <div class="content">
             <h1>L'INGÉNIERIE DE DEMAIN</h1>
             <p>l'EFREI, grande école du numérique</p>
-            <a href="CoursFormations.html" class="btn-video">Voir nos formations</a>
+            <a href="CoursFormations.php" class="btn-video">Voir nos formations</a>
         </div>
     </section>
     <div id="imgcampus">

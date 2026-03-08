@@ -35,10 +35,11 @@ body {
    2. SYSTÈME DE HEADER (NAVIGATION)
    ========================================================================== */
 
-/* --- 2.1 Style par défaut (Pages Contact, À Propos, etc.) --- */
+/* --- 2.1 Système de Header (Optimisation Flux) --- */
 header {
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* FIX : Aligne tout à gauche après le logo */
     padding: 15px 40px;
     position: fixed;
     top: 0;
@@ -46,41 +47,65 @@ header {
     width: 100%;
     z-index: 1000;
     box-sizing: border-box;
-    background-color: whitesmoke;
-    border-bottom: 2px solid #e0e0e0;
     background-color: var(--header-bg);
-    /* Remplace whitesmoke */
     border-bottom: 2px solid var(--border-color);
-    /* Remplace #e0e0e0 */
-    transition: background-color 0.4s ease, padding 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    transition: all 0.4s ease;
 }
 
 #logoheader {
     width: 110px;
     height: auto;
-    margin-right: 50px;
-    cursor: pointer;
-    filter: none;
-    /* Logo en couleurs originales par défaut */
+    flex-shrink: 0; 
+    margin-right: 60px; /* Espace fixe entre le logo et le début du menu */
     transition: all 0.4s ease;
 }
 
 nav {
     display: flex;
-    gap: 30px;
+    gap: 25px; /* Espacement entre les entrées du menu */
+    align-items: center;
 }
 
 nav a {
     text-decoration: none;
-    color: #222;
-    /* Texte noir par défaut */
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    transition: all 0.4s ease;
-    margin-top: 8px;
+    white-space: nowrap; /* Empêche le texte de s'écraser sur deux lignes */
     color: var(--text-color);
+    transition: 0.3s;
+}
+
+/* --- 2.5 Maintenance Responsive (Gestion des collisions) --- */
+
+@media (max-width: 1200px) {
+    #logoheader {
+        margin-right: 30px; /* On réduit l'espace entre logo et nav */
+    }
+    nav {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 950px) {
+    /* Si ça s'écrase encore, on passe en mode "Stack technique" */
+    header {
+        flex-direction: column;
+        padding: 10px;
+    }
+    #logoheader {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 90px;
+    }
+    nav {
+        gap: 10px;
+        flex-wrap: wrap; /* Les boutons passent à la ligne si besoin */
+        justify-content: center;
+    }
+    nav a {
+        font-size: 0.7rem;
+    }
 }
 
 nav a:hover {
@@ -264,6 +289,7 @@ header nav a.active {
     pointer-events: none;
     filter: grayscale(0.3) contrast(1.1);
 }
+
 .map-container.active iframe {
     pointer-events: auto;
 }
@@ -738,16 +764,21 @@ button[type="submit"]:hover {
 
 .cours {
     display: flex;
-    justify-content: center; /* Centre les blocs sur la ligne */
-    flex-wrap: wrap;        /* PERMET LE RETOUR À LA LIGNE */
-    gap: 50px;              /* Espace entre les blocs */
+    justify-content: center;
+    /* Centre les blocs sur la ligne */
+    flex-wrap: wrap;
+    /* PERMET LE RETOUR À LA LIGNE */
+    gap: 50px;
+    /* Espace entre les blocs */
     margin: 50px auto;
-    max-width: 1400px;      /* Largeur max pour éviter que ce soit trop étiré */
+    max-width: 1400px;
+    /* Largeur max pour éviter que ce soit trop étiré */
 }
 
 .upload-box {
     width: 100%;
-    min-height: 150px; /* Important : sinon la zone est trop petite */
+    min-height: 150px;
+    /* Important : sinon la zone est trop petite */
     border: 2px dashed #3D83BF;
     display: flex;
     align-items: center;
@@ -762,7 +793,7 @@ button[type="submit"]:hover {
 }
 
 
-#drop-zone{
+#drop-zone {
     background-color: var(--card-bg);
 }
 
@@ -775,7 +806,7 @@ button[type="submit"]:hover {
 }
 
 .carte {
-    width: calc(25% - 30px); 
+    width: calc(25% - 30px);
     min-width: 250px;
     height: 200px;
     position: relative;
@@ -818,6 +849,7 @@ button[type="submit"]:hover {
 .carte:hover {
     box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5);
 }
+
 /* ==========================================================================
    5. FOOTER
    ========================================================================== */
