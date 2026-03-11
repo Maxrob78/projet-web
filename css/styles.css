@@ -1,46 +1,70 @@
 /* ==========================================================================
-   1. POLICE & BASES
+   TABLE DES MATIÈRES
+   1.  IMPORTS & VARIABLES
+   2.  BASE & RESET
+   3.  HEADER & NAVIGATION
+   4.  FLASH MEDIA (OVERLAY)
+   5.  PAGE ACCUEIL — HERO
+   6.  PAGE ACCUEIL — CAMPUS & SECTIONS
+   7.  PAGE ACCUEIL — CHIFFRES CLÉS
+   8.  PAGE ACCUEIL — CARROUSEL
+   9.  PAGE ACCUEIL — VIDEO HOVER
+   10. PAGES CONTENU (À PROPOS / CONTACT)
+   11. FORMULAIRES & BOUTONS
+   12. COURS & FORMATIONS (CARTES)
+   13. FOOTER
+   14. ANIMATIONS
    ========================================================================== */
+
+
+/* ==========================================================================
+   1. IMPORTS & VARIABLES
+   ========================================================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-/* Modifiez le début de votre CSS */
 :root {
-    --bg-color: white;
-    --text-color: #222;
-    --header-bg: whitesmoke;
-    --card-bg: rgb(239, 239, 239);
+    --bg-color:     white;
+    --text-color:   #222;
+    --header-bg:    whitesmoke;
+    --card-bg:      rgb(239, 239, 239);
     --border-color: #e0e0e0;
+    --accent:       #3D83BF;
+    --accent-dark:  #1a4f7e;
 }
 
-/* Le mode sombre écrase uniquement les valeurs des variables */
 [data-theme="dark"] {
-    --bg-color: #121212;
-    --text-color: #ffffff;
-    --header-bg: #1a1a1a;
-    --card-bg: #1e1e1e;
+    --bg-color:     #121212;
+    --text-color:   #ffffff;
+    --header-bg:    #1a1a1a;
+    --card-bg:      #1e1e1e;
     --border-color: #333333;
 }
+
+
+/* ==========================================================================
+   2. BASE & RESET
+   ========================================================================== */
 
 body {
     font-family: "Inter", sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
-    /* Utilisation de la variable */
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+
 /* ==========================================================================
-   2. SYSTÈME DE HEADER (NAVIGATION)
+   3. HEADER & NAVIGATION
    ========================================================================== */
 
-/* --- 2.1 Système de Header (Optimisation Flux) --- */
 header {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FIX : Aligne tout à gauche après le logo */
+    justify-content: flex-start;
     padding: 15px 40px;
     position: fixed;
     top: 0;
@@ -56,14 +80,14 @@ header {
 #logoheader {
     width: 110px;
     height: auto;
-    flex-shrink: 0; 
-    margin-right: 60px; /* Espace fixe entre le logo et le début du menu */
+    flex-shrink: 0;
+    margin-right: 60px;
     transition: all 0.4s ease;
 }
 
 nav {
     display: flex;
-    gap: 25px; /* Espacement entre les entrées du menu */
+    gap: 25px;
     align-items: center;
 }
 
@@ -72,24 +96,77 @@ nav a {
     font-weight: 600;
     font-size: 0.8rem;
     text-transform: uppercase;
-    white-space: nowrap; /* Empêche le texte de s'écraser sur deux lignes */
+    white-space: nowrap;
     color: var(--text-color);
-    transition: 0.3s;
+    transition: opacity 0.3s;
 }
 
-/* --- 2.5 Maintenance Responsive (Gestion des collisions) --- */
+nav a:hover {
+    opacity: 0.6;
+}
+
+nav a.active {
+    color: var(--accent) !important;
+    border-left: 2px solid var(--accent) !important;
+    display: inline-flex;
+    align-items: center;
+    padding-left: 12px;
+    height: 18px;
+    text-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* --- Header : variante page d'accueil (sur vidéo) --- */
+
+header.header-accueil {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    backdrop-filter: blur(0px);
+    border-bottom: none;
+}
+
+header.header-accueil #logoheader {
+    filter: brightness(0) invert(1);
+}
+
+header.header-accueil nav a {
+    color: white;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Header : état "scrolled" (après défilement) --- */
+
+header.scrolled {
+    background: linear-gradient(0deg, rgba(255, 0, 0, 0) 0%, var(--header-bg) 50%);
+}
+
+header.scrolled #logoheader {
+    filter: none;
+}
+
+header.scrolled nav a {
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+/* --- Bouton thème --- */
+
+#theme-toggle {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+/* --- Responsive --- */
 
 @media (max-width: 1200px) {
-    #logoheader {
-        margin-right: 30px; /* On réduit l'espace entre logo et nav */
-    }
-    nav {
-        gap: 15px;
-    }
+    #logoheader { margin-right: 30px; }
+    nav { gap: 15px; }
 }
 
 @media (max-width: 950px) {
-    /* Si ça s'écrase encore, on passe en mode "Stack technique" */
     header {
         flex-direction: column;
         padding: 10px;
@@ -101,73 +178,17 @@ nav a {
     }
     nav {
         gap: 10px;
-        flex-wrap: wrap; /* Les boutons passent à la ligne si besoin */
+        flex-wrap: wrap;
         justify-content: center;
     }
-    nav a {
-        font-size: 0.7rem;
-    }
+    nav a { font-size: 0.7rem; }
 }
 
-nav a:hover {
-    opacity: 0.6;
-}
 
-/* --- 2.2 Style Spécifique Accueil (Intro Vidéo) --- */
-header.header-accueil {
-    background: #000000;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    backdrop-filter: blur(0px);
-    border-bottom: none;
+/* ==========================================================================
+   4. FLASH MEDIA (OVERLAY)
+   ========================================================================== */
 
-}
-
-header.header-accueil #logoheader {
-    filter: brightness(0) invert(1);
-    /* Logo blanc sur la vidéo */
-}
-
-header.header-accueil nav a {
-    color: white;
-    /* Texte blanc sur la vidéo */
-    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* --- 2.3 Style "Scrolled" --- */
-header.scrolled {
-    background: var(--header-bg);
-    /* Utilise la couleur du thème actuel */
-}
-
-/* On enlève le gradient qui force le blanc, ou on l'adapte : */
-header.scrolled {
-    background: linear-gradient(0deg, rgba(255, 0, 0, 0) 0%, var(--header-bg) 50%);
-}
-
-header.scrolled #logoheader {
-    filter: none;
-    /* Retour au logo couleur */
-}
-
-header.scrolled nav a {
-    color: var(--text-color);
-    /* Retour au texte noir */
-    text-shadow: none;
-}
-
-/* --- 2.4 Indicateur de lien actif --- */
-header nav a.active {
-    color: #3D83BF !important;
-    border-left: 2px solid #3D83BF !important;
-    display: inline-flex;
-    align-items: center;
-    padding-left: 12px;
-    height: 18px;
-    text-shadow: none !important;
-    opacity: 1 !important;
-}
-
-/* --- flash --- */
 #flashMedia {
     position: fixed;
     top: 0;
@@ -181,14 +202,6 @@ header nav a.active {
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
-}
-
-.mediaWrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none;
 }
 
 #flashMedia img,
@@ -221,6 +234,14 @@ header nav a.active {
     z-index: 10;
 }
 
+.mediaWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
 #flashMedia.titreSeul {
     background-color: transparent;
     backdrop-filter: none;
@@ -236,9 +257,11 @@ header nav a.active {
     bottom: 5%;
 }
 
+
 /* ==========================================================================
-   3. SECTION (ACCUEIL)
+   5. PAGE ACCUEIL — HERO
    ========================================================================== */
+
 .hero {
     position: relative;
     width: 100%;
@@ -295,7 +318,7 @@ header nav a.active {
 .btn-video {
     display: inline-block;
     padding: 18px 45px;
-    border: 2px solid #3D83BF;
+    border: 2px solid var(--accent);
     background-color: rgba(255, 255, 255, 0.05);
     color: white;
     font-weight: 800;
@@ -308,13 +331,18 @@ header nav a.active {
 }
 
 .btn-video:hover {
-    background-color: #3D83BF;
+    background-color: var(--accent);
     box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.05);
 }
 
+
+/* ==========================================================================
+   6. PAGE ACCUEIL — CAMPUS & SECTIONS
+   ========================================================================== */
+
 #imgcampus {
-    margin: 100px 50px 100px 50px;
+    margin: 100px 50px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -328,81 +356,22 @@ header nav a.active {
     height: auto;
     border-radius: 10px;
     border: solid 3px #3d7cb367;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(4px);
     transition: all 0.3s ease;
-}
-
-#sectioncampus {
-    margin-left: 13.5%;
-    margin-right: 13.5%;
-    text-align: justify;
-    line-height: 1.6;
-}
-
-.map-container {
-    max-width: 1000px;
-    margin: 80px auto;
-    position: relative;
-    height: 450px;
-    overflow: hidden;
-    border: 2px solid #3D83BF;
-    border-radius: 10px;
-}
-
-
-.map-container iframe {
-    width: 100%;
-    height: 550px;
-    margin-top: -70px;
-    border: none;
-    pointer-events: none;
-    filter: grayscale(0.3) contrast(1.1);
-}
-
-.map-container.active iframe {
-    pointer-events: auto;
-}
-
-#type-choix {
-    color: #ffffff;
-    font-weight: 600;
-    background-color: #000;
-    border: 2px solid #3D83BF;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
-
-#type-choix option {
-    background-color: #000;
-    color: white;
-}
-
-#type-choix:hover {
-    background-color: #005eb0;
-    color: white;
-    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
-    transform: scale(1.05);
-    transition: all 0.3s ease;
-}
-
-.titre-section {
-    background-image: url(../images/gradient1.avif);
-    background-size: cover;
-    background-position: center;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
 }
 
 #imgcampus img:hover {
     box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.05);
-    transition: all 0.3s ease;
 }
 
-/* Le conteneur parent */
+#sectioncampus {
+    margin: 0 13.5%;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+/* --- Sections missions / valeurs --- */
+
 .imageparagraphe {
     display: flex;
     align-items: center;
@@ -421,6 +390,12 @@ header nav a.active {
     border-radius: 10px;
 }
 
+.missionpara,
+.valeurpara {
+    margin: 0;
+    line-height: 1.6;
+}
+
 .missionimg,
 .valeurimg {
     width: 100%;
@@ -432,19 +407,42 @@ header nav a.active {
     transition: transform 0.3s ease;
 }
 
-.missionpara,
-.valeurpara {
-    margin: 0;
-    line-height: 1.6;
-}
-
 .missionimg:hover,
 .valeurimg:hover {
     transform: translateY(-10px);
     box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5);
 }
 
-/* --- SECTION CHIFFRES CLÉS --- */
+/* --- Carte de la map --- */
+
+.map-container {
+    max-width: 1000px;
+    margin: 80px auto;
+    position: relative;
+    height: 450px;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 550px;
+    margin-top: -70px;
+    border: none;
+    pointer-events: none;
+    filter: grayscale(0.3) contrast(1.1);
+}
+
+.map-container.active iframe {
+    pointer-events: auto;
+}
+
+
+/* ==========================================================================
+   7. PAGE ACCUEIL — CHIFFRES CLÉS
+   ========================================================================== */
+
 .section-chiffres {
     padding: 80px 10%;
     text-align: center;
@@ -455,35 +453,34 @@ header nav a.active {
     letter-spacing: 3px;
     margin-bottom: 50px;
     text-transform: uppercase;
+    background-image: url(../images/gradient1.avif);
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .grid-stats {
     display: grid;
-    /* 3 colonnes sur PC, s'adapte automatiquement */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
 }
 
 .stat-card {
-    background: white;
     padding: 40px 20px;
     border-radius: 15px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid #eef2f6;
-    background: var(--card-bg);
-    /* Remplace white */
-    border: 1px solid var(--border-color);
-    /* Remplace #eef2f6 */
-    color: var(--text-color);
-    /* Ajoutez ceci pour le texte interne */
 }
 
-/* Effet au survol */
 .stat-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 40px rgba(61, 131, 191, 0.15);
-    border-color: #3D83BF;
+    border-color: var(--accent);
 }
 
 .stat-icon {
@@ -501,8 +498,7 @@ header nav a.active {
 .stat-value {
     font-size: 2.2rem;
     font-weight: 800;
-    color: #3D83BF;
-    /* Ton bleu d'accentuation */
+    color: var(--accent);
     margin-bottom: 5px;
 }
 
@@ -511,12 +507,138 @@ header nav a.active {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
-    color: #555;
     color: var(--text-color);
-    /* Remplace #555 pour plus de lisibilité */
     opacity: 0.8;
 }
 
+
+/* ==========================================================================
+   8. PAGE ACCUEIL — CARROUSEL
+   ========================================================================== */
+
+.carousel-container {
+    /* Conteneur parent nécessaire pour l'isolation des instances */
+}
+
+.slideshow-container {
+    max-width: 85%;
+    position: relative;
+    margin: 80px auto;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    background: #000;
+}
+
+.mySlides img {
+    width: 100%;
+    height: 550px;
+    object-fit: cover;
+    filter: brightness(0.7);
+    display: block;
+}
+
+.text-overlay {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px 40px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+}
+
+.quote-icon {
+    font-size: 4rem;
+    color: var(--accent);
+    font-family: serif;
+    line-height: 0;
+    margin-bottom: 20px;
+}
+
+.main-quote {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.student-credit {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* --- Boutons de navigation --- */
+
+.prev,
+.next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 24px;
+    border-radius: 50%;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.prev { left: 30px; }
+.next { right: 30px; }
+
+.prev:hover,
+.next:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(61, 131, 191, 0.5);
+}
+
+/* --- Indicateurs (points) --- */
+
+.dot-container {
+    text-align: center;
+    margin-top: -5%;
+    padding-bottom: 1%;
+    position: relative;
+    z-index: 10;
+}
+
+.dot {
+    height: 4px;
+    width: 40px;
+    margin: 0 6px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    display: inline-block;
+    transition: 0.4s;
+    cursor: pointer;
+}
+
+.dot.active,
+.dot:hover {
+    background-color: var(--accent);
+    width: 60px;
+}
+
+
+/* ==========================================================================
+   9. PAGE ACCUEIL — VIDEO HOVER
+   ========================================================================== */
 
 .video-hover-container {
     position: relative;
@@ -544,154 +666,14 @@ header nav a.active {
     opacity: 0;
 }
 
-.video-hover-container:hover .preview-thumb {
-    opacity: 0;
-}
+.video-hover-container:hover .preview-thumb { opacity: 0; }
+.video-hover-container:hover .preview-video { opacity: 1; }
 
-.video-hover-container:hover .preview-video {
-    opacity: 1;
-}
-
-
-
-/* --- Slideshow Container --- */
-.slideshow-container {
-    max-width: 85%;
-    /* Plus large pour l'immersion */
-    position: relative;
-    margin: 80px auto;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    background: #000;
-}
-
-.mySlides img {
-    width: 100%;
-    height: 550px;
-    object-fit: cover;
-    /* Image toujours parfaite */
-    filter: brightness(0.7);
-    /* Pour faire ressortir le texte blanc */
-    display: block;
-}
-
-/* --- Overlay de texte (Glassmorphism) --- */
-.text-overlay {
-    position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 30px 40px;
-    border-radius: 20px;
-    color: white;
-    text-align: center;
-}
-
-.quote-icon {
-    font-size: 4rem;
-    color: #3D83BF;
-    font-family: serif;
-    line-height: 0;
-    margin-bottom: 20px;
-}
-
-.main-quote {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    font-weight: 500;
-    margin-bottom: 20px;
-}
-
-.student-credit {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* --- Correction des boutons de navigation --- */
-.prev,
-.next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 24px;
-    border-radius: 50%;
-    z-index: 100;
-    /* Pour passer au-dessus de l'image et du texte */
-    transition: all 0.3s ease;
-}
-
-/* Le bouton précédent reste à gauche */
-.prev {
-    left: 30px;
-}
-
-/* Le bouton suivant va à droite */
-.next {
-    right: 30px;
-}
-
-/* Effet de survol premium */
-.prev:hover,
-.next:hover {
-    background: #3D83BF;
-    border-color: #3D83BF;
-    box-shadow: 0 0 20px rgba(61, 131, 191, 0.5);
-}
-
-/* --- Indicateurs (Modern Bars) --- */
-.dot-container {
-    text-align: center;
-    margin-top: -5%;
-    padding-bottom: 1%;
-    position: relative;
-    z-index: 10;
-}
-
-.dot {
-    height: 4px;
-    width: 40px;
-    margin: 0 6px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-    display: inline-block;
-    transition: 0.4s;
-    cursor: pointer;
-}
-
-.dot.active,
-.dot:hover {
-    background-color: #3D83BF;
-    width: 60px;
-}
-
-#lienactif {
-    border-left: #005eb0 solid 2px;
-    padding-left: 12px;
-    color: #3D83BF;
-}
 
 /* ==========================================================================
-   4. PAGES DE CONTENU (À PROPOS & CONTACT)
+   10. PAGES CONTENU (À PROPOS / CONTACT)
    ========================================================================== */
+
 #apropos,
 #contactretour {
     padding-top: 120px;
@@ -707,11 +689,6 @@ header nav a.active {
     margin-top: 50px;
     line-height: 1.6;
     text-align: justify;
-    transition: 0.3s ease;
-}
-
-#apropos p:hover {
-    transition: 0.3s ease;
 }
 
 .aproposlegal {
@@ -726,7 +703,26 @@ header nav a.active {
     text-align: left;
 }
 
-/* --- 4.1 Formulaire de contact --- */
+#imgcontact {
+    width: 600px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tkt {
+    width: 100%;
+    height: auto;
+    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
+    border: 3px solid var(--accent-dark);
+}
+
+
+/* ==========================================================================
+   11. FORMULAIRES & BOUTONS
+   ========================================================================== */
+
 #contactretour {
     display: flex;
     justify-content: space-around;
@@ -751,20 +747,24 @@ legend {
     margin-bottom: 20px;
 }
 
+label {
+    cursor: pointer;
+    font-size: 16px;
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
 input,
 textarea {
-    background-color: #ffffff;
-    border: 2px solid #3D83BF;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--accent);
     padding: 10px 20px;
     width: 90%;
     border-radius: 4px;
     outline: none;
     transition: all 0.3s ease;
-    background-color: var(--bg-color);
-    /* Le champ s'adapte au thème */
-    color: var(--text-color);
-    border: 2px solid #3D83BF;
-    /* On garde le bleu de l'EFREI */
 }
 
 textarea {
@@ -776,38 +776,33 @@ input:hover,
 textarea:hover {
     box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.05);
-    transition: all 0.3s ease;
 }
 
-label {
-    cursor: pointer;
-    font-size: 16px;
-    display: block;
-    text-align: left;
-    margin-bottom: 5px;
-}
+/* --- Select type cours/formation --- */
 
-button[type="submit"] {
-    padding: 12px;
-    border: 1px solid #3670a4;
-    background-color: #4d8dc6;
-    color: white;
+#type-choix {
+    color: #ffffff;
+    font-weight: 600;
+    background-color: #000;
+    border: 2px solid var(--accent);
+    padding: 10px 20px;
     border-radius: 5px;
-    width: 200px;
-    cursor: pointer;
-    margin-top: 25px;
-    font-weight: bold;
     transition: all 0.3s ease;
 }
 
-button[type="submit"]:hover {
-    background-color: #469ae3;
+#type-choix option {
+    background-color: #000;
+    color: white;
+}
+
+#type-choix:hover {
+    background-color: #005eb0;
     box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.05);
-    transition: all 0.3s ease;
 }
 
-/* --- CONTENEUR POUR ALIGNER LES BOUTONS --- */
+/* --- Boutons du formulaire --- */
+
 .form-actions {
     display: flex;
     gap: 15px;
@@ -815,104 +810,35 @@ button[type="submit"]:hover {
     align-items: center;
 }
 
-/* --- LE MODÈLE DE BASE (Stricte copie de ton submit) --- */
-#submitbtn, #deletebtn, #resetbtn {
-    padding: 12px !important;
-    border-radius: 5px !important;
-    width: 200px !important;
-    margin: 0 !important;
+#submitbtn,
+#deletebtn,
+#resetbtn {
+    padding: 12px;
+    border-radius: 5px;
+    width: 200px;
+    margin: 0;
     cursor: pointer;
     font-weight: bold;
+    color: white;
+    border: 1px solid;
     transition: all 0.3s ease;
-    color: white;
-    border: 1px solid; /* La couleur de bordure sera définie par bouton */
 }
 
-/* --- 1. BOUTON ENVOYER / MODIFIER (Bleu) --- */
-#submitbtn {
-    background-color: #4d8dc6;
-    border-color: #3670a4;
-}
+#submitbtn               { background-color: #4d8dc6; border-color: #3670a4; }
+#submitbtn:hover         { background-color: #469ae3; box-shadow: 0 0 30px rgba(61, 131, 191, 0.6); transform: scale(1.05); }
 
-#submitbtn:hover {
-    background-color: #469ae3;
-    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
-    transform: scale(1.05);
-}
+#deletebtn               { background-color: #e74c3c; border-color: #c0392b; display: none; }
+#deletebtn:hover         { background-color: #ff5e4d; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);  transform: scale(1.05); }
 
-/* --- 2. BOUTON SUPPRIMER (Rouge) --- */
-#deletebtn {
-    background-color: #e74c3c;
-    border-color: #c0392b;
-    display: none; /* Toujours caché par défaut au chargement */
-}
+#resetbtn                { background-color: #5d6d7e; border-color: #34495e; }
+#resetbtn:hover          { background-color: #7f8c8d; box-shadow: 0 0 30px rgba(93, 109, 126, 0.6); transform: scale(1.05); }
 
-#deletebtn:hover {
-    background-color: #ff5e4d;
-    box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);
-    transform: scale(1.05);
-}
-
-/* --- 3. BOUTON ANNULER (Gris Anthracite) --- */
-#resetbtn {
-    background-color: #5d6d7e;
-    border-color: #34495e;
-}
-
-#resetbtn:hover {
-    background-color: #7f8c8d;
-    box-shadow: 0 0 30px rgba(93, 109, 126, 0.6);
-    transform: scale(1.05);
-}
-
-#imgcontact {
-    width: 600px;
-    height: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#tkt {
-    width: 100%;
-    height: auto;
-    clip-path: polygon(15% 0%, 100% 0%, 100% 85%, 85% 100%, 0% 100%, 0% 15%);
-    border: 3px solid #1a4f7e;
-}
-
-#theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: transparent;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 1100;
-}
-
-.conteneur {
-    text-align: center;
-}
-
-.cours {
-    display: flex;
-    justify-content: center;
-    /* Centre les blocs sur la ligne */
-    flex-wrap: wrap;
-    /* PERMET LE RETOUR À LA LIGNE */
-    gap: 50px;
-    /* Espace entre les blocs */
-    margin: 50px auto;
-    max-width: 1400px;
-    /* Largeur max pour éviter que ce soit trop étiré */
-}
+/* --- Drop zone upload image --- */
 
 .upload-box {
     width: 100%;
     min-height: 150px;
-    /* Important : sinon la zone est trop petite */
-    border: 2px dashed #3D83BF;
+    border: 2px dashed var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -925,7 +851,6 @@ button[type="submit"]:hover {
     border-style: solid;
 }
 
-
 #drop-zone {
     background-color: var(--card-bg);
 }
@@ -935,7 +860,24 @@ button[type="submit"]:hover {
     border-style: solid;
     box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
     transform: scale(1.025);
-    transition: all 0.3s ease;
+}
+
+
+/* ==========================================================================
+   12. COURS & FORMATIONS (CARTES)
+   ========================================================================== */
+
+.conteneur {
+    text-align: center;
+}
+
+.cours {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 50px;
+    margin: 50px auto;
+    max-width: 1400px;
 }
 
 .carte {
@@ -944,7 +886,7 @@ button[type="submit"]:hover {
     height: 200px;
     position: relative;
     border-radius: 10px;
-    border: 3px solid #3D83BF;
+    border: 3px solid var(--accent);
     overflow: hidden;
 }
 
@@ -971,23 +913,17 @@ button[type="submit"]:hover {
     transition: bottom 0.4s ease;
 }
 
-.carte:hover .info {
-    bottom: 0;
-}
+.carte:hover img        { transform: scale(1.1); }
+.carte:hover .info      { bottom: 0; }
+.carte:hover            { box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5); }
 
-.carte:hover img {
-    transform: scale(1.1);
-}
-
-.carte:hover {
-    box-shadow: 0 10px 20px rgba(61, 131, 191, 0.5);
-}
 
 /* ==========================================================================
-   5. FOOTER
+   13. FOOTER
    ========================================================================== */
+
 footer {
-    background-color: #1a4f7e;
+    background-color: var(--accent-dark);
     color: #e0e0e0;
     padding: 60px 0 20px 0;
     display: flex;
@@ -1006,6 +942,11 @@ footer {
 
 .footer p {
     margin: 5px 0;
+}
+
+.footer a {
+    color: #e0e0e0;
+    text-decoration: none;
 }
 
 #logodufooter {
@@ -1030,22 +971,28 @@ footer {
     margin: 0 10px;
 }
 
-.footer a {
-    color: #e0e0e0;
-    text-decoration: none;
-}
 
 /* ==========================================================================
-   6. ANIMATIONS
+   14. ANIMATIONS
    ========================================================================== */
+
 @keyframes fadeInScale {
     from {
         opacity: 0;
         transform: scale(0.95);
     }
-
     to {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@keyframes fade {
+    from { opacity: 0.4; }
+    to   { opacity: 1; }
 }
