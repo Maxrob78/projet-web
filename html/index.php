@@ -31,6 +31,34 @@ include '../includes/header.php';
         offrons ainsi à nos étudiants un cadre d'apprentissage privilégié, où l'excellence académique
         s'accompagne d'un équipement de haut niveau pour répondre aux défis de demain.</p>
 </section>
+
+<h2 style="text-align: center;margin-top: 20px;font-size: 2em;">Actualités</h2>
+<div class="carousel-container">
+    <div class="slideshow-container">
+        <div class="mySlides fade">
+            <img src="../images/actu1.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/y2gx4ljzozw7gupo', '_blank')">
+            <div class="text-overlay"><p>Texte 1 - Carrousel 1</p></div>
+        </div>
+        <div class="mySlides fade">
+            <img src="../images/actu2.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/m649gg3h2yqkq2gv', '_blank')">
+            <div class="text-overlay"><p>Texte 2 - Carrousel 1</p></div>
+        </div>
+        <div class="mySlides fade">
+            <img src="../images/actu3.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/6yotqstd7af15jwt', '_blank')">
+            <div class="text-overlay"><p>Texte 3 - Carrousel 1</p></div>
+        </div>
+
+        <a class="prev" onclick="plusSlides(this, -1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(this, 1)">&#10095;</a>
+    </div>
+
+    <div class="dot-container">
+        <span class="dot" onclick="currentSlide(this, 1)"></span>
+        <span class="dot" onclick="currentSlide(this, 2)"></span>
+        <span class="dot" onclick="currentSlide(this, 3)"></span>
+    </div>
+</div>
+
 <div class="imageparagraphe">
     <div class="image-container">
         <img class="missionimg" src="../images/cmpbordeaux.png" alt="Photo du campus Parisien de l'EFREI">
@@ -114,33 +142,6 @@ include '../includes/header.php';
     </div>
 </section>
 
-
-<h2 style="text-align: center;margin-top: 20px;font-size: 2em;">Actualités</h2>
-<div class="carousel-container">
-    <div class="slideshow-container">
-        <div class="mySlides fade">
-            <img src="../images/actu1.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/y2gx4ljzozw7gupo', '_blank')">
-            <div class="text-overlay"><p>Texte 1 - Carrousel 1</p></div>
-        </div>
-        <div class="mySlides fade">
-            <img src="../images/actu2.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/m649gg3h2yqkq2gv', '_blank')">
-            <div class="text-overlay"><p>Texte 2 - Carrousel 1</p></div>
-        </div>
-        <div class="mySlides fade">
-            <img src="../images/actu3.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/6yotqstd7af15jwt', '_blank')">
-            <div class="text-overlay"><p>Texte 3 - Carrousel 1</p></div>
-        </div>
-
-        <a class="prev" onclick="plusSlides(this, -1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(this, 1)">&#10095;</a>
-    </div>
-
-    <div class="dot-container">
-        <span class="dot" onclick="currentSlide(this, 1)"></span>
-        <span class="dot" onclick="currentSlide(this, 2)"></span>
-        <span class="dot" onclick="currentSlide(this, 3)"></span>
-    </div>
-</div>
 <h2 style="text-align: center;margin-top: 20px;font-size: 2em;">Témoignages d'étudiants</h2>
 <div class="carousel-container">
     <div class="slideshow-container">

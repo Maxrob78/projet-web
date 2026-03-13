@@ -105,7 +105,7 @@ nav a:hover {
     opacity: 0.6;
 }
 
-nav a.active {
+#lienactif {
     color: var(--accent) !important;
     border-left: 2px solid var(--accent) !important;
     display: inline-flex;
@@ -515,10 +515,6 @@ header.scrolled nav a {
 /* ==========================================================================
    8. PAGE ACCUEIL — CARROUSEL
    ========================================================================== */
-
-.carousel-container {
-    /* Conteneur parent nécessaire pour l'isolation des instances */
-}
 
 .slideshow-container {
     max-width: 85%;

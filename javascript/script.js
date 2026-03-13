@@ -304,8 +304,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ==========================================================================
-   9. FLASH MEDIA — INITIALISATION & RESIZE
-   ========================================================================== */
+9. FLASH MEDIA — INITIALISATION & RESIZE
+========================================================================== */
 
 const flash        = document.querySelector('#flashMedia');
 const flashVideo   = document.querySelector('#flashVideo');
@@ -320,8 +320,8 @@ window.addEventListener('resize', () => {
         if (!flash || flash.style.display !== "flex") return;
 
         const mediaActif = flashVideo.style.display !== "none" ? flashVideo
-                         : flashImage.style.display  !== "none" ? flashImage
-                         : null;
+                        : flashImage.style.display  !== "none" ? flashImage
+                        : null;
 
         if (mediaActif) flashUpscale(mediaActif);
     }, 100);
@@ -329,14 +329,15 @@ window.addEventListener('resize', () => {
 
 
 /* ==========================================================================
-   10. FLASH MEDIA — CONFIG & VALIDATION
-   ========================================================================== */
+10. FLASH MEDIA — CONFIG & VALIDATION
+========================================================================== */
 
 let flashConfig = {
     video:     "",
     image:     "",
     texte:     "",
     duree:     "auto",
+    time:      0,
     volume:    1,
     vitesse:   1,
     audioSeul: false
@@ -345,16 +346,21 @@ let flashConfig = {
 function flashVerifConfig() {
     // Durée
     if (flashConfig.duree !== 'inf') {
-        const parsedDuree = parseInt(flashConfig.duree);
+        const parsedDuree = parseFloat(flashConfig.duree);
         flashConfig.duree = (isNaN(parsedDuree) || parsedDuree <= 0) ? 'auto' : parsedDuree;
     }
 
     if (!flashConfig.video) {
         // Pas de vidéo : on réinitialise les paramètres audio/vidéo
+        flashConfig.time      = 0;
         flashConfig.volume    = 1;
         flashConfig.vitesse   = 1;
         flashConfig.audioSeul = false;
     } else {
+        // Timestamp (>= 0)
+        const parsedTime = parseFloat(flashConfig.time);
+        flashConfig.time = (isNaN(parsedTime) || parsedTime < 0) ? 0 : parsedTime;
+
         // Vitesse (doit être > 0)
         const parsedVitesse = parseFloat(flashConfig.vitesse);
         flashConfig.vitesse = (isNaN(parsedVitesse) || parsedVitesse <= 0) ? 1 : parsedVitesse;
@@ -385,8 +391,8 @@ function flashVerifConfig() {
 
 
 /* ==========================================================================
-   11. FLASH MEDIA — LECTURE (flashStart)
-   ========================================================================== */
+11. FLASH MEDIA — LECTURE (flashStart)
+========================================================================== */
 
 let flashTimeout;
 
@@ -417,7 +423,7 @@ function flashStart() {
         flashVideo.playbackRate = flashConfig.vitesse;
 
         if (hasImage) {
-            // Vidéo (audio) + Image (visuel)
+            // Vidéo (audio) + Image
             let errImg = false;
             let errVid = false;
 
@@ -433,17 +439,25 @@ function flashStart() {
                 errVid = true;
                 if (errImg) flashStop();
             };
+            if (flashVideo.readyState >= 1) flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
+            flashVideo.onloadedmetadata = () => flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
 
             flashVideo.play().catch(err => console.warn("Erreur lecture mixte :", err));
             flashImage.onload = () => flashUpscale(flashImage);
             if (flashImage.complete) flashUpscale(flashImage);
 
         } else {
-            // Vidéo seule (ou audio seul)
+            // Vidéo seule
             if (!flashConfig.audioSeul) {
                 flashVideo.style.display = "block";
-                if (flashVideo.readyState >= 1) flashUpscale(flashVideo);
-                flashVideo.onloadedmetadata = () => flashUpscale(flashVideo);
+                if (flashVideo.readyState >= 1) {
+                    flashUpscale(flashVideo);
+                    flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
+                }
+                flashVideo.onloadedmetadata = () => {
+                    flashUpscale(flashVideo);
+                    flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
+                }
             }
 
             flashVideo.onerror = () => { console.error("Erreur lecture vidéo"); flashStop(); };
@@ -472,7 +486,7 @@ function flashStart() {
         if (hasVideo) flashVideo.loop = true;
     } else if (typeof flashConfig.duree === 'number') {
         if (hasVideo) flashVideo.loop = true;
-        flashTimeout = setTimeout(() => flashStop(), flashConfig.duree);
+        flashTimeout = setTimeout(() => flashStop(), flashConfig.duree * 1000);
     } else {
         if (hasVideo) flashVideo.onended = () => flashStop();
         else flashTimeout = setTimeout(() => flashStop(), 5000);
@@ -481,8 +495,8 @@ function flashStart() {
 
 
 /* ==========================================================================
-   12. FLASH MEDIA — ARRÊT (flashStop)
-   ========================================================================== */
+12. FLASH MEDIA — ARRÊT (flashStop)
+========================================================================== */
 
 function flashStop() {
     clearTimeout(flashTimeout);
@@ -517,8 +531,8 @@ function flashStop() {
 
 
 /* ==========================================================================
-   13. FLASH MEDIA — MISE À L'ÉCHELLE
-   ========================================================================== */
+13. FLASH MEDIA — MISE À L'ÉCHELLE
+========================================================================== */
 
 function flashUpscale(media) {
     if (!media || media.style.display === "none") return;
@@ -564,8 +578,8 @@ function flashAjusterTitre(w, h, charsPerLine = 35) {
 
 
 /* ==========================================================================
-   14. FLASH MEDIA — UTILITAIRES
-   ========================================================================== */
+14. FLASH MEDIA — UTILITAIRES
+========================================================================== */
 
 function flashSyncDOMfromConfig() {
     if (flashConfig.video) flashVideo.src = flashConfig.video;
@@ -584,6 +598,7 @@ function flashResetConfig() {
         image:     "",
         texte:     "",
         duree:     "auto",
+        time:      0,
         volume:    1,
         vitesse:   1,
         audioSeul: false
@@ -603,14 +618,10 @@ function flashResetAll() {
 
 // Fonction de test rapide (à retirer en production)
 function flashTest() {
-    flashConfig = {
-        video:     "",
-        image:     "../images/jeanmichel.png",
-        texte:     "slt les enfants",
-        duree:     "auto",
-        volume:    1,
-        vitesse:   2,
-        audioSeul: false
-    };
+    flashResetConfig(); 
+
+    flashConfig.image = "../images/jeanmichel.png";
+    flashConfig.texte = "slt les enfants";
+    
     flashStart();
 }
