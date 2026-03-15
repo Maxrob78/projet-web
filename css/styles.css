@@ -400,7 +400,8 @@ header.scrolled nav a {
 /* --- Carte de la map --- */
 
 .map-container {
-    max-width: 1000px;
+    max-width: 1200px;
+    width: 90%;
     margin: 80px auto;
     position: relative;
     height: 450px;
