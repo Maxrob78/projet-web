@@ -56,6 +56,7 @@
             --finalWidth: 95vw;
             --charsLine: 35;
             --fontSize: calc(var(--finalWidth) / (var(--charsLine) * 0.58));
+            --strokeSize: calc(var(--fontSize) / 10);
 
             position: absolute;
             bottom: 10%;
@@ -63,6 +64,7 @@
             transform: translateX(-50%);
             width: var(--finalWidth);
             font-size: var(--fontSize);
+            -webkit-text-stroke: var(--strokeSize) black;
             word-wrap: break-word;
             overflow-wrap: break-word;
             white-space: normal;

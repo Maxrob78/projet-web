@@ -121,14 +121,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const conteneurCours      = document.getElementById('liste-cours');
     const conteneurFormations = document.getElementById('liste-formations');
 
-    if (conteneurCours || conteneurFormations) {
-        fetch('../json/cours-formations.json')
+    function chargerCours() {
+        if (!conteneurCours && !conteneurFormations) return;
+
+        fetch('../json/cours-formations.json?t=' + Date.now())
             .then(response => response.json())
             .then(data => {
                 const creerCarte = (item, type) => `
                     <div class="carte"
-                         onclick="preparerModification('${item.id}', '${item.nom}', \`${item.description.replace(/'/g, "\\'")}\`, '${type}', '${item.image}')"
-                         style="cursor: pointer;">
+                        onclick="preparerModification('${item.id}', '${item.nom}', \`${item.description.replace(/'/g, "\\'")}\`, '${type}', '${item.image}')"
+                        style="cursor: pointer;">
                         <img src="${item.image}" alt="${item.nom}">
                         <div class="info" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                             <h3>${item.nom}</h3>
@@ -148,6 +150,8 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error("Erreur de chargement JSON :", error));
     }
+
+    chargerCours();
 
 
     // =========================================================================
@@ -271,7 +275,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     alert("Enregistré avec succès !");
-                    location.reload();
+                    resetFormulaire();
+                    chargerCours();
                 } else {
                     alert("Erreur PHP : " + data.message);
                 }
@@ -304,8 +309,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ==========================================================================
-9. FLASH MEDIA — INITIALISATION & RESIZE
-========================================================================== */
+   9. FLASH MEDIA — INITIALISATION & RESIZE
+   ========================================================================== */
 
 const flash        = document.querySelector('#flashMedia');
 const flashVideo   = document.querySelector('#flashVideo');
@@ -329,8 +334,8 @@ window.addEventListener('resize', () => {
 
 
 /* ==========================================================================
-10. FLASH MEDIA — CONFIG & VALIDATION
-========================================================================== */
+   10. FLASH MEDIA — CONFIG & VALIDATION
+   ========================================================================== */
 
 let flashConfig = {
     video:     "",
@@ -382,17 +387,17 @@ function flashVerifConfig() {
     }
 
     // Nettoyage & encodage des URLs
-    flashConfig.video = typeof flashConfig.video === 'string' ? encodeURI(flashConfig.video.trim()) : "";
-    flashConfig.image = typeof flashConfig.image === 'string' ? encodeURI(flashConfig.image.trim()) : "";
-    flashConfig.texte = typeof flashConfig.texte === 'string' ? flashConfig.texte.trim() : "";
+    flashConfig.video = encodeURI(String(flashConfig.video ?? "").trim());
+    flashConfig.image = encodeURI(String(flashConfig.image ?? "").trim());
+    flashConfig.texte = String(flashConfig.texte ?? "").trim();
 
     console.log("Config Flash validée :", flashConfig);
 }
 
 
 /* ==========================================================================
-11. FLASH MEDIA — LECTURE (flashStart)
-========================================================================== */
+   11. FLASH MEDIA — LECTURE (flashStart)
+   ========================================================================== */
 
 let flashTimeout;
 
@@ -495,8 +500,8 @@ function flashStart() {
 
 
 /* ==========================================================================
-12. FLASH MEDIA — ARRÊT (flashStop)
-========================================================================== */
+   12. FLASH MEDIA — ARRÊT (flashStop)
+   ========================================================================== */
 
 function flashStop() {
     clearTimeout(flashTimeout);
@@ -531,8 +536,8 @@ function flashStop() {
 
 
 /* ==========================================================================
-13. FLASH MEDIA — MISE À L'ÉCHELLE
-========================================================================== */
+   13. FLASH MEDIA — MISE À L'ÉCHELLE
+   ========================================================================== */
 
 function flashUpscale(media) {
     if (!media || media.style.display === "none") return;
@@ -578,8 +583,8 @@ function flashAjusterTitre(w, h, charsPerLine = 35) {
 
 
 /* ==========================================================================
-14. FLASH MEDIA — UTILITAIRES
-========================================================================== */
+   14. FLASH MEDIA — UTILITAIRES
+   ========================================================================== */
 
 function flashSyncDOMfromConfig() {
     if (flashConfig.video) flashVideo.src = flashConfig.video;
@@ -618,10 +623,8 @@ function flashResetAll() {
 
 // Fonction de test rapide (à retirer en production)
 function flashTest() {
-    flashResetConfig(); 
-
-    flashConfig.image = "../images/jeanmichel.png";
-    flashConfig.texte = "slt les enfants";
-    
+    flashResetConfig();
+    flashConfig.video = "../videos/Screaming chicken on tree meme.mp4";
+    flashConfig.texte = "baisse le son";
     flashStart();
 }

@@ -280,9 +280,9 @@
             }
 
             // Nettoyage & encodage des URLs
-            flashConfig.video = typeof flashConfig.video === 'string' ? encodeURI(flashConfig.video.trim()) : "";
-            flashConfig.image = typeof flashConfig.image === 'string' ? encodeURI(flashConfig.image.trim()) : "";
-            flashConfig.texte = typeof flashConfig.texte === 'string' ? flashConfig.texte.trim() : "";
+            flashConfig.video = encodeURI(String(flashConfig.video ?? "").trim());
+            flashConfig.image = encodeURI(String(flashConfig.image ?? "").trim());
+            flashConfig.texte = String(flashConfig.texte ?? "").trim();
 
             console.log("Config Flash validée :", flashConfig);
         }
