@@ -14,6 +14,8 @@
    12. COURS & FORMATIONS (CARTES)
    13. FOOTER
    14. ANIMATIONS
+   15. RESPONSIVE — TABLETTE
+   16. RESPONSIVE — MOBILE 
    ========================================================================== */
 
 
@@ -54,6 +56,13 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+body > *:not(header):not(footer):not(#flashMedia) {
+    flex: 1 0 auto;
 }
 
 
@@ -105,7 +114,7 @@ nav a:hover {
     opacity: 0.6;
 }
 
-nav a.active {
+#lienactif {
     color: var(--accent) !important;
     border-left: 2px solid var(--accent) !important;
     display: inline-flex;
@@ -157,31 +166,6 @@ header.scrolled nav a {
     cursor: pointer;
     font-size: 20px;
     margin-right: 5px;
-}
-
-/* --- Responsive --- */
-
-@media (max-width: 1200px) {
-    #logoheader { margin-right: 30px; }
-    nav { gap: 15px; }
-}
-
-@media (max-width: 950px) {
-    header {
-        flex-direction: column;
-        padding: 10px;
-    }
-    #logoheader {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 90px;
-    }
-    nav {
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    nav a { font-size: 0.7rem; }
 }
 
 
@@ -242,18 +226,18 @@ header.scrolled nav a {
     pointer-events: none;
 }
 
-#flashMedia.titreSeul {
+#flashMedia.noMedia {
     background-color: transparent;
     backdrop-filter: none;
     pointer-events: none;
 }
 
-#flashMedia.titreSeul .mediaWrapper {
+#flashMedia.noMedia .mediaWrapper {
     width: 100%;
     height: 100%;
 }
 
-#flashMedia.titreSeul h1 {
+#flashMedia.noMedia h1 {
     bottom: 5%;
 }
 
@@ -416,7 +400,8 @@ header.scrolled nav a {
 /* --- Carte de la map --- */
 
 .map-container {
-    max-width: 1000px;
+    max-width: 1200px;
+    width: 90%;
     margin: 80px auto;
     position: relative;
     height: 450px;
@@ -463,7 +448,7 @@ header.scrolled nav a {
 
 .grid-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);  /* ← 4 colonnes fixes */
     gap: 30px;
 }
 
@@ -515,10 +500,6 @@ header.scrolled nav a {
 /* ==========================================================================
    8. PAGE ACCUEIL — CARROUSEL
    ========================================================================== */
-
-.carousel-container {
-    /* Conteneur parent nécessaire pour l'isolation des instances */
-}
 
 .slideshow-container {
     max-width: 85%;
@@ -995,4 +976,286 @@ footer {
 @keyframes fade {
     from { opacity: 0.4; }
     to   { opacity: 1; }
+}
+
+
+/* ===========================================================================
+   15. RESPONSIVE — TABLETTE 
+   =========================================================================== */
+
+@media (max-width: 950px) {
+
+    #logoheader { margin-right: 30px; }
+
+    #imgcampus {
+        flex-direction: column;
+        align-items: center;
+        margin: 60px 20px;
+    }
+
+    #sectioncampus { margin: 0 5%; }
+
+    .imageparagraphe { flex-direction: column; }
+}
+
+
+/* ===========================================================================
+   16. RESPONSIVE — MOBILE 
+   =========================================================================== */
+
+@media (max-width: 600px) {
+
+    /* --- Fix overflow global --- */
+    html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
+    header {
+        flex-wrap: wrap;
+        padding: 6px 10px;
+        gap: 0;
+    }
+
+    #logoheader {
+        width: 60px;
+        margin-right: 0;
+        order: 0;
+    }
+
+    #theme-toggle {
+        order: 1;
+        margin-left: auto;
+        font-size: 16px !important;
+    }
+
+    nav {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        column-gap: 8px;
+        row-gap: 2px;
+        margin-top: 4px;
+    }
+
+    nav a {
+        font-size: 0.5rem;
+        white-space: nowrap;
+    }
+
+    #lienactif { padding-left: 5px; }
+
+    /* --- Hero --- */
+    .content {
+        padding: 0 15px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .content h1 {
+        font-size: 1.4rem;
+        letter-spacing: 0px;
+        word-break: keep-all;
+    }
+
+    .content p {
+        font-size: 0.8rem;
+        letter-spacing: 0;
+    }
+
+    .btn-video {
+        padding: 8px 15px;
+        font-size: 0.6rem;
+        letter-spacing: 0.5px;
+        white-space: normal;
+        text-align: center;
+    }
+
+    /* --- Textes pages généraux --- */
+    h2 { font-size: 1.2rem; }
+
+    #apropos p,
+    .missionpara p,
+    .valeurpara p,
+    .aproposlegal p,
+    #sectioncampus p {
+        text-align: left !important;
+        font-size: 0.78rem;
+        line-height: 1.45;
+    }
+
+    #apropos {
+        width: 92%;
+        margin: 0 auto 25px auto;
+        padding-top: 90px;
+    }
+
+    .aproposlegal {
+        width: 92%;
+        margin: 25px auto;
+    }
+
+    #sectioncampus {
+        margin: 0 4%;
+        font-size: 0.78rem;
+        text-align: left;
+    }
+
+    /* --- Campus images --- */
+    #imgcampus {
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 8px;
+        padding: 8px;
+    }
+
+    #imgcampus img { width: 100%; }
+
+    /* --- Missions / Valeurs --- */
+    .imageparagraphe {
+        flex-direction: column;
+        padding: 8px;
+        gap: 15px;
+    }
+
+    .section-chiffres { padding: 25px 3%; }
+
+    .titre-section { font-size: 1rem; letter-spacing: 1px; }
+
+    .grid-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 12px 6px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .stat-icon {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+
+    .stat-icon img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .stat-value {
+        font-size: 1rem !important;
+        word-break: break-word;
+        margin-bottom: 3px;
+    }
+
+    .stat-desc { font-size: 0.6rem; letter-spacing: 0.5px; }
+
+    /* --- Carrousel --- */
+    .slideshow-container {
+        max-width: 100%;
+        margin: 20px 0;
+        border-radius: 6px;
+    }
+
+    .mySlides img { height: 160px; }
+
+    .text-overlay {
+        padding: 8px 10px;
+        font-size: 0.65rem;
+        bottom: 10px;
+        width: 90%;
+    }
+
+    .prev, .next {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .prev { left: 5px; }
+    .next { right: 5px; }
+
+    .cours {
+        gap: 12px;
+        margin: 20px 8px;
+    }
+
+    .carte {
+        width: calc(50% - 6px);   
+        min-width: unset;
+        height: 130px;
+    }
+
+    .info h3 { font-size: 0.7rem; }
+    .info p  { font-size: 0.6rem; }
+
+    /* --- Formulaires --- */
+    #contactretour {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 80px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    fieldset {
+        width: 92vw;
+        max-width: 92vw;
+        box-sizing: border-box;
+        padding: 15px 12px;
+        margin: 0 auto;
+    }
+
+    legend {
+        font-size: 0.75rem;
+        word-break: break-word;
+        text-align: center;
+        max-width: 100%;
+    }
+
+    label { font-size: 0.75rem; }
+
+    input, textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
+    input:hover, textarea:hover { transform: none; }
+
+    #type-choix { font-size: 0.78rem; padding: 6px 10px; }
+
+    #imgcontact { display: none; }
+
+    .form-actions { flex-direction: column; gap: 8px; }
+
+    #submitbtn, #deletebtn, #resetbtn {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 10px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 0 16px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .footer { width: 100%; }
+    .footer p { font-size: 0.75rem; }
+
+    #logodufooter { display: none; }
+
+    #legal {
+        font-size: 0.65rem;
+        padding: 12px 12px;
+        box-sizing: border-box;
+    }
 }

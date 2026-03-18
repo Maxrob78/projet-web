@@ -7,14 +7,14 @@ try {
         throw new Exception("Données du formulaire manquantes.");
     }
 
-    $id = $_POST['id'] ?? null; // Récupère l'ID s'il y en a un (mode modification)
+    $id = $_POST['id'] ?? null;
     $nom = $_POST['nom'];
     $description = $_POST['description'];
     $type = $_POST['type-choix'] ?? 'cours';
 
-    $imagePath = null; // On initialise à null
+    $imagePath = null;
 
-    // 2. GESTION DE L'IMAGE
+    // GESTION DE L'IMAGE
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
         $root = dirname(__DIR__); 
         $target_dir = $root . "/images/";
@@ -31,7 +31,7 @@ try {
         }
     }
 
-    // 3. MISE À JOUR DU JSON
+    // MISE À JOUR DU JSON
     $json_file = '../json/cours-formations.json';
     $current_data = ["cours" => [], "formations" => []];
 
@@ -40,18 +40,15 @@ try {
     }
 
     if (!empty($id)) {
-        // --- MODE MODIFICATION (AVEC CHANGEMENT DE TYPE POSSIBLE) ---
+        // --- MODE MODIFICATION ---
         $itemFound = null;
 
         // 1. On cherche l'élément dans TOUTES les catégories et on le supprime de son ancienne place
         foreach (['cours', 'formations'] as $cat) {
             foreach ($current_data[$cat] as $key => $item) {
                 if (isset($item['id']) && $item['id'] == $id) {
-                    // On sauvegarde les infos existantes (notamment l'image si on n'en a pas mis de nouvelle)
                     $itemFound = $item;
-                    // On le retire de cette catégorie
                     unset($current_data[$cat][$key]);
-                    // On réindexe le tableau pour éviter les trous dans les index JSON
                     $current_data[$cat] = array_values($current_data[$cat]);
                     break 2; // On sort des deux boucles
                 }
