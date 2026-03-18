@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EFREI | <?php echo $pageTitle; ?></title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,8 +12,9 @@
 </head>
 <body>
     <header class="<?php echo ($currentPage == 'index') ? 'header-accueil' : ''; ?>">
-        <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI"
-            onclick="window.location.href='index.php'">
+        <a href="index.php" aria-label="Retour à l'accueil">
+            <img id="logoheader" src="../images/Logo_efrei.svg" alt="Logo de l'EFREI">
+        </a>
         <nav>
             <a <?php echo ($currentPage == 'index') ? 'id="lienactif"' : ''; ?> href="index.php">Accueil</a>
             <a <?php echo ($currentPage == 'cours') ? 'id="lienactif"' : ''; ?> href="CoursFormations.php">Cours et formations</a>
@@ -24,7 +26,7 @@
     <div id="flashMedia">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
-            <img id="flashImg">
+            <img id="flashImg" alt="">
             <h1 id="flashTitre"></h1>
         </div>
     </div>

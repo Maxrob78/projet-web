@@ -119,20 +119,20 @@ include '../includes/header.php';
 <div class="carousel-container">
     <div class="slideshow-container">
         <div class="mySlides fade">
-            <img src="../images/actu1.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/y2gx4ljzozw7gupo', '_blank')">
+            <img src="../images/actu1.jpg" alt="Actualité 1" onclick="window.open('https://www.myefrei.fr/portal/student/slides/y2gx4ljzozw7gupo', '_blank')">
             <div class="text-overlay"><p>Texte 1 - Carrousel 1</p></div>
         </div>
         <div class="mySlides fade">
-            <img src="../images/actu2.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/m649gg3h2yqkq2gv', '_blank')">
+            <img src="../images/actu2.jpg" alt="Actualité 2" onclick="window.open('https://www.myefrei.fr/portal/student/slides/m649gg3h2yqkq2gv', '_blank')">
             <div class="text-overlay"><p>Texte 2 - Carrousel 1</p></div>
         </div>
         <div class="mySlides fade">
-            <img src="../images/actu3.jpg" onclick="window.open('https://www.myefrei.fr/portal/student/slides/6yotqstd7af15jwt', '_blank')">
+            <img src="../images/actu3.jpg" alt="Actualité 3" onclick="window.open('https://www.myefrei.fr/portal/student/slides/6yotqstd7af15jwt', '_blank')">
             <div class="text-overlay"><p>Texte 3 - Carrousel 1</p></div>
         </div>
 
-        <a class="prev" onclick="plusSlides(this, -1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(this, 1)">&#10095;</a>
+        <button class="prev" onclick="plusSlides(this, -1)" aria-label="Précédent">&#10094;</button>
+        <button class="next" onclick="plusSlides(this, 1)" aria-label="Suivant">&#10095;</button>
     </div>
 
     <div class="dot-container">
@@ -145,20 +145,20 @@ include '../includes/header.php';
 <div class="carousel-container">
     <div class="slideshow-container">
         <div class="mySlides fade">
-            <img src="../images/tm1.png">
+            <img src="../images/tm1.png" alt="Témoignage de Thomas">
             <div class="text-overlay"><p>Thomas - Les laboratoires de recherche et le matériel de pointe m'ont permis de concrétiser mes projets d'IA. Une école à la pointe de l'innovation.</p></div>
         </div>
         <div class="mySlides fade">
-            <img src="../images/tm2.png">
+            <img src="../images/tm2.png" alt="Témoignage de Minh">
             <div class="text-overlay"><p>Minh - Grâce au réseau des 150 entreprises partenaires, j'ai décroché mon alternance dans une Big Tech en seulement 10 jours. Un vrai tremplin.</p></div>
         </div>
         <div class="mySlides fade">
-            <img src="../images/tm3.png">
+            <img src="../images/tm3.png" alt="Témoignage de Nicolas">
             <div class="text-overlay"><p>Nicolas - L'esprit d'entraide et la richesse de la vie associative rendent le campus unique. On y apprend autant humainement que techniquement.</p></div>
         </div>
 
-        <a class="prev" onclick="plusSlides(this, -1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(this, 1)">&#10095;</a>
+        <button class="prev" onclick="plusSlides(this, -1)" aria-label="Précédent">&#10094;</button>
+        <button class="next" onclick="plusSlides(this, 1)" aria-label="Suivant">&#10095;</button>
     </div>
 
     <div class="dot-container">
