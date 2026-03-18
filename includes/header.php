@@ -20,8 +20,8 @@
             <a <?php echo ($currentPage == 'cours') ? 'id="lienactif"' : ''; ?> href="CoursFormations.php">Cours et formations</a>
             <a <?php echo ($currentPage == 'equipe') ? 'id="lienactif"' : ''; ?> href="equipe.php">Equipe d'enseignants</a>
             <a <?php echo ($currentPage == 'contact') ? 'id="lienactif"' : ''; ?> href="contact.php">A propos</a>
-            <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-right: 5px;">🌙</button>
         </nav>
+        <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-left: auto;">🌙</button>
     </header>
     <div id="flashMedia">
         <div class="mediaWrapper">

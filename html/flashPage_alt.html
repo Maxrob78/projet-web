@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>test flash media </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        /* --- flash --- */
+        #flashMedia {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .mediaWrapper {
+            --w: var(--natW, 1);
+            --h: var(--natH, 1);
+            --scale: min(100vw / var(--w), 100vh / var(--h));
+
+            position: relative;
+            display: inline-flex;
+            width: calc(var(--w) * var(--scale));
+            height: calc(var(--h) * var(--scale));
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flashMedia img,
+        #flashMedia video {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.98);
+        }
+
+        #flashMedia h1 {
+            --finalWidth: 95vw;
+            --charsLine: 35;
+            --fontSize: calc(var(--finalWidth) / (var(--charsLine) * 0.58));
+            --strokeSize: calc(var(--fontSize) / 10);
+
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: var(--finalWidth);
+            font-size: var(--fontSize);
+            -webkit-text-stroke: var(--strokeSize) black;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            text-align: center;
+            margin: 0;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            paint-order: stroke fill;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+            line-height: 1.2;
+            letter-spacing: 3px;
+            z-index: 10;
+        }
+
+        #flashMedia.noMedia {
+            background-color: transparent;
+            pointer-events: none;
+        }
+
+        #flashMedia.noMedia .mediaWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        #flashMedia.noMedia h1 {
+            bottom: 5%;
+        }
+        /* --- fin flash --- */
+
+        body {
+            background: #0f1117;
+            margin: 0;
+        }
+
+        #flashControl {
+            width: 100%;
+            background: #1a1d27;
+            border-bottom: 2px solid #2a2d3e;
+            padding: 30px;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            z-index: 10001;
+            color: #c9d1e0;
+        }
+
+        #flashControl h3 { margin-top: 0; color: #e2e8f5; border-bottom: 2px solid #4a6fa5; padding-bottom: 10px; }
+
+        .ctrl-section { margin-bottom: 25px; }
+        .ctrl-section label { display: block; font-weight: bold; margin-bottom: 10px; color: #7a8aaa; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+
+        #ctrlTexte {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #2e3347;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: #12151f;
+            color: #e2e8f5;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #ctrlTexte:focus { border-color: #4a6fa5; }
+        #ctrlTexte::placeholder { color: #3d4660; }
+
+        .drop-zone {
+            border: 2px dashed #2e3e5c;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: #12182a;
+            color: #4a6fa5;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .drop-zone:hover { background: #182035; border-color: #4a6fa5; }
+
+        .settings-bg { background: #12151f; padding: 20px; border-radius: 10px; border: 1px solid #2a2d3e; }
+        .config-vertical { display: flex; flex-direction: column; gap: 15px; }
+
+        .field { display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #c9d1e0; }
+        .field b { color: #e2e8f5; }
+        .field input[type="text"], .field input[type="number"] {
+            width: 120px; padding: 8px; border-radius: 4px;
+            border: 1px solid #2e3347; background: #1a1d27; color: #e2e8f5;
+            outline: none; transition: border-color 0.2s;
+        }
+        .field input[type="text"]:focus, .field input[type="number"]:focus { border-color: #4a6fa5; }
+        .field input[type="range"] { width: 200px; cursor: pointer; accent-color: #4a6fa5; }
+        .field input[type="checkbox"] { accent-color: #4a6fa5; }
+
+        /* Boutons ✕ inline */
+        #flashControl button[onclick*="clearMedia"] {
+            background: #1e2233 !important;
+            border: 1px solid #2e3347 !important;
+            color: #7a8aaa !important;
+            cursor: pointer;
+            padding: 0 15px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+        #flashControl button[onclick*="clearMedia"]:hover {
+            background: #2a2d3e !important;
+            color: #e2e8f5 !important;
+        }
+
+        .btn-group-vertical { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .btn-lancer { background: #1e6b3e; color: #c8f7d8; padding: 20px; border: 1px solid #2ecc71; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-lancer:hover { background: #27ae60; color: white; }
+        .btn-stop { background: #4a1a1a; color: #f5a0a0; padding: 15px; border: 1px solid #e74c3c; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-stop:hover { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <div id="flashMedia">
+        <div class="mediaWrapper">
+            <video id="flashVideo"></video>
+            <img id="flashImg">
+            <h1 id="flashTitre"></h1>
+        </div>
+    </div>
+
+    <div id="flashControl">
+        <h3>Flash Control - Panneau de Régie</h3>
+        
+        <div class="ctrl-section">
+            <label>Titre du Flash</label>
+            <input type="text" id="ctrlTexte" placeholder="Saisissez le texte ici...">
+        </div>
+
+        <div class="ctrl-section">
+            <label>Sources Médias</label>
+            <input type="file" id="fileImg" accept="image/*" style="display:none">
+            <input type="file" id="fileVid" accept="video/*" style="display:none">
+
+            <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 10px;">
+                <div class="drop-zone" id="dropImage" onclick="document.getElementById('fileImg').click()" style="flex: 1; margin-bottom: 0;">
+                    🖼️ Image : Glisser ou cliquer
+                </div>
+                <button onclick="clearMedia('image')" style="background:#eee; border:1px solid #ccc; cursor:pointer; padding:0 15px; border-radius:10px;">✕</button>
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: stretch;">
+                <div class="drop-zone" id="dropVideo" onclick="document.getElementById('fileVid').click()" style="flex: 1; margin-bottom: 0;">
+                    🎬 Vidéo : Glisser ou cliquer
+                </div>
+                <button onclick="clearMedia('video')" style="background:#eee; border:1px solid #ccc; cursor:pointer; padding:0 15px; border-radius:10px;">✕</button>
+            </div>
+        </div>
+
+        <div class="ctrl-section settings-bg">
+            <label>Configuration</label>
+            <div class="config-vertical">
+                <div class="field">
+                    <span>⏱️ Démarrer à (sec) :</span>
+                    <input type="number" id="ctrlTime" step="0.1" value="0" min="0">
+                </div>
+                <div class="field">
+                    <span>⏳ Durée (auto, inf, ou secondes) :</span>
+                    <input type="text" id="ctrlDuree" value="auto">
+                </div>
+                <div class="field">
+                    <span>⏩ Vitesse : <b id="valVitesse">1.0</b>x</span>
+                    <input type="range" id="ctrlVitesse" min="0.5" max="4" step="0.1" value="1" 
+                        oninput="document.getElementById('valVitesse').innerText = parseFloat(this.value).toFixed(1)">
+                </div>
+                <div class="field">
+                    <span>🔊 Volume : <b id="valVolume">1.0</b></span>
+                    <input type="range" id="ctrlVolume" min="0" max="1" step="0.05" value="1" 
+                        oninput="document.getElementById('valVolume').innerText = this.value">
+                </div>
+                <div class="field">
+                    <span>🛡️ Mode Audio Seul (masquer le visuel) :</span>
+                    <input type="checkbox" id="ctrlAudioSeul" style="margin:0; width: 20px; height: 20px; cursor:pointer;">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group-vertical">
+            <button onclick="lancerFlashDepuisControl()" class="btn-lancer">Lancer le Flash</button>
+            <button onclick="resetUI()" class="btn-stop">Arrêt / Reset</button>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+        9. FLASH MEDIA — INITIALISATION & RESIZE
+        ========================================================================== */
+
+        const flash        = document.querySelector('#flashMedia');
+        const flashVideo   = document.querySelector('#flashVideo');
+        const flashImage   = document.querySelector('#flashImg');
+        const flashTitre   = document.querySelector('#flashTitre');
+        const flashWrapper = document.querySelector('.mediaWrapper');
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (!flash || flash.style.display !== "flex") return;
+
+                const mediaActif = flashVideo.style.display !== "none" ? flashVideo
+                                : flashImage.style.display  !== "none" ? flashImage
+                                : null;
+
+                if (mediaActif) flashUpscale(mediaActif);
+            }, 100);
+        });
+
+
+        /* ==========================================================================
+        10. FLASH MEDIA — CONFIG & VALIDATION
+        ========================================================================== */
+
+        let flashConfig = {
+            video:     "",
+            image:     "",
+            texte:     "",
+            duree:     "auto",
+            time:      0,
+            volume:    1,
+            vitesse:   1,
+            audioSeul: false
+        };
+
+        function flashValider() {
+            // Durée
+            if (flashConfig.duree !== 'inf') {
+                const parsedDuree = parseFloat(flashConfig.duree);
+                flashConfig.duree = (isNaN(parsedDuree) || parsedDuree <= 0) ? 'auto' : parsedDuree;
+            }
+
+            if (!flashConfig.video) {
+                // Pas de vidéo : on réinitialise les paramètres audio/vidéo
+                flashConfig.time      = 0;
+                flashConfig.volume    = 1;
+                flashConfig.vitesse   = 1;
+                flashConfig.audioSeul = false;
+            } else {
+                // Timestamp (>= 0)
+                const parsedTime = parseFloat(flashConfig.time);
+                flashConfig.time = (isNaN(parsedTime) || parsedTime < 0) ? 0 : parsedTime;
+
+                // Vitesse (doit être > 0)
+                const parsedVitesse = parseFloat(flashConfig.vitesse);
+                flashConfig.vitesse = (isNaN(parsedVitesse) || parsedVitesse <= 0) ? 1 : parsedVitesse;
+
+                // Volume (entre 0 et 1)
+                const parsedVolume = parseFloat(flashConfig.volume);
+                flashConfig.volume = isNaN(parsedVolume) ? 1 : Math.min(Math.max(parsedVolume, 0), 1);
+
+                // audioSeul : forcé à true si une image est présente
+                if (flashConfig.image) {
+                    flashConfig.audioSeul = true;
+                } else {
+                    const ext = flashConfig.video.split('.').pop().toLowerCase();
+                    const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+                    flashConfig.audioSeul = formatsAudio.includes(ext)
+                        ? true
+                        : (typeof flashConfig.audioSeul === 'boolean' ? flashConfig.audioSeul : false);
+                }
+            }
+
+            // Nettoyage & encodage des URLs
+            flashConfig.video = encodeURI(String(flashConfig.video ?? "").trim());
+            flashConfig.image = encodeURI(String(flashConfig.image ?? "").trim());
+            flashConfig.texte = String(flashConfig.texte ?? "").trim();
+            if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) console.warn("flash vide: affichage potentiellement invisible.");
+
+            console.log("Config Flash validée :", flashConfig);
+        }
+
+
+        /* ==========================================================================
+        11. FLASH MEDIA — LECTURE (flashStart)
+        ========================================================================== */
+
+        let flashTimeout;
+
+        function flashStart() {
+            flashStop();
+            flashValider();
+            flashSyncDOMfromConfig();
+            flash.style.display = "flex";
+
+            const hasVideo = !!flashVideo.src;
+            const hasImage = !!flashImage.src;
+
+            // Mode sans média visuel
+            if (!hasImage && (flashConfig.audioSeul || !hasVideo)) {
+                flash.classList.add('noMedia');
+                flashAjusterTitre(window.innerWidth, window.innerHeight);
+            } 
+            else flash.classList.remove('noMedia');
+
+            // --- Affichage et lecture ---
+            let errImg = false;
+            let errVid = false;
+
+            if (flashConfig.texte) {
+                flashTitre.style.display = "block";
+                flashTitre.style.visibility = "hidden";
+            }
+            if (hasImage) {
+                flashImage.style.display = "block";
+
+                if (flashImage.complete) flashUpscale(flashImage);
+                else flashImage.onload  = () => flashUpscale(flashImage);
+
+                flashImage.onerror = () => {
+                    if (hasVideo) {
+                        console.warn("Erreur image, passage en audio seul");
+                        flashImage.style.display = "none";
+                        flashAjusterTitre(window.innerWidth, window.innerHeight);
+                        errImg = true;
+                        if (errVid) flashStop();
+                    } else { 
+                        console.error("Erreur lecture image"); 
+                        flashStop(); 
+                    } 
+                };
+            }
+            if (hasVideo) {
+                flashVideo.volume       = flashConfig.volume;
+                flashVideo.playbackRate = flashConfig.vitesse;
+                if (!flashConfig.audioSeul) flashVideo.style.display = "block";
+
+                if (flashVideo.readyState >= 1) {
+                    if (!flashConfig.audioSeul) flashUpscale(flashVideo);
+                    flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
+                } else {
+                    flashVideo.onloadedmetadata = () => {
+                        if (!flashConfig.audioSeul) flashUpscale(flashVideo);
+                        flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
+                    }
+                }
+
+                flashVideo.onerror = () => { 
+                    if (hasImage) {
+                        console.warn("Erreur vidéo, image seule");
+                        errVid = true;
+                        if (errImg) flashStop();
+                    } else { 
+                        console.error("Erreur lecture vidéo"); 
+                        flashStop();
+                    } 
+                };
+                flashVideo.play().catch(err => {
+                    if (hasImage) {
+                        console.warn("Erreur lecture mixte :", err);
+                        errVid = true;
+                        if (errImg) flashStop();
+                    } else {
+                        if (err.name === 'NotAllowedError' && !flashConfig.audioSeul) {
+                            console.warn("Autoplay bloqué, passage en mute");
+                            flashVideo.muted = true;
+                            flashVideo.play();
+                        } else {
+                            console.error("Erreur lecture vidéo :", err);
+                            flashStop();
+                        }
+                    }
+                });
+            }
+
+            // --- Gestion de la fermeture ---
+            if (flashConfig.duree === 'inf') {
+                if (hasVideo) flashVideo.loop = true;
+            } else if (typeof flashConfig.duree === 'number') {
+                if (hasVideo) flashVideo.loop = true;
+                flashTimeout = setTimeout(() => flashStop(), flashConfig.duree * 1000);
+            } else {
+                if (hasVideo) flashVideo.onended = () => flashStop();
+                else flashTimeout = setTimeout(() => flashStop(), 7000);
+            }
+        }
+
+
+        /* ==========================================================================
+        12. FLASH MEDIA — ARRÊT (flashStop)
+        ========================================================================== */
+
+        function flashStop() {
+            clearTimeout(flashTimeout);
+
+            // Nettoyage des callbacks
+            flashVideo.onloadedmetadata = null;
+            flashVideo.onerror          = null;
+            flashVideo.onended          = null;
+            flashImage.onload           = null;
+            flashImage.onerror          = null;
+
+            // Réinitialisation de la vidéo
+            flashVideo.pause();
+            flashVideo.currentTime = 0;
+            flashVideo.muted       = false;
+            flashVideo.loop        = false;
+
+            // Masquage des éléments
+            flashVideo.style.display = "none";
+            flashImage.style.display = "none";
+            flashTitre.style.display = "none";
+            flash.style.display      = "none";
+            flashWrapper.style.width  = "";
+            flashWrapper.style.height = "";
+
+            // Nettoyage des sources
+            flashVideo.removeAttribute('src');
+            flashImage.removeAttribute('src');
+            flashTitre.innerHTML = "";
+            flashVideo.load();
+        }
+
+
+        /* ==========================================================================
+        13. FLASH MEDIA — MISE À L'ÉCHELLE
+        ========================================================================== */
+
+        function flashUpscale(media) {
+            if (!media || media.style.display === "none") return;
+
+            // On récupère la taille réelle (ex: 300x200)
+            const originalW = media.tagName === 'IMG' ? media.naturalWidth  : media.videoWidth;
+            const originalH = media.tagName === 'IMG' ? media.naturalHeight : media.videoHeight;
+            
+            if (originalW === 0 || originalH === 0) return;
+
+            // ON ENVOIE LES CHIFFRES AU CSS
+            flashWrapper.style.setProperty('--natW', originalW);
+            flashWrapper.style.setProperty('--natH', originalH);
+
+            // Pour l'ajustement du texte, on utilise les tailles calculées par le CSS
+            // clientWidth donne la taille agrandie finale
+            flashAjusterTitre(flashWrapper.clientWidth, flashWrapper.clientHeight);
+        }
+
+        function flashAjusterTitre(w, h, charsPerLine = 35) {
+            if (!flashTitre || !flashConfig.texte) return;
+
+            // 1. On injecte les bases de calcul dans le CSS
+            const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
+            const largeurFinale = largeurRef * 0.95;
+
+            flashTitre.style.setProperty('--finalWidth', `${largeurFinale}px`);
+            flashTitre.style.setProperty('--charsLine', charsPerLine);
+            flashTitre.style.fontSize = "";
+
+            // 2. On attend que le navigateur ait "digéré" le changement de style
+            requestAnimationFrame(() => {
+                const hauteurMax = h * 0.8;
+                
+                let style = window.getComputedStyle(flashTitre);
+                let taillePolice = parseFloat(style.fontSize);
+
+                // 3. Boucle de réduction si nécessaire
+                while (flashTitre.offsetHeight > hauteurMax && taillePolice > 10) {
+                    taillePolice -= 1; 
+                    flashTitre.style.fontSize = `${taillePolice}px`;
+                }
+
+                flashTitre.style.webkitTextStroke = `${taillePolice / 10}px black`;
+                flashTitre.style.visibility = "visible"
+            });
+        }
+
+
+        /* ==========================================================================
+        14. FLASH MEDIA — UTILITAIRES
+        ========================================================================== */
+
+        function flashSyncDOMfromConfig() {
+            if (flashConfig.video) flashVideo.src = flashConfig.video;
+            else flashVideo.removeAttribute('src');
+
+            if (flashConfig.image) flashImage.src = flashConfig.image;
+            else flashImage.removeAttribute('src');
+
+            flashTitre.innerHTML = flashConfig.texte || "";
+            flashVideo.load();
+        }
+
+        function flashResetConfig() {
+            flashConfig = {
+                video:     "",
+                image:     "",
+                texte:     "",
+                duree:     "auto",
+                time:      0,
+                volume:    1,
+                vitesse:   1,
+                audioSeul: false
+            };
+        }
+
+        function flashResetDOMStyles() {
+            [flash, flashVideo, flashImage, flashTitre, flashWrapper].forEach(el => el.removeAttribute('style'));
+        }
+
+        function flashResetAll() {
+            flashStop();
+            flashResetConfig();
+            flashSyncDOMfromConfig();
+            flashResetDOMStyles();
+        }
+        // ===========================================
+        // FIN FLASH MEDIA
+        // ===========================================
+
+        // Initialisation des zones de drag & drop au chargement
+        document.addEventListener("DOMContentLoaded", function() {
+            // Gestion des zones de Drag & Drop
+            setupDropZone('dropImage', 'image', 'fileImg');
+            setupDropZone('dropVideo', 'video', 'fileVid');
+        });
+
+        function setupDropZone(zoneId, configKey, inputId) {
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(inputId);
+
+            // 1. Gestion du Drag & Drop
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0], zone, configKey);
+            });
+
+            // 2. Gestion du clic (via l'input caché)
+            input.addEventListener('change', (e) => {
+                handleFile(e.target.files[0], zone, configKey);
+            });
+        }
+
+        function handleFile(file, zone, configKey) {
+            if (file) {
+                // Crée l'URL locale et l'assigne à la config
+                flashConfig[configKey] = URL.createObjectURL(file);
+                zone.innerText = "✓ " + file.name;
+                zone.style.borderColor = "#2ecc71";
+                zone.style.color = "#2ecc71";
+                zone.style.background = "#0d1f14";
+            }
+        }
+
+       function lancerFlashDepuisControl() {
+            // Mise à jour de la config globale avant le start
+            flashConfig.texte = document.getElementById('ctrlTexte').value;
+            
+            flashConfig.time = parseFloat(document.getElementById('ctrlTime').value) || 0;
+
+            const dureeVal = document.getElementById('ctrlDuree').value.trim().toLowerCase();
+            flashConfig.duree = (dureeVal === 'auto' || dureeVal === 'inf') ? dureeVal : (parseFloat(dureeVal) || 'auto');
+
+            flashConfig.vitesse = parseFloat(document.getElementById('ctrlVitesse').value) || 1;
+            flashConfig.volume = parseFloat(document.getElementById('ctrlVolume').value);
+            flashConfig.audioSeul = document.getElementById('ctrlAudioSeul').checked;
+
+            if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) 
+                if (!confirm("Flash vide. Êtes-vous sûr ?")) return;
+                
+            flashStart();
+        }
+
+        // Fonction pour supprimer un média spécifique
+        function clearMedia(type) {
+            if (type === 'image') {
+                flashConfig.image = "";
+                const zone = document.getElementById('dropImage');
+                zone.innerText = "🖼️ Image : Glisser ou cliquer";
+                zone.style.borderColor = "";
+                zone.style.color = "";
+                zone.style.background = ""; 
+                document.getElementById('fileImg').value = "";
+            } else {
+                flashConfig.video = "";
+                const zone = document.getElementById('dropVideo');
+                zone.innerText = "🎬 Vidéo : Glisser ou cliquer";
+                zone.style.borderColor = "";
+                zone.style.color = "";
+                zone.style.background = "";
+                document.getElementById('fileVid').value = "";
+            }
+        }
+
+        function resetUI() {
+            flashStop();
+            flashResetConfig();
+            flashSyncDOMfromConfig();
+
+            document.getElementById('ctrlTexte').value = "";
+            document.getElementById('ctrlTime').value = 0;
+            document.getElementById('ctrlDuree').value = "auto";
+            document.getElementById('ctrlVitesse').value = "1";
+            document.getElementById('valVitesse').innerText = "1.0";
+            document.getElementById('ctrlVolume').value = "1";
+            document.getElementById('valVolume').innerText = "1.0";
+            document.getElementById('ctrlAudioSeul').checked = false;
+
+            clearMedia('image');
+            clearMedia('video');
+        }
+    </script>
+</body>
+</html>
