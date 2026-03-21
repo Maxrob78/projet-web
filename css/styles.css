@@ -184,20 +184,43 @@ header.scrolled nav a {
     align-items: center;
     z-index: 9999;
     overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(5px);
+}
+
+.mediaWrapper {
+    --w: var(--natW, 1);
+    --h: var(--natH, 1);
+    --scale: min(100vw / var(--w), 100vh / var(--h));
+    
+    width: calc(var(--w) * var(--scale));
+    height: calc(var(--h) * var(--scale));
+
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #flashMedia img,
 #flashMedia video {
     display: none;
-    max-width: 100vw;
-    max-height: 100vh;
-    object-fit: contain;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.98);
+    width: 100%;
+    height: 100%;
+    background: black;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.98);
 }
 
 #flashMedia h1 {
+    --finalWidth: 95vw;
+    --charsLine: 35;
+    --fontSize: calc(var(--finalWidth) / (var(--charsLine) * 0.58));
+    --strokeSize: calc(var(--fontSize) / 10);
+
+    width: var(--finalWidth);
+    font-size: var(--fontSize);
+    -webkit-text-stroke: var(--strokeSize) black;
+
     position: absolute;
     bottom: 10%;
     left: 50%;
@@ -206,30 +229,20 @@ header.scrolled nav a {
     overflow-wrap: break-word;
     white-space: normal;
     text-align: center;
-    max-width: 95vw;
     margin: 0;
     color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
     paint-order: stroke fill;
-    text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
     line-height: 1.2;
     letter-spacing: 3px;
     z-index: 10;
 }
 
-.mediaWrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none;
-}
-
 #flashMedia.noMedia {
     background-color: transparent;
     backdrop-filter: none;
-    pointer-events: none;
 }
 
 #flashMedia.noMedia .mediaWrapper {
@@ -238,7 +251,7 @@ header.scrolled nav a {
 }
 
 #flashMedia.noMedia h1 {
-    bottom: 5%;
+    bottom: 0;
 }
 
 
@@ -786,9 +799,11 @@ textarea:hover {
 
 .form-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     margin-top: 25px;
     align-items: center;
+    justify-content: center;
 }
 
 #submitbtn,
@@ -805,13 +820,13 @@ textarea:hover {
     transition: all 0.3s ease;
 }
 
-#submitbtn               { background-color: #4d8dc6; border-color: #3670a4; }
+#submitbtn               { background-color: #4d8dc6; border-color: #3670a4; order: 1; flex: 1; }
 #submitbtn:hover         { background-color: #469ae3; box-shadow: 0 0 30px rgba(61, 131, 191, 0.6); transform: scale(1.05); }
 
-#deletebtn               { background-color: #e74c3c; border-color: #c0392b; display: none; }
+#deletebtn               { background-color: #e74c3c; border-color: #c0392b; display: none; order: 3; width: 100%; flex-shrink: 0; }
 #deletebtn:hover         { background-color: #ff5e4d; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);  transform: scale(1.05); }
 
-#resetbtn                { background-color: #5d6d7e; border-color: #34495e; }
+#resetbtn                { background-color: #5d6d7e; border-color: #34495e; order: 2; flex: 1; }
 #resetbtn:hover          { background-color: #7f8c8d; box-shadow: 0 0 30px rgba(93, 109, 126, 0.6); transform: scale(1.05); }
 
 /* --- Drop zone upload image --- */

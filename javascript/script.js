@@ -324,13 +324,8 @@ let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-        if (!flash || flash.style.display !== "flex") return;
-
-        const mediaActif = flashVideo.style.display !== "none" ? flashVideo
-                        : flashImage.style.display  !== "none" ? flashImage
-                        : null;
-
-        if (mediaActif) flashUpscale(mediaActif);
+        if (flash.style.display !== "flex" || !flashConfig.texte) return;
+        flashAjusterTitre(); 
     }, 100);
 });
 
@@ -339,52 +334,43 @@ window.addEventListener('resize', () => {
    10. FLASH MEDIA — CONFIG & VALIDATION
    ========================================================================== */
 
-let flashConfig = {
-    video:     "",
-    image:     "",
-    texte:     "",
-    duree:     "auto",
-    time:      0,
-    volume:    1,
-    vitesse:   1,
-    audioSeul: false
+const flashConfig_default = {
+    video:   "",
+    image:   "",
+    texte:   "",
+    duree:   "auto",
+    time:    0,
+    volume:  1,
+    vitesse: 1,
+    isAudio: false
 };
+let flashConfig = { ...flashConfig_default }; 
 
-function flashValider() {
+function flashValide() {
     // Durée
     if (flashConfig.duree !== 'inf') {
         const parsedDuree = parseFloat(flashConfig.duree);
         flashConfig.duree = (isNaN(parsedDuree) || parsedDuree <= 0) ? 'auto' : parsedDuree;
     }
 
-    if (!flashConfig.video) {
-        // Pas de vidéo : on réinitialise les paramètres audio/vidéo
-        flashConfig.time      = 0;
-        flashConfig.volume    = 1;
-        flashConfig.vitesse   = 1;
-        flashConfig.audioSeul = false;
-    } else {
-        // Timestamp (>= 0)
+    // Configs vidéo
+    if (flashConfig.video) {
         const parsedTime = parseFloat(flashConfig.time);
         flashConfig.time = (isNaN(parsedTime) || parsedTime < 0) ? 0 : parsedTime;
 
-        // Vitesse (doit être > 0)
-        const parsedVitesse = parseFloat(flashConfig.vitesse);
-        flashConfig.vitesse = (isNaN(parsedVitesse) || parsedVitesse <= 0) ? 1 : parsedVitesse;
-
-        // Volume (entre 0 et 1)
         const parsedVolume = parseFloat(flashConfig.volume);
         flashConfig.volume = isNaN(parsedVolume) ? 1 : Math.min(Math.max(parsedVolume, 0), 1);
 
-        // audioSeul : forcé à true si une image est présente
-        if (flashConfig.image) {
-            flashConfig.audioSeul = true;
-        } else {
+        const parsedVitesse = parseFloat(flashConfig.vitesse);
+        flashConfig.vitesse = isNaN(parsedVitesse) ? 1 : Math.min(Math.max(parsedVitesse, 0.1), 16);
+
+        if (flashConfig.image) flashConfig.isAudio = true;
+        else {
             const ext = flashConfig.video.split('.').pop().toLowerCase();
             const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
-            flashConfig.audioSeul = formatsAudio.includes(ext)
+            flashConfig.isAudio = formatsAudio.includes(ext)
                 ? true
-                : (typeof flashConfig.audioSeul === 'boolean' ? flashConfig.audioSeul : false);
+                : (typeof flashConfig.isAudio === 'boolean' ? flashConfig.isAudio : false);
         }
     }
 
@@ -392,9 +378,11 @@ function flashValider() {
     flashConfig.video = encodeURI(String(flashConfig.video ?? "").trim());
     flashConfig.image = encodeURI(String(flashConfig.image ?? "").trim());
     flashConfig.texte = String(flashConfig.texte ?? "").trim();
-    if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) console.warn("flash vide: background transparent par défaut.");
 
-    console.log("Config Flash validée :", flashConfig);
+    if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) {
+        console.warn("flash vide => transparent par défaut :", flashConfig);
+    }
+    else console.log("Config Flash validée :", flashConfig);
 }
 
 
@@ -402,140 +390,157 @@ function flashValider() {
    11. FLASH MEDIA — LECTURE (flashStart)
    ========================================================================== */
 
-let flashTimeout;
-
 function flashStart() {
     flashStop();
-    flashValider();
+    flashValide();
     flashSyncDOMfromConfig();
+
+    const promesse = new Promise((resolve) => {
+        window.removeEventListener('flashSucces', resolve);
+        window.addEventListener('flashSucces', resolve, { once: true });
+    });
+
+    let hasVideo = !!flashVideo.src;
+    let hasImage = !!flashImage.src;
+
+    // Affichage
     flash.style.display = "flex";
-
-    const hasVideo = !!flashVideo.src;
-    const hasImage = !!flashImage.src;
-
-    // Mode sans média visuel
-    if (!hasImage && (flashConfig.audioSeul || !hasVideo)) {
-        flash.classList.add('noMedia');
-        flashAjusterTitre(window.innerWidth, window.innerHeight);
-    } 
-    else flash.classList.remove('noMedia');
-
-    // --- Affichage et lecture ---
-    let errImg = false;
-    let errVid = false;
-
     if (flashConfig.texte) {
-        flashTitre.style.display = "block";
         flashTitre.style.visibility = "hidden";
+        flashTitre.style.display = "block";
+
+        if (!hasImage && (flashConfig.isAudio || !hasVideo)) {
+            flash.classList.add('noMedia');
+            flashAjusterTitre();
+        } 
+        else flash.classList.remove('noMedia');
     }
     if (hasImage) {
+        flashImage.style.visibility = "hidden";
         flashImage.style.display = "block";
 
         if (flashImage.complete) flashUpscale(flashImage);
         else flashImage.onload  = () => flashUpscale(flashImage);
-
         flashImage.onerror = () => {
             if (hasVideo) {
                 console.warn("Erreur image, passage en audio seul");
                 flashImage.style.display = "none";
-                flashAjusterTitre(window.innerWidth, window.innerHeight);
-                errImg = true;
-                if (errVid) flashStop();
+                flashImage.removeAttribute('src');
+                hasImage = false;
+                flashAjusterTitre();
             } else { 
                 console.error("Erreur lecture image"); 
-                flashStop(); 
+                flashStop(false); 
             } 
         };
     }
     if (hasVideo) {
         flashVideo.volume       = flashConfig.volume;
         flashVideo.playbackRate = flashConfig.vitesse;
-        if (!flashConfig.audioSeul) flashVideo.style.display = "block";
+        if (!flashConfig.isAudio) {
+            flashVideo.style.visibility = "hidden";
+            flashVideo.style.display = "block";
+        }
 
         if (flashVideo.readyState >= 1) {
-            if (!flashConfig.audioSeul) flashUpscale(flashVideo);
+            if (!flashConfig.isAudio) flashUpscale(flashVideo);
             flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
         } else {
             flashVideo.onloadedmetadata = () => {
-                if (!flashConfig.audioSeul) flashUpscale(flashVideo);
+                if (!flashConfig.isAudio) flashUpscale(flashVideo);
                 flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
-            }
+            };
         }
-
         flashVideo.onerror = () => { 
             if (hasImage) {
                 console.warn("Erreur vidéo, image seule");
-                errVid = true;
-                if (errImg) flashStop();
+                flashVideo.removeAttribute('src');
+                flashVideo.load();
+                hasVideo = false;
             } else { 
                 console.error("Erreur lecture vidéo"); 
-                flashStop();
+                flashStop(false); 
             } 
         };
-        flashVideo.play().catch(err => {
-            if (hasImage) {
-                console.warn("Erreur lecture mixte :", err);
-                errVid = true;
-                if (errImg) flashStop();
-            } else {
-                if (err.name === 'NotAllowedError' && !flashConfig.audioSeul) {
+
+        // Lecture vidéo
+        flashVideo.play()
+            .then(() => flashAutostop(true))
+            .catch(err => {
+                if (err.name === 'NotAllowedError' && !flashConfig.isAudio) {
                     console.warn("Autoplay bloqué, passage en mute");
                     flashVideo.muted = true;
-                    flashVideo.play();
+                    flashVideo.play()
+                        .then(() => flashAutostop(true))
+                        .catch(() => {
+                            console.error("Lecture bloquée.");
+                            flashStop(false);
+                        })
                 } else {
-                    console.error("Erreur lecture vidéo :", err);
-                    flashStop();
+                    if (hasImage) {
+                        console.warn("Erreur lecture vidéo, image seule.");
+                        flashAutostop();
+                    } else {
+                        console.error("Erreur lecture vidéo :", err);
+                        flashStop(false);
+                    }
                 }
-            }
-        });
+            })
     }
+    else flashAutostop();
 
-    // --- Gestion de la fermeture ---
-    if (flashConfig.duree === 'inf') {
-        if (hasVideo) flashVideo.loop = true;
-    } else if (typeof flashConfig.duree === 'number') {
-        if (hasVideo) flashVideo.loop = true;
-        flashTimeout = setTimeout(() => flashStop(), flashConfig.duree * 1000);
-    } else {
-        if (hasVideo) flashVideo.onended = () => flashStop();
-        else flashTimeout = setTimeout(() => flashStop(), 7000);
-    }
+    return promesse;
 }
 
 
 /* ==========================================================================
-   12. FLASH MEDIA — ARRÊT (flashStop)
+   12. FLASH MEDIA — ARRÊT 
    ========================================================================== */
 
-function flashStop() {
+let flashTimeout;
+
+function flashAutostop(aVideo = false) {
+    if (flashConfig.duree === 'inf') {
+        if (aVideo) flashVideo.loop = true;
+    } else if (typeof flashConfig.duree === 'number') {
+        if (aVideo) flashVideo.loop = true;
+        flashTimeout = setTimeout(() => flashStop(true), flashConfig.duree * 1000);
+    } else {
+        if (aVideo) flashVideo.onended = () => flashStop(true);
+        else flashTimeout = setTimeout(() => flashStop(true), 7000);
+    }
+}
+
+function flashStop(succes) {
     clearTimeout(flashTimeout);
 
-    // Nettoyage des callbacks
     flashVideo.onloadedmetadata = null;
     flashVideo.onerror          = null;
     flashVideo.onended          = null;
     flashImage.onload           = null;
     flashImage.onerror          = null;
 
-    // Réinitialisation de la vidéo
     flashVideo.pause();
     flashVideo.currentTime = 0;
     flashVideo.muted       = false;
     flashVideo.loop        = false;
 
-    // Masquage des éléments
-    flashVideo.style.display = "none";
-    flashImage.style.display = "none";
-    flashTitre.style.display = "none";
     flash.style.display      = "none";
-    flashWrapper.style.width  = "";
-    flashWrapper.style.height = "";
+    flashTitre.style.display = "none";
+    flashImage.style.display = "none";
+    flashVideo.style.display = "none";
+    flashWrapper.style.removeProperty('--natW');
+    flashWrapper.style.removeProperty('--natH');
+    flashTitre.style.removeProperty('--finalWidth');
+    flashTitre.style.removeProperty('--charsLine');
 
-    // Nettoyage des sources
     flashVideo.removeAttribute('src');
     flashImage.removeAttribute('src');
     flashTitre.innerHTML = "";
     flashVideo.load();
+
+    // Notif si succès
+    if (succes) window.dispatchEvent(new CustomEvent('flashSucces'));
 }
 
 
@@ -548,44 +553,41 @@ function flashUpscale(media) {
 
     const originalW = media.tagName === 'IMG' ? media.naturalWidth  : media.videoWidth;
     const originalH = media.tagName === 'IMG' ? media.naturalHeight : media.videoHeight;
+    
     if (originalW === 0 || originalH === 0) return;
 
-    // Mode "contain" : on prend le ratio le plus petit pour ne jamais couper
-    const scale  = Math.min(window.innerWidth / originalW, window.innerHeight / originalH);
-    const finalW = Math.floor(originalW * scale);
-    const finalH = Math.floor(originalH * scale);
+    flashWrapper.style.setProperty('--natW', originalW);
+    flashWrapper.style.setProperty('--natH', originalH);
 
-    flashWrapper.style.width  = `${finalW}px`;
-    flashWrapper.style.height = `${finalH}px`;
-    media.style.width  = "100%";
-    media.style.height = "100%";
-
-    flashAjusterTitre(finalW, finalH);
+    flashAjusterTitre(35, media);
 }
 
-function flashAjusterTitre(w, h, charsPerLine = 35) {
-    if (!flashTitre || !flashConfig.texte) return;
+function flashAjusterTitre(charsPerLine = 35, mediaRef) {
+    if (!flashTitre || !flashConfig.texte) {
+        if (mediaRef) mediaRef.style.visibility = "visible";
+        return;
+    }
 
-    // Largeur de référence basée sur le plus grand côté, plafonnée à l'écran
-    const largeurReference = Math.min(Math.max(w, h), window.innerWidth);
-    const largeurFinale    = largeurReference * 0.95;
-    flashTitre.style.width = `${largeurFinale}px`;
+    const w = mediaRef ? flashWrapper.offsetWidth  : window.innerWidth;
+    const h = mediaRef ? flashWrapper.offsetHeight : window.innerHeight;
 
-    // Taille de police calculée pour ~35 caractères par ligne
-    let taillePolice = largeurFinale / (charsPerLine * 0.58);
-    flashTitre.style.fontSize = `${taillePolice}px`;
+    const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
+    const largeurFinale = largeurRef * 0.95;
 
-    // On attend que le navigateur ait "digéré" le changement de style
+    flashTitre.style.setProperty('--finalWidth', `${largeurFinale}px`);
+    flashTitre.style.setProperty('--charsLine', charsPerLine);
+
     requestAnimationFrame(() => {
         const hauteurMax = h * 0.8;
-        
+        let taillePolice = parseFloat(getComputedStyle(flashTitre).fontSize);
+
         while (flashTitre.offsetHeight > hauteurMax && taillePolice > 10) {
             taillePolice -= 1; 
             flashTitre.style.fontSize = `${taillePolice}px`;
         }
 
-        flashTitre.style.webkitTextStroke = `${taillePolice / 10}px black`;
-        flashTitre.style.visibility = "visible"; 
+        flashTitre.style.visibility = "visible"
+        if (mediaRef) mediaRef.style.visibility = "visible";
     });
 }
 
@@ -606,16 +608,7 @@ function flashSyncDOMfromConfig() {
 }
 
 function flashResetConfig() {
-    flashConfig = {
-        video:     "",
-        image:     "",
-        texte:     "",
-        duree:     "auto",
-        time:      0,
-        volume:    1,
-        vitesse:   1,
-        audioSeul: false
-    };
+    flashConfig = { ...flashConfig_default };
 }
 
 function flashResetDOMStyles() {
@@ -633,10 +626,7 @@ function flashResetAll() {
 function flashTest() {
     flashResetConfig();
     flashConfig.video = "../videos/Screaming chicken on tree meme.mp4";
-    flashConfig.texte = "baisse le son";
-    flashStart();
+    flashStart().then(() => console.log("test réussi"));
 }
 
-function flashPage() { 
-    window.open("flashPage.html"); 
-}
+const flashPage = () => window.open("flashPage.html");

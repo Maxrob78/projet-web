@@ -43,7 +43,6 @@ try {
         // --- MODE MODIFICATION ---
         $itemFound = null;
 
-        // 1. On cherche l'élément dans TOUTES les catégories et on le supprime de son ancienne place
         foreach (['cours', 'formations'] as $cat) {
             foreach ($current_data[$cat] as $key => $item) {
                 if (isset($item['id']) && $item['id'] == $id) {
@@ -56,14 +55,12 @@ try {
         }
 
         if ($itemFound) {
-            // 2. On prépare les nouvelles données
             $updated_item = [
                 "id"          => $id,
                 "nom"         => $nom,
                 "description" => $description,
                 "image"       => ($imagePath !== null) ? $imagePath : $itemFound['image']
             ];
-            // 3. On l'ajoute dans la NOUVELLE catégorie choisie
             $current_data[$type][] = $updated_item;
         } else {
             throw new Exception("Élément introuvable pour modification.");
