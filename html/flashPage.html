@@ -179,7 +179,7 @@
     <div id="flashMedia">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
-            <img id="flashImg">
+            <img id="flashImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
             <h1 id="flashTitre"></h1>
         </div>
     </div>
@@ -385,7 +385,7 @@
                             if (hasVideo) {
                                 console.warn("Erreur image, audio seul.");
                                 flashImage.style.display = "none";
-                                flashImage.removeAttribute('src');
+                                flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
                                 hasImage = false;
                                 flashAjusterTitre();
                             } else {
@@ -499,7 +499,7 @@
             flashWrapper.style.height = "";
 
             flashVideo.removeAttribute('src');
-            flashImage.removeAttribute('src');
+            flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
             flashTitre.innerHTML = "";
             flashVideo.load();
 
@@ -565,7 +565,7 @@
             else flashVideo.removeAttribute('src');
 
             if (flashConfig.image) flashImage.src = flashConfig.image;
-            else flashImage.removeAttribute('src');
+            else flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
             flashTitre.innerHTML = flashConfig.texte || "";
             flashVideo.load();
