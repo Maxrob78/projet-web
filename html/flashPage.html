@@ -34,6 +34,7 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            pointer-events: none;
         }
 
         #flashMedia img,
@@ -76,7 +77,6 @@
 
         #flashMedia.noMedia {
             background-color: transparent;
-            pointer-events: none;
         }
 
         #flashMedia.noMedia .mediaWrapper {
@@ -105,7 +105,7 @@
             color: #c9d1e0;
         }
 
-        #flashControl h3 { margin-top: 0; color: #e2e8f5; border-bottom: 2px solid #4a6fa5; padding-bottom: 10px; }
+        #flashControl h2 { margin-top: 0; color: #e2e8f5; border-bottom: 2px solid #4a6fa5; padding-bottom: 10px; }
 
         .ctrl-section { margin-bottom: 25px; }
         .ctrl-section label { display: block; font-weight: bold; margin-bottom: 10px; color: #7a8aaa; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
@@ -179,13 +179,13 @@
     <div id="flashMedia">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
-            <img id="flashImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+            <img id="flashImg" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
             <h1 id="flashTitre"></h1>
         </div>
     </div>
 
     <div id="flashControl">
-        <h3>Flash Control - Panneau de Régie</h3>
+        <h2>Flash Control - Panneau de Régie</h2>
         
         <div class="ctrl-section">
             <label>Titre du Flash</label>
@@ -385,7 +385,7 @@
                             if (hasVideo) {
                                 console.warn("Erreur image, audio seul.");
                                 flashImage.style.display = "none";
-                                flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                                flashImage.removeAttribute('src');
                                 hasImage = false;
                                 flashAjusterTitre();
                             } else {
@@ -499,7 +499,7 @@
             flashWrapper.style.height = "";
 
             flashVideo.removeAttribute('src');
-            flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            flashImage.removeAttribute('src');
             flashTitre.innerHTML = "";
             flashVideo.load();
 
@@ -565,7 +565,7 @@
             else flashVideo.removeAttribute('src');
 
             if (flashConfig.image) flashImage.src = flashConfig.image;
-            else flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            else flashImage.removeAttribute('src');
 
             flashTitre.innerHTML = flashConfig.texte || "";
             flashVideo.load();

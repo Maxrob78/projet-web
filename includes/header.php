@@ -26,7 +26,7 @@
     <div id="flashMedia">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
-            <img id="flashImg" alt="">
+            <img id="flashImg" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
             <h1 id="flashTitre"></h1>
         </div>
     </div>

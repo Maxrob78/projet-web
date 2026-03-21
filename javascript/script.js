@@ -425,7 +425,7 @@ function flashStart() {
             if (hasVideo) {
                 console.warn("Erreur image, passage en audio seul");
                 flashImage.style.display = "none";
-                flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                flashImage.removeAttribute('src');
                 hasImage = false;
                 flashAjusterTitre();
             } else { 
@@ -535,7 +535,7 @@ function flashStop(succes) {
     flashTitre.style.removeProperty('--charsLine');
 
     flashVideo.removeAttribute('src');
-    flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    flashImage.removeAttribute('src');
     flashTitre.innerHTML = "";
     flashVideo.load();
 
@@ -599,12 +599,12 @@ function flashAjusterTitre(charsPerLine = 35, mediaRef) {
 function flashSyncDOMfromConfig() {
     if (flashConfig.video) flashVideo.src = flashConfig.video;
     else flashVideo.removeAttribute('src');
+    flashVideo.load();
 
     if (flashConfig.image) flashImage.src = flashConfig.image;
-    else flashImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    else flashImage.removeAttribute('src');
 
     flashTitre.innerHTML = flashConfig.texte || "";
-    flashVideo.load();
 }
 
 function flashResetConfig() {
