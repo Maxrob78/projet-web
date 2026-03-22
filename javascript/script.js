@@ -380,9 +380,9 @@ function flashValide() {
     flashConfig.texte = String(flashConfig.texte ?? "").trim();
 
     if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) {
-        console.warn("flash vide => transparent par défaut :", flashConfig);
+        console.warn("flash vide : transparent par défaut.", flashConfig);
     }
-    else console.log("Config Flash validée :", flashConfig);
+    else console.log("Config Flash validée", flashConfig);
 }
 
 
@@ -395,25 +395,24 @@ function flashStart() {
     flashValide();
     flashSyncDOMfromConfig();
 
-    const promesse = new Promise((resolve) => {
-        window.removeEventListener('flashSucces', resolve);
+    const promesse = new Promise((resolve, reject) => {
         window.addEventListener('flashSucces', resolve, { once: true });
+        window.addEventListener('flashEchec',  reject,  { once: true });
     });
+    flash._settled = false;
 
     let hasVideo = !!flashVideo.src;
     let hasImage = !!flashImage.src;
+
+    if (!hasImage && (flashConfig.isAudio || !hasVideo)) flash.classList.add('noMedia');
+    else flash.classList.remove('noMedia');
 
     // Affichage
     flash.style.display = "flex";
     if (flashConfig.texte) {
         flashTitre.style.visibility = "hidden";
-        flashTitre.style.display = "block";
-
-        if (!hasImage && (flashConfig.isAudio || !hasVideo)) {
-            flash.classList.add('noMedia');
-            flashAjusterTitre();
-        } 
-        else flash.classList.remove('noMedia');
+        flashTitre.style.display    = "block";
+        if (flash.classList.contains('noMedia')) flashAjusterTitre(45);
     }
     if (hasImage) {
         flashImage.style.visibility = "hidden";
@@ -479,6 +478,9 @@ function flashStart() {
                 } else {
                     if (hasImage) {
                         console.warn("Erreur lecture vidéo, image seule.");
+                        flashVideo.removeAttribute('src');
+                        flashVideo.load();
+                        hasVideo = false;
                         flashAutostop();
                     } else {
                         console.error("Erreur lecture vidéo :", err);
@@ -539,8 +541,14 @@ function flashStop(succes) {
     flashTitre.innerHTML = "";
     flashVideo.load();
 
-    // Notif si succès
-    if (succes) window.dispatchEvent(new CustomEvent('flashSucces'));
+    // Notif si succès/échec
+    if (succes === true) {
+        flash._settled = true;
+        window.dispatchEvent(new CustomEvent('flashSucces'));
+    } else if (succes === false && !flash._settled) {
+        flash._settled = true;
+        window.dispatchEvent(new CustomEvent('flashEchec'));
+    }
 }
 
 
@@ -626,7 +634,9 @@ function flashResetAll() {
 function flashTest() {
     flashResetConfig();
     flashConfig.video = "../videos/Screaming chicken on tree meme.mp4";
-    flashStart().then(() => console.log("test réussi"));
+    flashStart()
+        .then(() => console.log("test réussi"))
+        .catch(() => console.log("échec test"));
 }
 
 const flashPage = () => window.open("flashPage.html");

@@ -29,12 +29,12 @@ include '../includes/header.php';
             <legend id="legende-form" style="text-transform: uppercase;">ajouter un élément</legend>
             <input type="hidden" id="item-id" name="id" value="">
             <p>
-                <label for="nom">Nom</label><br>
+                <label for="nom">Nom*</label><br>
                 <input type="text" id="nom" name="nom" required>
             </p>
 
             <p>
-                <label for="description">Description</label><br>
+                <label for="description">Description*</label><br>
                 <textarea id="description" name="description" rows="5" required></textarea>
             </p>
 

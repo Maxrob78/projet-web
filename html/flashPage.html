@@ -321,7 +321,7 @@
                 console.error("Config flash vide.");
                 return false;
             }
-            console.log("Config Flash validée :", flashConfig);
+            console.log("Config Flash validée", flashConfig);
             return true;
         }
 
@@ -350,26 +350,25 @@
         
         async function flashStart() {
             flashStop();
-            if (!flashValider()) return Promise.reject("Flash annulé : config invalide");
+            if (!flashValider()) throw "config invalide.";
             flashSyncDOMfromConfig();
 
             const sessionId  = Symbol();
             flash._sessionId = sessionId;
             const estActif   = () => flash._sessionId === sessionId;
+            flash._settled = false;
 
             let hasVideo = !!flashVideo.src;
             let hasImage = !!flashImage.src;
+
+            if (!hasImage && (flashConfig.isAudio || !hasVideo)) flash.classList.add('noMedia');
+            else flash.classList.remove('noMedia');
 
             flash.style.display = "flex";
             if (flashConfig.texte) {
                 flashTitre.style.visibility = "hidden";
                 flashTitre.style.display    = "block";
-
-                if (!hasImage && (flashConfig.isAudio || !hasVideo)) {
-                    flash.classList.add('noMedia');
-                    flashAjusterTitre(45);
-                } 
-                else flash.classList.remove('noMedia');
+                if (flash.classList.contains('noMedia')) flashAjusterTitre(45);
             }
 
             // Chargement image + vidéo en parallèle
@@ -407,7 +406,7 @@
                 jobs.push(
                     waitForVideoMeta(flashVideo)
                         .then(() => {
-                            if (!estActif()) return;
+                            if (!estActif()) throw "session annulée.";
                             if (!flashConfig.isAudio) flashUpscale(flashVideo);
                             flashVideo.currentTime = (flashConfig.time < flashVideo.duration)
                                 ? flashConfig.time : 0;
@@ -427,7 +426,7 @@
             }
 
             await Promise.allSettled(jobs);
-            if (!estActif()) return;
+            if (!estActif()) throw "session annulée.";
 
             // Lecture vidéo
             if (hasVideo) {
@@ -439,17 +438,17 @@
                         try { await flashVideo.play(); }
                         catch {
                             console.error("Lecture toujours bloquée");
-                            flashStop(false); return;
+                            flashStop(false); throw "erreur lecture vidéo.";
                         }
                     } else {
                         if (hasImage) console.warn("Erreur lecture vidéo, image seule.");
                         else {
-                            console.error("Erreur lecture vidéo :", err);
-                            flashStop(false); return;
+                            console.error("Erreur lecture vidéo", err);
+                            flashStop(false); throw "erreur lecture vidéo.";
                         }
                     }
                 }
-                if (!estActif()) { flashVideo.pause(); return; }
+                if (!estActif()) { flashVideo.pause(); throw "session annulée."; }
             }
 
             // Gestion fermeture
@@ -469,14 +468,21 @@
         12. FLASH MEDIA — ARRÊT
         ========================================================================== */
 
+        let _resolveTermine;
+        let _rejectTermine;
         function flashTermine() {
-            return new Promise(resolve => {
-                window.removeEventListener('flashSucces', resolve);
+            if (_resolveTermine) window.removeEventListener('flashSucces', _resolveTermine);
+            if (_rejectTermine)  window.removeEventListener('flashEchec',  _rejectTermine);
+
+            return new Promise((resolve, reject) => {
+                _resolveTermine = resolve;
+                _rejectTermine  = reject;
                 window.addEventListener('flashSucces', resolve, { once: true });
+                window.addEventListener('flashEchec',  reject,  { once: true });
             });
         }
 
-        function flashStop(succes =  false) {
+        function flashStop(succes) {
             flash._sessionId = null;
             clearTimeout(flashTimeout);
 
@@ -503,8 +509,14 @@
             flashTitre.innerHTML = "";
             flashVideo.load();
 
-            // notif si succès
-            if (succes) window.dispatchEvent(new CustomEvent('flashSucces'));
+            // notif si succès/échec
+            if (succes === true) {
+                flash._settled = true;
+                window.dispatchEvent(new CustomEvent('flashSucces'));
+            } else if (succes === false && !flash._settled) {
+                flash._settled = true;
+                window.dispatchEvent(new CustomEvent('flashEchec'));
+            }
         }
 
 
@@ -563,12 +575,12 @@
         function flashSyncDOMfromConfig() {
             if (flashConfig.video) flashVideo.src = flashConfig.video;
             else flashVideo.removeAttribute('src');
+            flashVideo.load();
 
             if (flashConfig.image) flashImage.src = flashConfig.image;
             else flashImage.removeAttribute('src');
 
             flashTitre.innerHTML = flashConfig.texte || "";
-            flashVideo.load();
         }
 
         function flashResetConfig() {
@@ -641,8 +653,12 @@
             if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) {
                 if (!confirm("Flash vide. Continuer ?")) return;
             }   
-            flashStart().then(() => console.log("flash chargé et affiché"));
-            flashTermine().then(() => console.log("flash terminé sans erreur"));
+            flashStart()
+                .then(() => console.log("flash chargé et affiché"))
+                .catch((e) => console.warn("erreur chargement flash", e));
+            flashTermine()
+                .then(() => console.log("flash terminé après lecture complète"))
+                .catch(() => console.warn("flash fermé à cause d'une erreur"));
         }
 
         // Fonction pour supprimer un média spécifique

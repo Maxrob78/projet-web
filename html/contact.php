@@ -40,22 +40,22 @@ include '../includes/header.php';
             <legend>CONTACT</legend>
 
             <p>
-                <label for="nom">Nom</label><br>
+                <label for="nom">Nom*</label><br>
                 <input type="text" id="nom" name="nom" required>
             </p>
 
             <p>
-                <label for="email">Adresse Email</label><br>
+                <label for="email">Adresse Email*</label><br>
                 <input type="email" id="email" name="email" required>
             </p>
 
             <p>
-                <label for="sujet">Sujet</label><br>
+                <label for="sujet">Sujet*</label><br>
                 <input type="text" id="sujet" name="sujet" required>
             </p>
 
             <p>
-                <label for="message">Message</label><br>
+                <label for="message">Message*</label><br>
                 <textarea id="message" name="message" rows="4" required></textarea>
             </p>
             <button id="submitbtn" type="submit" name="submit-form">Envoyer</button>
