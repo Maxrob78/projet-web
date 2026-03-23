@@ -252,7 +252,7 @@ header.scrolled nav a {
 }
 
 #flashMedia.noMedia h1 {
-    bottom: 0;
+    bottom: 10px;
 }
 
 
@@ -1303,6 +1303,7 @@ footer {
 
     .section-chiffres {
         padding: 25px 3%;
+        padding-top: 100px;
     }
 
     .titre-section {

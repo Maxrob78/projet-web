@@ -98,6 +98,37 @@ document.addEventListener("DOMContentLoaded", function () {
             toggleBtn.textContent = '☀️';
         }
 
+        let clicsTheme = 0;
+        let timerClics = null;
+        let intervalBg = null;
+        let timerTexte = null;
+
+        function epilepsie() {
+            flashResetConfig();
+            flashConfig.texte = "c sa que tu veux ?";
+            flashConfig.duree = 6;
+
+            flashStart()
+                .then(() => {
+                    let blanc = true;
+                    intervalBg = setInterval(() => {
+                        flash.style.backgroundColor = blanc ? "#ffffff" : "#000000";
+                        blanc = !blanc;
+                    }, 50);
+
+                    timerTexte = setTimeout(() => {
+                        flashTitre.innerHTML = "ptit con va";
+                    }, 4000);
+                });
+            flashTermine()
+                .then(() => {
+                    clearInterval(intervalBg);
+                    clearTimeout(timerTexte);
+                    flash.style.backgroundColor = "";
+                })
+                .catch((e) => console.warn(e));
+        }
+
         toggleBtn.addEventListener('click', () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
@@ -109,6 +140,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 toggleBtn.textContent = '☀️';
                 localStorage.setItem('theme', 'dark');
+            }
+
+            clicsTheme++;
+            clearTimeout(timerClics);
+
+            if (clicsTheme >= 11) {
+                clicsTheme = 0;
+                epilepsie();
+            } else {
+                timerClics = setTimeout(() => { clicsTheme = 0; }, 500);
             }
         });
     }
@@ -311,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ==========================================================================
-   9. FLASH MEDIA — INITIALISATION & RESIZE
+   9. FLASH MEDIA — INIT DOM & OBSERVERS
    ========================================================================== */
 
 const flash        = document.querySelector('#flashMedia');
@@ -325,8 +366,14 @@ window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
         if (flash.style.display !== "flex" || !flashConfig.texte) return;
-        flashAjusterTitre(); 
+        const chars = flash.classList.contains('noMedia') ? 45 : 35;
+        flashAjusterTitre(chars);
     }, 100);
+});
+const observerTitre = new MutationObserver(() => {
+    if (flash.style.display !== "flex" || !flashConfig.texte) return;
+    const chars = flash.classList.contains('noMedia') ? 45 : 35;
+    flashAjusterTitre(chars);
 });
 
 
@@ -381,8 +428,9 @@ function flashValide() {
 
     if (!flashConfig.video && !flashConfig.image && !flashConfig.texte) {
         console.warn("flash vide : transparent par défaut.", flashConfig);
+        return false;
     }
-    else console.log("Config Flash validée", flashConfig);
+    console.log("Config Flash validée.", flashConfig); return true;
 }
 
 
@@ -390,15 +438,33 @@ function flashValide() {
    11. FLASH MEDIA — LECTURE (flashStart)
    ========================================================================== */
 
-function flashStart() {
-    flashStop();
-    flashValide();
-    flashSyncDOMfromConfig();
-
-    const promesse = new Promise((resolve, reject) => {
-        window.addEventListener('flashSucces', resolve, { once: true });
-        window.addEventListener('flashEchec',  reject,  { once: true });
+function whenImageLoad(image) {
+    if (image.complete && image.naturalWidth > 0) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        image.onload  = resolve;
+        image.onerror = reject;
     });
+}
+
+function whenVideoMeta(video) {
+    if (video.readyState >= 1) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        video.onloadedmetadata = resolve;
+        video.onerror          = reject;
+    });
+}
+
+let flashTimeout;
+
+async function flashStart() {
+    flashStop();
+    if (!flashValide()) throw "config invalide.";
+    flashSyncDOMfromConfig();
+    observerTitre.observe(flashTitre, { childList: true, characterData: true, subtree: true });
+
+    const sessionId  = Symbol();
+    flash._sessionId = sessionId;
+    const estActif   = () => flash._sessionId === sessionId;
     flash._settled = false;
 
     let hasVideo = !!flashVideo.src;
@@ -406,115 +472,129 @@ function flashStart() {
 
     if (!hasImage && (flashConfig.isAudio || !hasVideo)) flash.classList.add('noMedia');
     else flash.classList.remove('noMedia');
-
-    // Affichage
     flash.style.display = "flex";
+
     if (flashConfig.texte) {
         flashTitre.style.visibility = "hidden";
         flashTitre.style.display    = "block";
         if (flash.classList.contains('noMedia')) flashAjusterTitre(45);
     }
+
+    // Chargement image + vidéo en parallèle
+    const jobs = [];
+
     if (hasImage) {
         flashImage.style.visibility = "hidden";
-        flashImage.style.display = "block";
-
-        if (flashImage.complete) flashUpscale(flashImage);
-        else flashImage.onload  = () => flashUpscale(flashImage);
-        flashImage.onerror = () => {
-            if (hasVideo) {
-                console.warn("Erreur image, passage en audio seul");
-                flashImage.style.display = "none";
-                flashImage.removeAttribute('src');
-                hasImage = false;
-                flashAjusterTitre();
-            } else { 
-                console.error("Erreur lecture image"); 
-                flashStop(false); 
-            } 
-        };
+        flashImage.style.display    = "block";
+        jobs.push(
+            whenImageLoad(flashImage)
+                .then(() => { if (estActif()) flashUpscale(flashImage); })
+                .catch(() => { 
+                    if (hasVideo) {
+                        console.warn("Erreur image, audio seul.");
+                        flashImage.style.display = "none";
+                        flashImage.removeAttribute('src');
+                        hasImage = false;
+                        flashAjusterTitre();
+                    } else {
+                        console.error("Erreur lecture image"); 
+                        flashStop(false); 
+                    }
+                })
+        );
     }
+
     if (hasVideo) {
         flashVideo.volume       = flashConfig.volume;
         flashVideo.playbackRate = flashConfig.vitesse;
         if (!flashConfig.isAudio) {
             flashVideo.style.visibility = "hidden";
-            flashVideo.style.display = "block";
+            flashVideo.style.display    = "block";
         }
 
-        if (flashVideo.readyState >= 1) {
-            if (!flashConfig.isAudio) flashUpscale(flashVideo);
-            flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
-        } else {
-            flashVideo.onloadedmetadata = () => {
-                if (!flashConfig.isAudio) flashUpscale(flashVideo);
-                flashVideo.currentTime = (flashConfig.time < flashVideo.duration) ? flashConfig.time : 0;
-            };
-        }
-        flashVideo.onerror = () => { 
-            if (hasImage) {
-                console.warn("Erreur vidéo, image seule");
-                flashVideo.removeAttribute('src');
-                flashVideo.load();
-                hasVideo = false;
-            } else { 
-                console.error("Erreur lecture vidéo"); 
-                flashStop(false); 
-            } 
-        };
-
-        // Lecture vidéo
-        flashVideo.play()
-            .then(() => flashAutostop(true))
-            .catch(err => {
-                if (err.name === 'NotAllowedError' && !flashConfig.isAudio) {
-                    console.warn("Autoplay bloqué, passage en mute");
-                    flashVideo.muted = true;
-                    flashVideo.play()
-                        .then(() => flashAutostop(true))
-                        .catch(() => {
-                            console.error("Lecture bloquée.");
-                            flashStop(false);
-                        })
-                } else {
+        jobs.push(
+            whenVideoMeta(flashVideo)
+                .then(() => {
+                    if (!estActif()) throw "session annulée.";
+                    if (!flashConfig.isAudio) flashUpscale(flashVideo);
+                    flashVideo.currentTime = (flashConfig.time < flashVideo.duration)
+                        ? flashConfig.time : 0;
+                })
+                .catch(() => { 
                     if (hasImage) {
-                        console.warn("Erreur lecture vidéo, image seule.");
+                        console.warn("Erreur vidéo, image seule.");
                         flashVideo.removeAttribute('src');
                         flashVideo.load();
                         hasVideo = false;
-                        flashAutostop();
                     } else {
-                        console.error("Erreur lecture vidéo :", err);
-                        flashStop(false);
+                        console.error("Erreur chargement vidéo"); 
+                        flashStop(false); 
                     }
-                }
-            })
+                })
+        );
     }
-    else flashAutostop();
 
-    return promesse;
-}
+    await Promise.allSettled(jobs);
+    if (!estActif()) throw "session annulée.";
 
+    // Lecture vidéo
+    if (hasVideo) {
+        try { await flashVideo.play(); }
+        catch (err) {
+            if (err.name === 'NotAllowedError' && !flashConfig.isAudio) {
+                console.warn("Autoplay bloqué, passage en mute");
+                flashVideo.muted = true;
+                try { await flashVideo.play(); }
+                catch {
+                    console.error("Lecture toujours bloquée");
+                    flashStop(false); throw "erreur lecture vidéo.";
+                }
+            } else {
+                if (hasImage) console.warn("Erreur lecture vidéo, image seule.");
+                else {
+                    console.error("Erreur lecture vidéo", err);
+                    flashStop(false); throw "erreur lecture vidéo.";
+                }
+            }
+        }
+        if (!estActif()) { flashVideo.pause(); throw "session annulée."; }
+    }
 
-/* ==========================================================================
-   12. FLASH MEDIA — ARRÊT 
-   ========================================================================== */
-
-let flashTimeout;
-
-function flashAutostop(aVideo = false) {
+    // Gestion fermeture
     if (flashConfig.duree === 'inf') {
-        if (aVideo) flashVideo.loop = true;
+        if (hasVideo) flashVideo.loop = true;
     } else if (typeof flashConfig.duree === 'number') {
-        if (aVideo) flashVideo.loop = true;
+        if (hasVideo) flashVideo.loop = true;
         flashTimeout = setTimeout(() => flashStop(true), flashConfig.duree * 1000);
     } else {
-        if (aVideo) flashVideo.onended = () => flashStop(true);
+        if (hasVideo) flashVideo.onended = () => flashStop(true);
         else flashTimeout = setTimeout(() => flashStop(true), 7000);
     }
 }
 
+let _resolveTermine;
+let _rejectTermine;
+function flashTermine() {
+    if (_resolveTermine) window.removeEventListener('flashSucces', _resolveTermine);
+    if (_rejectTermine)  window.removeEventListener('flashEchec',  _rejectTermine);
+
+    return new Promise((resolve, reject) => {
+        _resolveTermine = resolve;
+        _rejectTermine  = reject;
+        window.addEventListener('flashSucces', resolve, { once: true });
+        window.addEventListener('flashEchec',  reject,  { once: true });
+    });
+}
+
+
+/* ==========================================================================
+   12. FLASH MEDIA — ARRÊT
+   ========================================================================== */
+
 function flashStop(succes) {
+    flash._sessionId = null;
     clearTimeout(flashTimeout);
+    observerTitre.disconnect();
 
     flashVideo.onloadedmetadata = null;
     flashVideo.onerror          = null;
@@ -527,21 +607,19 @@ function flashStop(succes) {
     flashVideo.muted       = false;
     flashVideo.loop        = false;
 
-    flash.style.display      = "none";
-    flashTitre.style.display = "none";
-    flashImage.style.display = "none";
-    flashVideo.style.display = "none";
-    flashWrapper.style.removeProperty('--natW');
-    flashWrapper.style.removeProperty('--natH');
-    flashTitre.style.removeProperty('--finalWidth');
-    flashTitre.style.removeProperty('--charsLine');
+    flashVideo.style.display  = "none";
+    flashImage.style.display  = "none";
+    flashTitre.style.display  = "none";
+    flash.style.display       = "none";
+    flashWrapper.style.width  = "";
+    flashWrapper.style.height = "";
 
     flashVideo.removeAttribute('src');
     flashImage.removeAttribute('src');
     flashTitre.innerHTML = "";
     flashVideo.load();
 
-    // Notif si succès/échec
+    // notif si succès/échec
     if (succes === true) {
         flash._settled = true;
         window.dispatchEvent(new CustomEvent('flashSucces'));
@@ -576,25 +654,26 @@ function flashAjusterTitre(charsPerLine = 35, mediaRef) {
         return;
     }
 
-    const w = mediaRef ? flashWrapper.offsetWidth  : window.innerWidth;
-    const h = mediaRef ? flashWrapper.offsetHeight : window.innerHeight;
+    const w = flashWrapper.offsetWidth  || window.innerWidth;
+    const h = flashWrapper.offsetHeight || window.innerHeight;
 
     const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
     const largeurFinale = largeurRef * 0.95;
 
     flashTitre.style.setProperty('--finalWidth', `${largeurFinale}px`);
     flashTitre.style.setProperty('--charsLine', charsPerLine);
+    flashTitre.style.fontSize = "";
 
     requestAnimationFrame(() => {
         const hauteurMax = h * 0.8;
-        let taillePolice = parseFloat(getComputedStyle(flashTitre).fontSize);
 
-        while (flashTitre.offsetHeight > hauteurMax && taillePolice > 10) {
-            taillePolice -= 1; 
-            flashTitre.style.fontSize = `${taillePolice}px`;
+        if (flashTitre.offsetHeight > hauteurMax) {
+            const tailleActuelle = parseFloat(getComputedStyle(flashTitre).fontSize);
+            const ratio = hauteurMax / flashTitre.offsetHeight;
+            flashTitre.style.fontSize = `${Math.max(tailleActuelle * ratio, 10)}px`;
         }
 
-        flashTitre.style.visibility = "visible"
+        flashTitre.style.visibility = "visible";
         if (mediaRef) mediaRef.style.visibility = "visible";
     });
 }
@@ -634,9 +713,8 @@ function flashResetAll() {
 function flashTest() {
     flashResetConfig();
     flashConfig.video = "../videos/Screaming chicken on tree meme.mp4";
-    flashStart()
-        .then(() => console.log("test réussi"))
-        .catch(() => console.log("échec test"));
+    flashStart().catch((e) => console.log("échec test", e));
+    flashTermine().then(() => console.log("test réussi"))
 }
 
-const flashPage = () => window.open("flashPage.html");
+function flashPage() {window.open("flashPage.html");}
