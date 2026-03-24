@@ -710,7 +710,7 @@ header.scrolled nav a {
 }
 
 #imgcontact {
-    width: 600px;
+    width: clamp(100px, 30%, 600px);
     height: 500px;
     display: flex;
     justify-content: center;

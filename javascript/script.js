@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         flashTitre.innerHTML = "ptit con va";
                     }, 4000);
                 });
-            flashTermine()
+            flashDone()
                 .then(() => {
                     clearInterval(intervalBg);
                     clearTimeout(timerTexte);
@@ -574,7 +574,7 @@ async function flashStart() {
 
 let _resolveTermine;
 let _rejectTermine;
-function flashTermine() {
+function flashDone() {
     if (_resolveTermine) window.removeEventListener('flashSucces', _resolveTermine);
     if (_rejectTermine)  window.removeEventListener('flashEchec',  _rejectTermine);
 
@@ -714,7 +714,7 @@ function flashTest() {
     flashResetConfig();
     flashConfig.video = "../videos/Screaming chicken on tree meme.mp4";
     flashStart().catch((e) => console.log("échec test", e));
-    flashTermine().then(() => console.log("test réussi"))
+    flashDone().then(() => console.log("test réussi"))
 }
 
 function flashPage() {window.open("flashPage.html");}

@@ -472,7 +472,7 @@
 
         let _resolveTermine;
         let _rejectTermine;
-        function flashTermine() {
+        function flashDone() {
             if (_resolveTermine) window.removeEventListener('flashSucces', _resolveTermine);
             if (_rejectTermine)  window.removeEventListener('flashEchec',  _rejectTermine);
 
@@ -665,7 +665,7 @@
             flashStart()
                 .then(() => console.log("flash chargé et affiché"))
                 .catch((e) => console.warn("erreur chargement flash", e));
-            flashTermine()
+            flashDone()
                 .then(() => console.log("flash terminé après lecture complète"))
                 .catch(() => console.warn("flash fermé à cause d'une erreur"));
         }
