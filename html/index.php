@@ -37,15 +37,12 @@ include '../includes/header.php';
     <div class="slideshow-container">
         <div class="mySlides fade">
             <img src="../images/actu1.jpg" alt="Actualité 1" onclick="window.open('https://www.myefrei.fr/portal/student/slides/y2gx4ljzozw7gupo', '_blank')">
-            <div class="text-overlay"><p>Texte 1 - Carrousel 1</p></div>
         </div>
         <div class="mySlides fade">
             <img src="../images/actu2.jpg" alt="Actualité 2" onclick="window.open('https://www.myefrei.fr/portal/student/slides/m649gg3h2yqkq2gv', '_blank')">
-            <div class="text-overlay"><p>Texte 2 - Carrousel 1</p></div>
         </div>
         <div class="mySlides fade">
             <img src="../images/actu3.jpg" alt="Actualité 3" onclick="window.open('https://www.myefrei.fr/portal/student/slides/6yotqstd7af15jwt', '_blank')">
-            <div class="text-overlay"><p>Texte 3 - Carrousel 1</p></div>
         </div>
 
         <button type="button" class="prev" onclick="plusSlides(this, -1)" aria-label="Précédent">&#10094;</button>
