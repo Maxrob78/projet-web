@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.resetFormulaire = function () {
         document.getElementById('QuizId').reset();
         document.getElementById('item-id').value           = "";
-        document.getElementById('submitbtn').textContent   = "Ajouter";
+        document.getElementById('submitbtn').textContent   = "Enregistrer";
         document.getElementById('deletebtn').style.display = "none";
         document.getElementById('legende-form').innerHTML = "ajouter un élément";
 
