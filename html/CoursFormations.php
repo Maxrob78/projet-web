@@ -26,15 +26,15 @@ include '../includes/header.php';
 <section id="contactretour">
     <form action="ajouter_cours.php" method="POST" name="Quiz" id="QuizId" class="box" enctype="multipart/form-data">
         <fieldset id="informations">
-            <legend>AJOUTER / MODIFIER UN COURS OU UNE FORMATION</legend>
+            <legend id="legende-form" style="text-transform: uppercase;">ajouter un élément</legend>
             <input type="hidden" id="item-id" name="id" value="">
             <p>
-                <label for="nom">Nom</label><br>
+                <label for="nom">Nom*</label><br>
                 <input type="text" id="nom" name="nom" required>
             </p>
 
             <p>
-                <label for="description">Description</label><br>
+                <label for="description">Description*</label><br>
                 <textarea id="description" name="description" rows="5" required></textarea>
             </p>
 

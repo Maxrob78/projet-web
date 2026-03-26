@@ -17,7 +17,7 @@
                 <p>83 Rue Lucien Faure, 33000 Bordeaux</p>
             </div>
             <div class="footer">
-                <a href="contact.php"><p>A propos</p></a>
+                <a href="contact.php">A propos</a>
             </div>
             <img id="logodufooter" src="../images/logo_footer.svg" alt="logo efrei">
         </div>

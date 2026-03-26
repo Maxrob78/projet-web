@@ -13,7 +13,7 @@ include '../includes/header.php';
             concernant. Cependant, pour certaines fonctionnalités du site, vous pouvez être amené à fournir des données
             personnelles (par exemple, lors de l’inscription à une newsletter ou de la soumission d’un formulaire de
             contact).<br> Dans tous les cas, nous nous engageons à ne collecter que les données nécessaires et à les traiter
-            de manière transparente et sécurisée.
+            de manière transparente et sécurisée.</p>
     </div>
     <div class="aproposlegal">
         <h2>Notre politique de cookie</h2>
