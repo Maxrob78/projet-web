@@ -102,10 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
         let timerClics = null;
         let intervalBg = null;
         let timerTexte = null;
+        const page = window.location.pathname;
 
         function epilepsie() {
             flashResetConfig();
-            flashConfig.texte = "c sa que tu veux ?";
+            flashConfig.texte = "c ça que tu veux ?";
             flashConfig.duree = 6;
 
             flashStart()
@@ -117,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }, 50);
 
                     timerTexte = setTimeout(() => {
-                        flashTitre.innerHTML = "ptit con va";
+                        flashTitre.innerHTML = "voila dit merci mtn";
                     }, 4000);
                 });
             flashDone()
@@ -145,11 +146,11 @@ document.addEventListener("DOMContentLoaded", function () {
             clicsTheme++;
             clearTimeout(timerClics);
 
-            if (clicsTheme >= 11) {
+            if (clicsTheme >= 11 && (header.classList.contains('scrolled') || !page.includes('index.php'))) {
                 clicsTheme = 0;
                 epilepsie();
             } else {
-                timerClics = setTimeout(() => { clicsTheme = 0; }, 500);
+                timerClics = setTimeout(() => { clicsTheme = 0; }, 200);
             }
         });
     }
@@ -235,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.resetFormulaire = function () {
         document.getElementById('QuizId').reset();
         document.getElementById('item-id').value           = "";
-        document.getElementById('submitbtn').textContent   = "Envoyer";
+        document.getElementById('submitbtn').textContent   = "Ajouter";
         document.getElementById('deletebtn').style.display = "none";
         document.getElementById('legende-form').innerHTML = "ajouter un élément";
 

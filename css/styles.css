@@ -65,6 +65,11 @@ body>*:not(header):not(footer):not(#flashMedia) {
     flex: 1 0 auto;
 }
 
+html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+}
+
 
 /* ==========================================================================
    3. HEADER & NAVIGATION
@@ -202,6 +207,7 @@ header.scrolled nav a {
     align-items: center;
     pointer-events: none;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 #flashMedia img,
@@ -819,12 +825,11 @@ textarea:hover {
 /* --- Boutons du formulaire --- */
 
 .form-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
     gap: 15px;
     margin-top: 25px;
-    align-items: center;
-    justify-content: center;
 }
 
 #submitbtn,
@@ -842,44 +847,42 @@ textarea:hover {
 }
 
 #submitbtn {
+    grid-column: 1;
+    grid-row: 1;
     background-color: #4d8dc6;
     border-color: #3670a4;
-    order: 1;
-    flex: 1;
 }
-
-#submitbtn:hover {
-    background-color: #469ae3;
-    box-shadow: 0 0 30px rgba(61, 131, 191, 0.6);
-    transform: scale(1.05);
+#submitbtn:hover { 
+    background-color: #469ae3; 
+    box-shadow: 0 0 30px rgba(61,131,191,0.6); 
+    transform: scale(1.05); 
 }
 
 #deletebtn {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: none;
+    width: auto;
+    box-sizing: border-box;
     background-color: #e74c3c;
     border-color: #c0392b;
-    display: none;
-    order: 3;
-    width: 100%;
-    flex-shrink: 0;
 }
-
-#deletebtn:hover {
+#deletebtn:hover { 
     background-color: #ff5e4d;
-    box-shadow: 0 0 30px rgba(231, 76, 60, 0.6);
-    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(231,76,60,0.6); 
+    transform: scale(1.05); 
 }
 
 #resetbtn {
+    grid-column: 2;
+    grid-row: 1;
     background-color: #5d6d7e;
     border-color: #34495e;
-    order: 2;
-    flex: 1;
 }
-
-#resetbtn:hover {
-    background-color: #7f8c8d;
-    box-shadow: 0 0 30px rgba(93, 109, 126, 0.6);
-    transform: scale(1.05);
+#resetbtn:hover { 
+    background-color: #7f8c8d; 
+    box-shadow: 0 0 30px rgba(93,109,126,0.6); 
+    transform: scale(1.05); 
 }
 
 /* --- Drop zone upload image --- */
@@ -1107,8 +1110,12 @@ footer {
     }
 
     /* --- Cours & Formations → 2 cartes par ligne --- */
+    .cours {
+        gap: 20px;
+    }
+
     .carte {
-        width: calc(50% - 25px);
+        width: calc(50% - 10px);
     }
 
     /* --- Carrousel --- */

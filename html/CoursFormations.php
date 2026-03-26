@@ -52,7 +52,7 @@ include '../includes/header.php';
             <input type="file" id="file-input" name="image" style="display:none" accept="image/*">
 
             <div class="form-actions">
-                <button id="submitbtn" type="submit">Enregistrer</button>
+                <button id="submitbtn" type="submit">Ajouter</button>
                 <button type="button" id="deletebtn" class="btn-danger" style="display:none;">
                     Supprimer
                 </button>
