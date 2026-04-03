@@ -6,8 +6,9 @@ $currentPage = "contact";
 // Traitement du formulaire
 $messageSucces = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit-form'])) {
-    $nom = htmlspecialchars($_POST['nom']);
-    $messageSucces = "Merci $nom, votre message a bien été reçu !";
+    $nom = htmlspecialchars(trim($_POST['nom']));
+    $msg = htmlspecialchars(trim($_POST['message']));
+    $messageSucces = "Merci $nom, votre message a bien été envoyé !"; // pas vrai
 }
 
 include '../includes/header.php';
@@ -30,14 +31,11 @@ include '../includes/header.php';
     </iframe>
 </div>
 
+<p id="submitmsg" style="color: #00bafe;font-weight: bold;text-align: center; margin-top: -20px; margin-bottom: 20px; scroll-margin-top: 90px;"><?php echo $messageSucces; ?></p>
 <section id="contactretour">
-
-    <form action="#contactretour" method="post" name="Quiz" id="contactID" class="box">
+    <form action="#submitmsg" method="post" name="Quiz" id="contactID" class="box">
         <fieldset id="informations">
             <legend>CONTACT</legend>
-            <?php if ($messageSucces): ?>
-                <p style="color: #00bafe;font-weight: bold;text-align: center; margin-top: -20px; margin-bottom: 20px;"><?php echo $messageSucces; ?></p>
-            <?php endif; ?>
 
             <p>
                 <label for="nom">Nom*</label><br>

@@ -34,16 +34,16 @@ include '../includes/header.php';
             </p>
 
             <p>
-                <label for="description">Description*</label><br>
-                <textarea id="description" name="description" rows="5" required></textarea>
-            </p>
-
-            <p>
                 <label for="type-choix">Type</label><br>
                 <select id="type-choix" name="type-choix">
                     <option value="cours">Cours</option>
                     <option value="formations">Formation</option>
                 </select>
+            </p>
+
+            <p>
+                <label for="description">Description*</label><br>
+                <textarea id="description" name="description" rows="5" required></textarea>
             </p>
 
             <div id="drop-zone" class="upload-box">
