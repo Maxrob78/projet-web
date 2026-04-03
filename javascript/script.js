@@ -90,38 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // 3. THÈME — DARK MODE
     // =========================================================================
 
-    let clicsTheme = 0;
-    let timerClics = null;
-    let intervalBg = null;
-    let timerTexte = null;
-    const page = window.location.pathname;
-
-    function epilepsie() {
-        flashResetConfig();
-        flashConfig.texte = "c ça que tu veux ?";
-        flashConfig.duree = 6;
-
-        flashStart()
-            .then(() => {
-                let blanc = true;
-                intervalBg = setInterval(() => {
-                    flash.style.backgroundColor = blanc ? "#ffffff" : "#000000";
-                    blanc = !blanc;
-                }, 50);
-
-                timerTexte = setTimeout(() => {
-                    flashTitre.innerHTML = "voila dit merci mtn";
-                }, 4000);
-            });
-        flashDone()
-            .then(() => {
-                clearInterval(intervalBg);
-                clearTimeout(timerTexte);
-                flash.style.backgroundColor = "";
-            })
-            .catch((e) => console.warn(e));
-    }
-
     const toggleBtn = document.getElementById('theme-toggle');
     if (toggleBtn) {
         if (localStorage.getItem('theme') === 'dark') {
@@ -140,16 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 toggleBtn.textContent = '☀️';
                 localStorage.setItem('theme', 'dark');
-            }
-
-            clicsTheme++;
-            clearTimeout(timerClics);
-
-            if (clicsTheme >= 11 && (header.classList.contains('scrolled') || !page.includes('index.php'))) {
-                clicsTheme = 0;
-                epilepsie();
-            } else {
-                timerClics = setTimeout(() => { clicsTheme = 0; }, 200);
             }
         });
     }
