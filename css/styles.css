@@ -248,7 +248,7 @@ header.scrolled nav a {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
     paint-order: stroke fill;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 0 10px black;
     line-height: 1.2;
     letter-spacing: 3px;
     z-index: 10;
