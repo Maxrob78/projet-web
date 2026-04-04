@@ -41,7 +41,7 @@
         {
             "id": 1,
             "nom": "D\u00e9veloppeur Web et IA",
-            "description": "Il apporte les connaissances nécessaires pour développer un site web, une application mobile ou n’importe quel logiciel",
+            "description": "Il apporte les connaissances nécessaires pour développer un site web, une application mobile ou n\u2019importe quel logiciel",
             "image": "..\/images\/web-et-ia-formation.jpg"
         },
         {
@@ -59,7 +59,7 @@
         {
             "id": 4,
             "nom": "Data Engineering & IA",
-            "description": "Centrées autour de la gestion de données, de l’intelligence artificielle et du cloud pour répondre aux besoins des entreprises en pleine transformation digitale.",
+            "description": "Centrées autour de la gestion de données, de l\u2019intelligence artificielle et du cloud pour répondre aux besoins des entreprises en pleine transformation digitale.",
             "image": "..\/images\/data-formation.webp"
         },
         {
@@ -71,7 +71,7 @@
         {
             "id": 6,
             "nom": "Chef de projet e-commerce",
-            "description": "Apprenez à concevoir, gérer et optimiser une plateforme e-commerce en pilotant la stratégie digitale et le développement commercial d’une entreprise.",
+            "description": "Apprenez à concevoir, gérer et optimiser une plateforme e-commerce en pilotant la stratégie digitale et le développement commercial d\u2019une entreprise.",
             "image": "..\/images\/ecommerce-formation.png"
         }
     ]
