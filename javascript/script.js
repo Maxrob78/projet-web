@@ -321,7 +321,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const attendre = (s) => new Promise(resolve => setTimeout(resolve, s * 1000));
     let tentativesInterdit = 0;
-    let bonusTexteTimeout  = null;
     let sanctionEnCours = false;
 
     function trouverMotsInterdit(message) {
@@ -351,31 +350,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (avecBonus) {
                 flashResetConfig();
-           
                 await countdownFinal("");
 
                 flashConfig.video = bonusvideo;
                 await flashStart(true);
-                bonusTexteTimeout = setTimeout(() => {
-                    flashTitre.innerHTML = "je t'avais prévenu";
-                }, 10000);
                 await flashDone();
-            
-                clearTimeout(bonusTexteTimeout);
-                bonusTexteTimeout = null;
-                flashResetDOMStyles();
             }
             else flashStop(1);
         } catch {}
         finally {
-            clearTimeout(bonusTexteTimeout);
-            bonusTexteTimeout = null;
             flashResetDOMStyles();
             sanctionEnCours = false;
         }
     }
 
-    async function countdownFinal(titreFixe = "", secondes = 10, nvFlash = false, fin = false) {
+    async function countdownFinal(titreFixe = "", secondes = 10) {
         const formaterTemps = (s) => `00:${String(s).padStart(2, '0')}`; // 00:10, 00:09, ... 00:00
 
         flashConfig.video = "../videos/décompte.mp4";
@@ -388,26 +377,22 @@ document.addEventListener("DOMContentLoaded", function () {
         let opacite = 0;
         
         try { 
-            await flashStart(!nvFlash);
+            await flashStart(true);
             flashImage.style.transition = "opacity 1.2s linear";
         } catch { return; }
 
-        while (secondes > 0) {
+        while (secondes >= 0) {
             await attendre(1.15);
             secondes--;
             opacite += 0.03;
             flashTitre.innerHTML = flashConfig.texte.replace(/00:\d{2}/, formaterTemps(secondes));
             flashImage.style.opacity = opacite;
 
-            if (flashVideo.ended) break;
+            if (secondes == 0 || flashVideo.ended) break;
         }
         
-        opacite += 0.03;
-        flashTitre.innerHTML = flashConfig.texte.replace(/00:\d{2}/, formaterTemps(secondes));
-        flashImage.style.opacity = opacite;
         flashTitre.style.color = "red";
         await attendre(0.8);
-        if (fin) flashStop(1);
         flashResetConfig();
         flashTitre.removeAttribute('style');
         flashImage.removeAttribute('style');
