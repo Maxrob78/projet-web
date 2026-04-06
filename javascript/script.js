@@ -354,6 +354,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 flashConfig.video = bonusvideo;
                 await flashStart(true);
+                setTimeout(() => { 
+                    flashTitre.textContent = "souffre mtn"; 
+                }, 10000);
                 await flashDone();
             }
             else flashStop(1);
@@ -469,11 +472,16 @@ window.addEventListener('resize', () => {
         flashAjusterTitre(chars);
     }, 100);
 });
+
 const observerTitre = new MutationObserver(() => {
     if (!flash._sessionId) return;
     const chars = flash.classList.contains('noMedia') ? 60 : 40;
     flashAjusterTitre(chars);
+
+    if (flashTitre.textContent.trim()) flashTitre.style.visibility = "visible";
+    else flashTitre.style.visibility = "hidden";
 });
+
 let _mediaChangeTimeout;
 let _observerIgnore = false;
 const observerMedia = new MutationObserver((mutations) => {
@@ -545,28 +553,31 @@ function flashPrepare() {
         flashConfig.duree = (dur > 0) ? dur : 'auto';
     }
 
-    // Application des src dans le DOM 
     _observerIgnore = true;
-    if (flashConfig.video) {
-        flashVideo.src = flashConfig.video;
-    } else {
-        flashVideo.removeAttribute('src');
-    }
-    flashVideo.load();
 
-    if (flashConfig.image) flashImage.src = flashConfig.image;
-    else flashImage.removeAttribute('src');
+    // Application des src dans le DOM 
+    if (flashVideo.getAttribute('src') !== flashConfig.video) {
+        if (flashConfig.video) flashVideo.src = flashConfig.video;
+        else flashVideo.removeAttribute('src');
+        flashVideo.load();
+    }
+
+    if (flashImage.getAttribute('src') !== flashConfig.image) {
+        if (flashConfig.image) flashImage.src = flashConfig.image;
+        else flashImage.removeAttribute('src');
+    }
 
     flashTitre.innerHTML = flashConfig.texte || "";
 
     // Préconfiguration des propriétés DOM vidéo 
-    if (flashConfig.video.src) {
+    if (flashVideo.getAttribute('src')) {
         flashVideo.volume       = flashConfig.volume;
         flashVideo.playbackRate = flashConfig.vitesse;
         flashVideo.muted        = flashConfig.volume === 0;
+        flashVideo.loop         = flashConfig.duree === 'inf' || typeof flashConfig.duree === 'number';
     }
 
-    setTimeout(() => { _observerIgnore = false; }, 0);
+    setTimeout(() => _observerIgnore = false, 0);
     console.log("Flash préparé : ", flashConfig);
     return true;
 }
@@ -596,9 +607,9 @@ let flashTimeout;
 
 async function flashStart(isReload = false) {
     if (isReload && !flash._sessionId) throw "pas de session active à recharger.";
-    flashStop(isReload ? "010_" : "111_");
+    flashStop(isReload ? "010_" : "");
     if (!flashPrepare()) { 
-        flashStop("1110"); 
+        flashStop(1110); 
         throw "config invalide"; 
     }
 
@@ -609,21 +620,22 @@ async function flashStart(isReload = false) {
     const sessionId = flash._sessionId; 
     const estActif  = () => flash._sessionId === sessionId;
 
-    let hasVideo = !!flashVideo.src;
-    let hasImage = !!flashImage.src;
+    let hasVideo = flashVideo.getAttribute('src');
+    let hasImage = flashImage.getAttribute('src');
+    let hasTexte = flashTitre.textContent.trim();
 
     if (!hasImage && (flashConfig.isAudio || !hasVideo)) flash.classList.add('noMedia');
     else flash.classList.remove('noMedia');
 
-    flashVideo.style.visibility = "hidden";
-    flashImage.style.visibility = "hidden";
-    flashTitre.style.visibility = "hidden";
+    if (!hasVideo || flashConfig.isAudio) flashVideo.style.visibility = "hidden";
+    if (!hasImage) flashImage.style.visibility = "hidden";
+    if (!hasTexte) flashTitre.style.visibility = "hidden";
     if (!isReload) {
         flash.style.visibility = "hidden";
         flash.style.display    = "flex";
     }
 
-    if (flashConfig.texte) {
+    if (hasTexte) {
         flashTitre.style.visibility = "visible";
         if (flash.classList.contains('noMedia')) flashAjusterTitre(60);
     }
@@ -644,7 +656,7 @@ async function flashStart(isReload = false) {
                         hasImage = false;
                         flashAjusterTitre();
                     } else {
-                        flashStop("1110"); 
+                        flashStop(1110); 
                         throw "Erreur chargement image"; 
                     }
                 })
@@ -653,7 +665,6 @@ async function flashStart(isReload = false) {
 
     if (hasVideo) {
         if (!flashConfig.isAudio) flashVideo.style.visibility = "visible";
-
         jobs.push(
             whenVideoMeta(flashVideo)
                 .then(() => {
@@ -669,7 +680,7 @@ async function flashStart(isReload = false) {
                         flashVideo.load();
                         hasVideo = false;
                     } else {
-                        flashStop("1110"); 
+                        flashStop(1110);
                         throw "Erreur chargement vidéo";
                     }
                 })
@@ -689,26 +700,23 @@ async function flashStart(isReload = false) {
                 flashVideo.muted = true;
                 try { await flashVideo.play(); }
                 catch {
-                    flashStop("1110"); 
+                    flashStop(1110);
                     throw "erreur lecture vidéo bloquée.";
                 }
             } 
             else if (hasImage) console.warn("Erreur lecture vidéo, image seule.");
             else {
-                flashStop("1110"); 
+                flashStop(1110);
                 throw "erreur lecture vidéo.";
             }
         }
         if (!estActif()) { flashVideo.pause(); throw "session annulée."; }
     }
 
-    // Gestion fermeture
-    if (flashConfig.duree === 'inf') {
-        if (hasVideo) flashVideo.loop = true;
-    } else if (typeof flashConfig.duree === 'number') {
-        if (hasVideo) flashVideo.loop = true;
+    // Gestion fermeture auto
+    if (typeof flashConfig.duree === 'number') {
         flashTimeout = setTimeout(() => flashStop(1), flashConfig.duree * 1000);
-    } else {
+    } else if (flashConfig.duree === 'auto') {
         if (hasVideo) flashVideo.onended = () => flashStop(1);
         else flashTimeout = setTimeout(() => flashStop(1), 7000);
     }
@@ -738,30 +746,25 @@ function flashStop(code) {
     const ch = c.padEnd(4, c.slice(-1) || "_")
                 .slice(0, 4).split("").map(Number);
 
-    if (ch[0] != 0) {
+    if (ch[0] !== 0) {
         flash._sessionId = null;
         flash.style.display = "none";
     }
-    if (ch[1] != 0) {
+    if (ch[1] !== 0) {
         clearTimeout(flashTimeout);
         flashVideo.onended          = null;
         flashVideo.onloadedmetadata = null;
         flashVideo.onerror          = null;
         flashImage.onload           = null;
         flashImage.onerror          = null;
-
-        flashVideo.pause();
-        flashVideo.currentTime = 0;
-        flashVideo.muted       = false;
-        flashVideo.loop        = false;
     }
-    if (ch[2] != 0) flashClearDOM();
+    if (ch[2] !== 0) flashClearDOM();
 
     // notif si succès/échec (dans flashDone.then ou .catch)
     if (ch[3] > 0) {
         flash._settled = true;
         window.dispatchEvent(new CustomEvent('flashSucces'));
-    } else if (ch[3] == 0 && !flash._settled) {
+    } else if (ch[3] === 0 && !flash._settled) {
         flash._settled = true;
         window.dispatchEvent(new CustomEvent('flashEchec'));
     }
@@ -786,11 +789,11 @@ function flashUpscale(media) {
 }
 
 function flashAjusterTitre(charsPerLine = 40) {
-    if (!flashTitre || !flashTitre.innerHTML) return;
-    
+    if (!flash._sessionId || !flashTitre.textContent.trim()) return;
 
     const w = flashWrapper.offsetWidth  || window.innerWidth;
     const h = flashWrapper.offsetHeight || window.innerHeight;
+    if (w === 0 || h === 0) return;
 
     const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
     const largeurFinale = largeurRef * 0.95;
