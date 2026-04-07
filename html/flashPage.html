@@ -377,15 +377,15 @@
             else flashTitre.style.visibility = "hidden";
         });
 
-        let _mediaChangeTimeout;
-        let _observerIgnore = false;
+        let mediaChangeTimeout;
+        let observerIgnore = false;
         const observerMedia = new MutationObserver((mutations) => {
-            if (!flash._sessionId || _observerIgnore) return;
+            if (!flash._sessionId || observerIgnore) return;
 
             const changed = new Set(mutations.map(m => m.target));
 
-            clearTimeout(_mediaChangeTimeout);
-            _mediaChangeTimeout = setTimeout(() => {
+            clearTimeout(mediaChangeTimeout);
+            mediaChangeTimeout = setTimeout(() => {
                 changed.forEach(media => {
                     if (media === flashVideo) flashConfig.video.src = flashVideo.getAttribute('src') ?? "";
                     else flashConfig.imageSrc = flashImage.getAttribute('src') ?? "";
@@ -434,25 +434,20 @@
             // Validation & ajustement des paramètres vidéo 
             if (flashConfig.video.src) {
                 const cfg = flashConfig.video;
+                const ext = cfg.src.split('.').pop().toLowerCase();
+                const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
 
-                cfg.time    = Math.max(parseFloat(cfg.time),    0) || 0;
+                cfg.time    = Math.max(parseFloat(cfg.time), 0) || 0;
                 cfg.volume  = Math.min(Math.max(parseFloat(cfg.volume)  || 0, 0), 1);
                 cfg.vitesse = Math.min(Math.max(parseFloat(cfg.vitesse) || 0, 0.1), 16);
-
-                if (flashConfig.imageSrc) cfg.isAudio = true;
-                else {
-                    const ext = cfg.src.split('.').pop().toLowerCase();
-                    const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
-                    cfg.isAudio = formatsAudio.includes(ext)
-                        ? true
-                        : (typeof cfg.isAudio === 'boolean' ? cfg.isAudio : false);
-                }
+                cfg.isAudio = formatsAudio.includes(ext) || flashConfig.imageSrc
+                    ? true : cfg.isAudio === true;
             }
 
             // Validation durée 
             if (flashConfig.duree !== 'inf') {
                 const dur = parseFloat(flashConfig.duree);
-                flashConfig.duree = (dur > 0) ? dur : 'auto';
+                flashConfig.duree = dur > 0 ? dur : 'auto';
             }
 
             console.log("Flash préparé : ", flashConfig);
@@ -487,7 +482,7 @@
 
             flashStop(isReload ? "010_" : "");
             if (!flashValide()) throw new Error("config invalide");
-            flashSyncDOM();
+            const videoChanged = flashSyncDOM();
 
             if (!isReload) {
                 flash._sessionId = Symbol();
@@ -520,10 +515,12 @@
             const jobs = [];
 
             if (hasImage) {
-                flashImage.style.visibility = "visible";
                 jobs.push(
                     whenImageLoad(flashImage)
-                        .then(() => { if (estActif()) flashUpscale(flashImage); })
+                        .then(() => { 
+                            if (estActif()) flashUpscale(flashImage); 
+                            flashImage.style.visibility = "visible";
+                        })
                         .catch(() => { 
                             if (hasVideo) {
                                 console.warn("Erreur image, audio seul.");
@@ -540,13 +537,13 @@
             }
 
             if (hasVideo) {
-                if (!flashConfig.video.isAudio) flashVideo.style.visibility = "visible";
                 jobs.push(
                     whenVideoMeta(flashVideo)
                         .then(() => {
                             if (!estActif()) throw new Error("session annulée.");
                             if (!flashConfig.video.isAudio) flashUpscale(flashVideo);
-                            flashVideo.currentTime = flashConfig.video.time < flashVideo.duration 
+                            if (!flashConfig.video.isAudio) flashVideo.style.visibility = "visible";
+                            if (videoChanged) flashVideo.currentTime = flashConfig.video.time < flashVideo.duration 
                                 ? flashConfig.video.time : 0;
                         })
                         .catch(() => { 
@@ -589,17 +586,11 @@
                 if (!estActif()) { flashVideo.pause(); throw new Error("session annulée."); }
             }
 
-            // Gestion fermeture
-            if (flashConfig.duree === 'inf') {
-                if (hasVideo) flashVideo.loop = true;
-            } else if (typeof flashConfig.duree === 'number') {
-                if (hasVideo) flashVideo.loop = true;
+            // Gestion fermeture auto
+            if (typeof flashConfig.duree === 'number') {
                 flashTimeout = setTimeout(() => flashStop(1), flashConfig.duree * 1000);
-            } else {
-                if (hasVideo) {
-                    flashVideo.loop = false;
-                    flashVideo.onended = () => flashStop(1);
-                } 
+            } else if (flashConfig.duree === 'auto') {
+                if (hasVideo) flashVideo.onended = () => flashStop(1);
                 else flashTimeout = setTimeout(() => flashStop(1), 7000);
             }
         }
@@ -624,15 +615,14 @@
         }
 
         function flashStop(code) {
-            const c  = String(code ?? "").trim();
-            const ch = c.padEnd(4, c.slice(-1) || "_")
-                        .slice(0, 4).split("").map(Number);
+            const tab = [...String(code)].map(c => parseInt(c)).slice(0, 4);
+            while (tab.length < 4) tab.push(tab.at(-1));
 
-            if (ch[0] !== 0) {
+            if (tab[0] !== 0) {
                 flash._sessionId = null;
                 flash.style.display = "none";
             }
-            if (ch[1] !== 0) {
+            if (tab[1] !== 0) {
                 clearTimeout(flashTimeout);
                 flashVideo.onended          = null;
                 flashVideo.onloadedmetadata = null;
@@ -640,17 +630,17 @@
                 flashImage.onload           = null;
                 flashImage.onerror          = null;
             }
-            if (ch[2] !== 0) {
+            if (tab[2] !== 0) {
                 flashVideo.removeAttribute('src');
                 flashImage.removeAttribute('src');
                 flashVideo.load();
             }
 
             // notif si succès/échec (dans flashDone.then ou .catch)
-            if (ch[3] > 0) {
+            if (tab[3] > 0) {
                 flash._settled = true;
                 window.dispatchEvent(new CustomEvent('flashSucces'));
-            } else if (ch[3] === 0 && !flash._settled) {
+            } else if (tab[3] === 0 && !flash._settled) {
                 flash._settled = true;
                 window.dispatchEvent(new CustomEvent('flashEchec'));
             }
@@ -706,9 +696,11 @@
 
 
         function flashSyncDOM() {
-            _observerIgnore = true;
+            observerIgnore = true;
+            let videoChange = false;
 
             if (flashVideo.getAttribute('src') !== flashConfig.video.src) {
+                videoChange = true;
                 if (flashConfig.video.src) flashVideo.src = flashConfig.video.src;
                 else flashVideo.removeAttribute('src');
                 flashVideo.load();
@@ -725,9 +717,11 @@
                 flashVideo.volume       = flashConfig.video.volume;
                 flashVideo.playbackRate = flashConfig.video.vitesse;
                 flashVideo.muted        = flashConfig.video.volume === 0;
+                flashVideo.loop         = flashConfig.duree === 'inf' || typeof flashConfig.duree === 'number';
             }
 
-            setTimeout(() => _observerIgnore = false, 0);
+            setTimeout(() => observerIgnore = false, 0);
+            return videoChange;
         }
 
         function flashResetConfig() {
@@ -739,7 +733,7 @@
 
         function flashResetStyles(styles = [], elements = []) {
             const cibles = elements.length > 0 ? elements : [flash, flashVideo, flashImage, flashTitre, flashWrapper];
-            const ciblesValides = cibles.filter(el => el instanceof Element);
+            const ciblesValides = cibles.filter(el => el instanceof HTMLElement);
 
             ciblesValides.forEach(el => {
                 if (styles.length > 0) {
@@ -850,7 +844,7 @@
         function resetUI() {
             flashStop();
             flashResetConfig();
-            flashClearDOM();
+            flashSyncDOM();
 
             document.getElementById('ctrlTexte').value = "";
             document.getElementById('ctrlTime').value = 0;
@@ -869,7 +863,6 @@
         PLAYGROUND — Exécution JS embarquée (détournement XSS contrôlé)
         ========================================================================== */
 
-        // Sauvegarde des originaux une fois pour toutes — avant tout patch
         const _consoleLog   = console.log;
         const _consoleWarn  = console.warn;
         const _consoleError = console.error;
@@ -883,12 +876,36 @@
             const timestamp = new Date().toLocaleTimeString();
             output.innerHTML = `<div style="color:#2e3347; margin-bottom:6px; border-bottom:1px solid #1a1d27; padding-bottom:4px;">▶ Exécuté à ${timestamp}</div>`;
 
-            function appendLog(color, ...args) {
-                const text = args.map(a => {
-                    try { return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a); }
-                    catch { return String(a); }
-                }).join(' ');
+            function serialize(val, indent = 0) {
+                const pad      = '  '.repeat(indent);
+                const padInner = '  '.repeat(indent + 1);
 
+                if (val === undefined)          return 'undefined';
+                if (val === null)               return 'null';
+                if (typeof val === 'string')    return `"${val}"`;
+                if (typeof val === 'number')    return String(val);
+                if (typeof val === 'boolean')   return String(val);
+                if (typeof val === 'function')  return val.toString();
+                if (val instanceof Error)       return `${val.name}: ${val.message}`;
+                if (val instanceof Element)     return val.outerHTML;
+
+                if (Array.isArray(val)) {
+                    if (val.length === 0) return '[]';
+                    const items = val.map(v => `${padInner}${serialize(v, indent + 1)}`).join(',\n');
+                    return `[\n${items}\n${pad}]`;
+                }
+
+                if (typeof val === 'object') {
+                    const entries = Object.entries(val);
+                    if (entries.length === 0) return '{}';
+                    const items = entries.map(([k, v]) => `${padInner}"${k}": ${serialize(v, indent + 1)}`).join(',\n');
+                    return `{\n${items}\n${pad}}`;
+                }
+
+                return String(val);
+            }
+
+            function appendRaw(color, text) {
                 const line = document.createElement('div');
                 line.style.cssText = `color:${color}; margin:2px 0; white-space:pre-wrap;`;
                 line.textContent = text;
@@ -896,25 +913,29 @@
                 output.scrollTop = output.scrollHeight;
             }
 
-            // On patch toujours depuis les originaux — pas depuis console.log courant
+            function appendLog(color, ...args) {
+                appendRaw(color, args.map(serialize).join(' '));
+            }
+
             console.log   = (...args) => { appendLog('#a8d8a8', ...args); _consoleLog(...args);   };
             console.warn  = (...args) => { appendLog('#f0c040', ...args); _consoleWarn(...args);  };
             console.error = (...args) => { appendLog('#f07070', ...args); _consoleError(...args); };
 
             try {
-                const fn = new Function(`return (async () => { "use strict"; ${code} })()`);
+                const fn = new Function(
+                    'return (async () => { "use strict";\n' + code + '\n})()'
+                );
                 const returnVal = await fn();
 
-                if (returnVal !== undefined) {
-                    try {
-                        const formatted = typeof returnVal === 'object'
-                            ? JSON.stringify(returnVal, null, 2)
-                            : String(returnVal);
-                        appendLog('#7ab8f5', `↩ ${formatted}`);
-                    } catch { appendLog('#7ab8f5', `↩ ${String(returnVal)}`); }
-                }
+                appendRaw(
+                    returnVal === undefined ? '#4a5568' : '#7ab8f5',
+                    '↩ ' + serialize(returnVal)
+                );
             } catch (err) {
-                appendLog('#f07070', `${err.name}: ${err.message}`);
+                const msg = err instanceof Error 
+                    ? `${err.name}: ${err.message}` 
+                    : serialize(err);
+                appendRaw('#f07070', msg);
             }
         }
 

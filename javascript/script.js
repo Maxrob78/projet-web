@@ -482,15 +482,15 @@ const observerTitre = new MutationObserver(() => {
     else flashTitre.style.visibility = "hidden";
 });
 
-let _mediaChangeTimeout;
-let _observerIgnore = false;
+let mediaChangeTimeout;
+let observerIgnore = false;
 const observerMedia = new MutationObserver((mutations) => {
-    if (!flash._sessionId || _observerIgnore) return;
+    if (!flash._sessionId || observerIgnore) return;
 
     const changed = new Set(mutations.map(m => m.target));
 
-    clearTimeout(_mediaChangeTimeout);
-    _mediaChangeTimeout = setTimeout(() => {
+    clearTimeout(mediaChangeTimeout);
+    mediaChangeTimeout = setTimeout(() => {
         changed.forEach(media => {
             if (media === flashVideo) flashConfig.video = flashVideo.getAttribute('src') ?? "";
             else flashConfig.image = flashImage.getAttribute('src') ?? "";
@@ -520,6 +520,7 @@ const flashConfig_default = {
 };
 let flashConfig = {...flashConfig_default}; 
 
+let videoChange = false;
 function flashPrepare() {
     // Nettoyage & encodage des sources + vérif si aucune source
     flashConfig.video = encodeURI(String(flashConfig.video ?? "").trim());
@@ -533,30 +534,28 @@ function flashPrepare() {
 
     // Configs vidéo
     if (flashConfig.video) {
+        const ext = flashConfig.video.split('.').pop().toLowerCase();
+        const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+        
         flashConfig.time    = Math.max(parseFloat(flashConfig.time), 0) || 0;
         flashConfig.volume  = Math.min(Math.max(parseFloat(flashConfig.volume) || 0, 0), 1);
         flashConfig.vitesse = Math.min(Math.max(parseFloat(flashConfig.vitesse) || 0, 0.1), 16);
-
-        if (flashConfig.image) flashConfig.isAudio = true;
-        else {
-            const ext = flashConfig.video.split('.').pop().toLowerCase();
-            const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
-            flashConfig.isAudio = formatsAudio.includes(ext)
-                ? true
-                : (typeof flashConfig.isAudio === 'boolean' ? flashConfig.isAudio : false);
-        }
+        flashConfig.isAudio = formatsAudio.includes(ext) || flashConfig.image
+            ? true : flashConfig.isAudio === true;
     }
 
     // Durée
     if (flashConfig.duree !== 'inf') {
         const dur = parseFloat(flashConfig.duree);
-        flashConfig.duree = (dur > 0) ? dur : 'auto';
+        flashConfig.duree = dur > 0 ? dur : 'auto';
     }
 
-    _observerIgnore = true;
+    observerIgnore = true;
+    videoChange = false;
 
     // Application des src dans le DOM 
     if (flashVideo.getAttribute('src') !== flashConfig.video) {
+        videoChange = true;
         if (flashConfig.video) flashVideo.src = flashConfig.video;
         else flashVideo.removeAttribute('src');
         flashVideo.load();
@@ -577,7 +576,7 @@ function flashPrepare() {
         flashVideo.loop         = flashConfig.duree === 'inf' || typeof flashConfig.duree === 'number';
     }
 
-    setTimeout(() => _observerIgnore = false, 0);
+    setTimeout(() => observerIgnore = false, 0);
     console.log("Flash préparé : ", flashConfig);
     return true;
 }
@@ -644,14 +643,16 @@ async function flashStart(isReload = false) {
     const jobs = [];
 
     if (hasImage) {
-        flashImage.style.visibility = "visible";
         jobs.push(
             whenImageLoad(flashImage)
-                .then(() => { if (estActif()) flashUpscale(flashImage); })
+                .then(() => { 
+                    if (estActif()) flashUpscale(flashImage);
+                    flashImage.style.visibility = "visible"; 
+                })
                 .catch(() => { 
                     if (hasVideo) {
                         console.warn("Erreur image, audio seul.");
-                        flashImage.style.display = "none";
+                        flashImage.style.visibility = "hidden";
                         flashImage.removeAttribute('src');
                         hasImage = false;
                         flashAjusterTitre();
@@ -664,13 +665,13 @@ async function flashStart(isReload = false) {
     }
 
     if (hasVideo) {
-        if (!flashConfig.isAudio) flashVideo.style.visibility = "visible";
         jobs.push(
             whenVideoMeta(flashVideo)
                 .then(() => {
                     if (!estActif()) throw "session annulée.";
                     if (!flashConfig.isAudio) flashUpscale(flashVideo);
-                    flashVideo.currentTime = flashConfig.time < flashVideo.duration 
+                    if (!flashConfig.isAudio) flashVideo.style.visibility = "visible";
+                    if (videoChange) flashVideo.currentTime = flashConfig.time < flashVideo.duration 
                         ? flashConfig.time : 0;
                 })
                 .catch(() => { 
@@ -727,24 +728,23 @@ async function flashStart(isReload = false) {
    12. FLASH MEDIA — ARRÊT
    ========================================================================== */
 
-let _resolveDone;
-let _rejectDone;
+let resolveDone;
+let rejectDone;
 function flashDone() {
-    if (_resolveDone) window.removeEventListener('flashSucces', _resolveDone);
-    if (_rejectDone)  window.removeEventListener('flashEchec',  _rejectDone);
+    if (resolveDone) window.removeEventListener('flashSucces', resolveDone);
+    if (rejectDone)  window.removeEventListener('flashEchec',  rejectDone);
 
     return new Promise((resolve, reject) => {
-        _resolveDone = resolve;
-        _rejectDone  = reject;
+        resolveDone = resolve;
+        rejectDone  = reject;
         window.addEventListener('flashSucces', resolve, { once: true });
         window.addEventListener('flashEchec',  reject,  { once: true });
     });
 }
 
 function flashStop(code) {
-    const c  = String(code ?? "").trim();
-    const ch = c.padEnd(4, c.slice(-1) || "_")
-                .slice(0, 4).split("").map(Number);
+    const ch = [...String(code)].map(c => parseInt(c)).slice(0, 4);
+    while (ch.length < 4) ch.push(ch.at(-1));
 
     if (ch[0] !== 0) {
         flash._sessionId = null;
