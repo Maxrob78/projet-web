@@ -372,9 +372,7 @@
             if (!flash._sessionId) return;
             const chars = flash.classList.contains('noMedia') ? 60 : 40;
             flashAjusterTitre(chars);
-
-            if (flashTitre.textContent.trim()) flashTitre.style.visibility = "visible";
-            else flashTitre.style.visibility = "hidden";
+            flashTitre.style.visibility = flashTitre.textContent.trim() ? "visible" : "hidden";
         });
 
         let mediaChangeTimeout;
@@ -616,7 +614,7 @@
 
         function flashStop(code) {
             const tab = [...String(code)].map(c => parseInt(c)).slice(0, 4);
-            while (tab.length < 4) tab.push(tab.at(-1));
+            while (tab.length < 4) tab.push(tab.at(-1) ?? NaN);
 
             if (tab[0] !== 0) {
                 flash._sessionId = null;
@@ -652,7 +650,7 @@
         ========================================================================== */
 
         function flashUpscale(media) {
-            if (!media || flash.style.display === "none") return;
+            if (!media || !flash._sessionId) return;
 
             const originalW = media.tagName === 'IMG' ? media.naturalWidth  : media.videoWidth;
             const originalH = media.tagName === 'IMG' ? media.naturalHeight : media.videoHeight;

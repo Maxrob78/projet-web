@@ -477,9 +477,7 @@ const observerTitre = new MutationObserver(() => {
     if (!flash._sessionId) return;
     const chars = flash.classList.contains('noMedia') ? 60 : 40;
     flashAjusterTitre(chars);
-
-    if (flashTitre.textContent.trim()) flashTitre.style.visibility = "visible";
-    else flashTitre.style.visibility = "hidden";
+    flashTitre.style.visibility = flashTitre.textContent.trim() ? "visible" : "hidden";
 });
 
 let mediaChangeTimeout;
@@ -744,7 +742,7 @@ function flashDone() {
 
 function flashStop(code) {
     const ch = [...String(code)].map(c => parseInt(c)).slice(0, 4);
-    while (ch.length < 4) ch.push(ch.at(-1));
+    while (ch.length < 4) ch.push(ch.at(-1) ?? NaN);
 
     if (ch[0] !== 0) {
         flash._sessionId = null;
