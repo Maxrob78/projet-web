@@ -894,9 +894,9 @@
                 }
 
                 if (typeof val === 'object') {
-                    const entries = Object.entries(val);
-                    if (entries.length === 0) return '{}';
-                    const items = entries.map(([k, v]) => `${padInner}"${k}": ${serialize(v, indent + 1)}`).join(',\n');
+                    const keys = Object.keys(val);
+                    if (keys.length === 0) return '{}';
+                    const items = keys.map(k => `${padInner}${k}: ${serialize(val[k], indent + 1)}`).join(',\n');
                     return `{\n${items}\n${pad}}`;
                 }
 
