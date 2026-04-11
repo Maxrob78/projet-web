@@ -23,35 +23,31 @@ include '../includes/header.php';
     <h2>PROCÉDURES D'ADMISSIONS</h2>
     <p>Pour candidater à l'Efrei via Parcoursup, il faut suivre trois étapes : d'abord formuler ses vœux en recherchant Puissance Alpha sur Parcoursup et en sélectionnant une ou plusieurs prépas de l'Efrei (il est conseillé d'en choisir plusieurs pour maximiser ses chances) ; ensuite finaliser son dossier en rédigeant un projet de formation motivé expliquant son intérêt pour la formation ; et enfin participer aux épreuves écrites du concours Puissance Alpha, dont les modalités et dates sont disponibles sur leur site officiel.</p>
 </section>
-<div class="map-container" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
 
+<div class="map-container" onclick="this.classList.add('active')" onmouseleave="this.classList.remove('active')">
     <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1l3OA8lR1VFPuScNyeKb8i5refkkKsOQ&ehbc=2E312F&noprof=1"
         width="100" height="450" style="border:0;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
     </iframe>
 </div>
 
-<p id="submitmsg" style="color: #00bafe;font-weight: bold;text-align: center; margin-top: -20px; margin-bottom: 20px; scroll-margin-top: 90px;"><?php echo $messageSucces; ?></p>
 <section id="contactretour">
-    <form action="#submitmsg" method="post" name="Quiz" id="contactID" class="box">
+    <form action="#contactretour" method="post" name="Quiz" id="contactID" class="box">
         <fieldset id="informations">
             <legend>CONTACT</legend>
-
+            <p style="color: #00bafe;font-weight: bold;text-align: center; margin-top: -20px; margin-bottom: 20px;"><?php echo $messageSucces; ?></p>
             <p>
                 <label for="nom">Nom*</label><br>
                 <input type="text" id="nom" name="nom" required>
             </p>
-
             <p>
                 <label for="email">Adresse Email*</label><br>
                 <input type="email" id="email" name="email" required>
             </p>
-
             <p>
                 <label for="sujet">Sujet*</label><br>
                 <input type="text" id="sujet" name="sujet" required>
             </p>
-
             <p>
                 <label for="message">Message*</label><br>
                 <textarea id="message" name="message" rows="4" required></textarea>
