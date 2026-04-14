@@ -7,7 +7,7 @@
    5.  COURS & FORMATIONS — FORMULAIRE (CRUD)
    6.  COURS & FORMATIONS — DROP ZONE (DRAG & DROP)
    7.  COURS & FORMATIONS — SUBMIT AJAX
-   8.  VIDÉO — LECTURE AU SURVOL
+   8.  VERIF DU FORMULAIRE CONTACT
    9.  FLASH MEDIA — INITIALISATION & RESIZE
    10. FLASH MEDIA — CONFIG & VALIDATION
    11. FLASH MEDIA — LECTURE (flashStart)
@@ -288,26 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================================================================
-    // 8. VIDÉO — LECTURE AU SURVOL
-    // =========================================================================
-
-    document.querySelectorAll('.video-hover-container').forEach(container => {
-        const video = container.querySelector('video');
-        if (!video) return;
-
-        container.addEventListener('mouseenter', () => {
-            video.muted = true;
-            video.play().catch(err => console.log("Lecture bloquée :", err));
-        });
-
-        container.addEventListener('mouseleave', () => {
-            video.pause();
-            video.currentTime = 0;
-        });
-    });
-
-    // =========================================================================
-    // VERIF DU FORMULAIRE CONTACT
+    // 8. VERIF DU FORMULAIRE CONTACT
     // =========================================================================
 
     const motsInterdits = [
@@ -401,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
         flashImage.removeAttribute('style');
     }
 
-    const contactForm = document.querySelector('#contactID');
+    const contactForm = document.getElementById('contactID');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             if (!this.checkValidity()) return;
@@ -457,10 +438,10 @@ document.addEventListener("DOMContentLoaded", function () {
    9. FLASH MEDIA — INIT DOM & OBSERVERS
    ========================================================================== */
 
-const flash        = document.querySelector('#flashMedia');
-const flashVideo   = document.querySelector('#flashVideo');
-const flashImage   = document.querySelector('#flashImg');
-const flashTitre   = document.querySelector('#flashTitre');
+const flash        = document.getElementById('flashMedia');
+const flashVideo   = document.getElementById('flashVideo');
+const flashImage   = document.getElementById('flashImg');
+const flashTitre   = document.getElementById('flashTitre');
 const flashWrapper = document.querySelector('.mediaWrapper');
 
 let resizeTimeout;
@@ -815,7 +796,6 @@ function flashAjusterTitre(charsPerLine = 40) {
 /* ==========================================================================
    14. FLASH MEDIA — UTILITAIRES
    ========================================================================== */
-
 
 function flashClearDOM() {
     flashVideo.removeAttribute('src');

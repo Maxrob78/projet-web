@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>test flash media </title>
+    <title>test flash media</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -257,6 +257,7 @@
     </style>
 </head>
 <body>
+    <!-- Flash Container -->
     <div id="flashMedia">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
@@ -264,6 +265,7 @@
             <h1 id="flashTitre"></h1>
         </div>
     </div>
+    <!-- /Flash Container -->
 
     <div id="flashControl">
         <h2>Flash Control - Panneau de Régie</h2>
@@ -352,10 +354,10 @@
         9. FLASH MEDIA — INIT DOM & OBSERVERS
         ========================================================================== */
 
-        const flash        = document.querySelector('#flashMedia');
-        const flashVideo   = document.querySelector('#flashVideo');
-        const flashImage   = document.querySelector('#flashImg');
-        const flashTitre   = document.querySelector('#flashTitre');
+        const flash        = document.getElementById('flashMedia');
+        const flashVideo   = document.getElementById('flashVideo');
+        const flashImage   = document.getElementById('flashImg');
+        const flashTitre   = document.getElementById('flashTitre');
         const flashWrapper = document.querySelector('.mediaWrapper');
 
         let resizeTimeout;
@@ -413,10 +415,7 @@
             texte:    "",
             duree:    "auto"
         };
-        let flashConfig = { 
-            ...flashConfig_default, 
-            video: { ...flashConfig_default.video }
-        };
+        let flashConfig = structuredClone(flashConfig_default);
 
         function flashValide() {
             // Nettoyage & validation des sources
@@ -692,7 +691,6 @@
         14. FLASH MEDIA — UTILITAIRES
         ========================================================================== */
 
-
         function flashSyncDOM() {
             observerIgnore = true;
             let videoChange = false;
@@ -723,10 +721,7 @@
         }
 
         function flashResetConfig() {
-            flashConfig = { 
-                ...flashConfig_default, 
-                video: { ...flashConfig_default.video }
-            };
+            flashConfig = structuredClone(flashConfig_default);
         }
 
         function flashResetStyles(styles = [], elements = []) {
@@ -969,7 +964,6 @@
                 flashTitre.innerHTML = flashConfig.texte.replace(/00:\d{2}/, formaterTemps(secondes));
                 flashImage.style.opacity = opacite;
                 
-
                 if (secondes <= 0 || flashVideo.ended) {
                     flashResetConfig();
                     flashConfig.video.src = "../videos/sentence.mp4";

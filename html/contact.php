@@ -8,7 +8,7 @@ $messageSucces = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit-form'])) {
     $nom = htmlspecialchars(trim($_POST['nom']));
     $msg = htmlspecialchars(trim($_POST['message']));
-    $messageSucces = "Merci $nom, votre message a bien été envoyé !"; // pas vrai
+    $messageSucces = "Merci $nom, votre message a bien été envoyé&nbsp;!"; // pas vrai
 }
 
 include '../includes/header.php';
@@ -35,7 +35,7 @@ include '../includes/header.php';
     <form action="#contactretour" method="post" name="Quiz" id="contactID" class="box">
         <fieldset id="informations">
             <legend>CONTACT</legend>
-            <p style="color: #00bafe;font-weight: bold;text-align: center; margin-top: -20px; margin-bottom: 20px;"><?php echo $messageSucces; ?></p>
+            <p style="color: #00bafe; font-weight: bold; text-align: center; margin-top: -20px; margin-bottom: 20px;"><?php echo $messageSucces; ?></p>
             <p>
                 <label for="nom">Nom*</label><br>
                 <input type="text" id="nom" name="nom" required>
