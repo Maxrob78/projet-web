@@ -8,12 +8,12 @@
    6.  COURS & FORMATIONS — DROP ZONE (DRAG & DROP)
    7.  COURS & FORMATIONS — SUBMIT AJAX
    8.  VIDÉO — LECTURE AU SURVOL
-   9.  FLASH MEDIA — INITIALISATION & RESIZE
+   9.  FLASH MEDIA — INIT DOM & OBSERVERS
    10. FLASH MEDIA — CONFIG & VALIDATION
-   11. FLASH MEDIA — LECTURE (flashStart)
-   12. FLASH MEDIA — ARRÊT (flashStop)
-   13. FLASH MEDIA — MISE À L'ÉCHELLE (flashUpscale / flashAjusterTitre)
-   14. FLASH MEDIA — UTILITAIRES (sync, reset, test)
+   11. FLASH MEDIA — LECTURE 
+   12. FLASH MEDIA — ARRÊT 
+   13. FLASH MEDIA — MISE À L'ÉCHELLE 
+   14. FLASH MEDIA — UTILITAIRES 
    ========================================================================== */
 
 
@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
         flashImage.removeAttribute('style');
     }
 
-    const contactForm = document.querySelector('#contactID');
+    const contactForm = document.getElementById('contactID');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             if (!this.checkValidity()) return;
@@ -454,10 +454,10 @@ document.addEventListener("DOMContentLoaded", function () {
    9. FLASH MEDIA — INIT DOM & OBSERVERS
    ========================================================================== */
 
-const flash        = document.querySelector('#flashMedia');
-const flashVideo   = document.querySelector('#flashVideo');
-const flashImage   = document.querySelector('#flashImg');
-const flashTitre   = document.querySelector('#flashTitre');
+const flash        = document.getElementById('flashMedia');
+const flashVideo   = document.getElementById('flashVideo');
+const flashImage   = document.getElementById('flashImg');
+const flashTitre   = document.getElementById('flashTitre');
 const flashWrapper = document.querySelector('.mediaWrapper');
 
 let resizeTimeout;
@@ -469,11 +469,13 @@ window.addEventListener('resize', () => {
         flashAjusterTitre(chars);
     }, 100);
 });
+
 const observerTitre = new MutationObserver(() => {
     if (!flash._sessionId) return;
     const chars = flash.classList.contains('noMedia') ? 60 : 40;
     flashAjusterTitre(chars);
 });
+
 let _mediaChangeTimeout;
 let _observerIgnore = false;
 const observerMedia = new MutationObserver((mutations) => {
@@ -525,18 +527,13 @@ function flashPrepare() {
 
     // Configs vidéo
     if (flashConfig.video) {
+        const ext = flashConfig.video.split('.').pop().toLowerCase();
+        const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
+
         flashConfig.time    = Math.max(parseFloat(flashConfig.time), 0) || 0;
         flashConfig.volume  = Math.min(Math.max(parseFloat(flashConfig.volume) || 0, 0), 1);
         flashConfig.vitesse = Math.min(Math.max(parseFloat(flashConfig.vitesse) || 0, 0.1), 16);
-
-        if (flashConfig.image) flashConfig.isAudio = true;
-        else {
-            const ext = flashConfig.video.split('.').pop().toLowerCase();
-            const formatsAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac'];
-            flashConfig.isAudio = formatsAudio.includes(ext)
-                ? true
-                : (typeof flashConfig.isAudio === 'boolean' ? flashConfig.isAudio : false);
-        }
+        flashConfig.isAudio = formatsAudio.includes(ext) || flashConfig.image ? true : flashConfig.isAudio === true;
     }
 
     // Durée
@@ -547,11 +544,8 @@ function flashPrepare() {
 
     // Application des src dans le DOM 
     _observerIgnore = true;
-    if (flashConfig.video) {
-        flashVideo.src = flashConfig.video;
-    } else {
-        flashVideo.removeAttribute('src');
-    }
+    if (flashConfig.video) flashVideo.src = flashConfig.video;
+    else flashVideo.removeAttribute('src');
     flashVideo.load();
 
     if (flashConfig.image) flashImage.src = flashConfig.image;
@@ -564,6 +558,7 @@ function flashPrepare() {
         flashVideo.volume       = flashConfig.volume;
         flashVideo.playbackRate = flashConfig.vitesse;
         flashVideo.muted        = flashConfig.volume === 0;
+        flashVideo.loop         = flashConfig.duree === 'inf' || typeof flashConfig.duree === 'number';
     }
 
     setTimeout(() => { _observerIgnore = false; }, 0);
@@ -596,7 +591,7 @@ let flashTimeout;
 
 async function flashStart(isReload = false) {
     if (isReload && !flash._sessionId) throw "pas de session active à recharger.";
-    flashStop(isReload ? "010_" : "111_");
+    flashStop(isReload ? "010_" : "");
     if (!flashPrepare()) { 
         flashStop("1110"); 
         throw "config invalide"; 
@@ -609,8 +604,8 @@ async function flashStart(isReload = false) {
     const sessionId = flash._sessionId; 
     const estActif  = () => flash._sessionId === sessionId;
 
-    let hasVideo = !!flashVideo.src;
-    let hasImage = !!flashImage.src;
+    let hasVideo = flashVideo.getAttribute('src');
+    let hasImage = flashImage.getAttribute('src');
 
     if (!hasImage && (flashConfig.isAudio || !hasVideo)) flash.classList.add('noMedia');
     else flash.classList.remove('noMedia');
@@ -639,7 +634,7 @@ async function flashStart(isReload = false) {
                 .catch(() => { 
                     if (hasVideo) {
                         console.warn("Erreur image, audio seul.");
-                        flashImage.style.display = "none";
+                        flashImage.style.visibility = "hidden";
                         flashImage.removeAttribute('src');
                         hasImage = false;
                         flashAjusterTitre();
@@ -653,7 +648,6 @@ async function flashStart(isReload = false) {
 
     if (hasVideo) {
         if (!flashConfig.isAudio) flashVideo.style.visibility = "visible";
-
         jobs.push(
             whenVideoMeta(flashVideo)
                 .then(() => {
@@ -702,13 +696,10 @@ async function flashStart(isReload = false) {
         if (!estActif()) { flashVideo.pause(); throw "session annulée."; }
     }
 
-    // Gestion fermeture
-    if (flashConfig.duree === 'inf') {
-        if (hasVideo) flashVideo.loop = true;
-    } else if (typeof flashConfig.duree === 'number') {
-        if (hasVideo) flashVideo.loop = true;
+    // Gestion fermeture auto
+    if (typeof flashConfig.duree === 'number') {
         flashTimeout = setTimeout(() => flashStop(1), flashConfig.duree * 1000);
-    } else {
+    } else if (flashConfig.duree === 'auto') {
         if (hasVideo) flashVideo.onended = () => flashStop(1);
         else flashTimeout = setTimeout(() => flashStop(1), 7000);
     }
@@ -734,9 +725,8 @@ function flashDone() {
 }
 
 function flashStop(code) {
-    const c  = String(code ?? "").trim();
-    const ch = c.padEnd(4, c.slice(-1) || "_")
-                .slice(0, 4).split("").map(Number);
+    let ch = String(code).replace(/\s/g, "_").slice(0, 4);
+    while (ch.length < 4) ch += ch.at(-1) ?? "_";
 
     if (ch[0] != 0) {
         flash._sessionId = null;
@@ -749,11 +739,6 @@ function flashStop(code) {
         flashVideo.onerror          = null;
         flashImage.onload           = null;
         flashImage.onerror          = null;
-
-        flashVideo.pause();
-        flashVideo.currentTime = 0;
-        flashVideo.muted       = false;
-        flashVideo.loop        = false;
     }
     if (ch[2] != 0) flashClearDOM();
 
@@ -786,11 +771,11 @@ function flashUpscale(media) {
 }
 
 function flashAjusterTitre(charsPerLine = 40) {
-    if (!flashTitre || !flashTitre.innerHTML) return;
+    if (!flash._sessionId || !flashTitre.textContent) return;
     
-
     const w = flashWrapper.offsetWidth  || window.innerWidth;
     const h = flashWrapper.offsetHeight || window.innerHeight;
+    if (w === 0 || h === 0) return;
 
     const largeurRef = Math.min(Math.max(w, h), window.innerWidth);
     const largeurFinale = largeurRef * 0.95;
@@ -814,7 +799,6 @@ function flashAjusterTitre(charsPerLine = 40) {
 /* ==========================================================================
    14. FLASH MEDIA — UTILITAIRES
    ========================================================================== */
-
 
 function flashClearDOM() {
     flashVideo.removeAttribute('src');
