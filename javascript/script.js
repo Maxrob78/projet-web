@@ -10,10 +10,10 @@
    8.  VERIF DU FORMULAIRE CONTACT
    9.  FLASH MEDIA — INITIALISATION & RESIZE
    10. FLASH MEDIA — CONFIG & VALIDATION
-   11. FLASH MEDIA — LECTURE (flashStart)
-   12. FLASH MEDIA — ARRÊT (flashStop)
-   13. FLASH MEDIA — MISE À L'ÉCHELLE (flashUpscale / flashAjusterTitre)
-   14. FLASH MEDIA — UTILITAIRES (sync, reset, test)
+   11. FLASH MEDIA — LECTURE 
+   12. FLASH MEDIA — ARRÊT 
+   13. FLASH MEDIA — MISE À L'ÉCHELLE 
+   14. FLASH MEDIA — UTILITAIRES 
    ========================================================================== */
 
 
@@ -429,6 +429,45 @@ document.addEventListener("DOMContentLoaded", function () {
             if (sanctionEnCours) e.preventDefault();
         });
     }
+
+
+    // =========================================================================
+    // VEILLE
+    // =========================================================================
+
+    let veilleTimeout;
+
+    function lancerVeille() {
+        flashResetConfig();
+        flashConfig.video = "../videos/cinema.mp4";
+        flashConfig.duree = "inf";
+        flashStart();
+    }
+
+    function setVeille() {
+        flashStop();
+        clearTimeout(veilleTimeout);
+        veilleTimeout = setTimeout(lancerVeille, 120000);
+    }
+
+    ["pointermove", "pointerdown", "keydown", "scroll", "wheel"].forEach(event => {
+        window.addEventListener(event, setVeille, {passive: true});
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            flashStop();
+            clearTimeout(veilleTimeout);
+        }
+        else setVeille();
+    });
+    window.addEventListener("focus", setVeille);
+    window.addEventListener("blur", () => {
+        flashStop();
+        clearTimeout(veilleTimeout);
+    });
+
+    setVeille();
 
 
 }); // fin DOMContentLoaded
