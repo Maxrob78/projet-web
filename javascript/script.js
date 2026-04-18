@@ -461,11 +461,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         else setVeille();
     });
-    window.addEventListener("focus", setVeille);
     window.addEventListener("blur", () => {
         flashStop();
         clearTimeout(veilleTimeout);
     });
+    window.addEventListener("focus", setVeille);
 
     setVeille();
 
