@@ -558,8 +558,7 @@ function flashPrepare() {
         flashConfig.time    = Math.max(parseFloat(flashConfig.time), 0) || 0;
         flashConfig.volume  = Math.min(Math.max(parseFloat(flashConfig.volume) || 0, 0), 1);
         flashConfig.vitesse = Math.min(Math.max(parseFloat(flashConfig.vitesse) || 0, 0.1), 16);
-        flashConfig.isAudio = formatsAudio.includes(ext) || flashConfig.image
-            ? true : flashConfig.isAudio === true;
+        flashConfig.isAudio = formatsAudio.includes(ext) || flashConfig.image ? true : flashConfig.isAudio === true;
     }
 
     // Durée
@@ -624,6 +623,7 @@ let flashTimeout;
 
 async function flashStart(isReload = false) {
     if (isReload && !flash._sessionId) throw "pas de session active à recharger.";
+    
     flashStop(isReload ? "010_" : "");
     if (!flashPrepare()) { 
         flashStop(1110); 
@@ -687,8 +687,10 @@ async function flashStart(isReload = false) {
             whenVideoMeta(flashVideo)
                 .then(() => {
                     if (!estActif()) throw "session annulée.";
-                    if (!flashConfig.isAudio) flashUpscale(flashVideo);
-                    if (!flashConfig.isAudio) flashVideo.style.visibility = "visible";
+                    if (!flashConfig.isAudio) {
+                        flashUpscale(flashVideo);
+                        flashVideo.style.visibility = "visible";
+                    }
                     if (videoChange) flashVideo.currentTime = flashConfig.time < flashVideo.duration 
                         ? flashConfig.time : 0;
                 })
