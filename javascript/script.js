@@ -8,7 +8,7 @@
    6.  COURS & FORMATIONS — DROP ZONE (DRAG & DROP)
    7.  COURS & FORMATIONS — SUBMIT AJAX
    8.  VERIF DU FORMULAIRE CONTACT
-   9.  FLASH MEDIA — INITIALISATION & RESIZE
+   9.  FLASH MEDIA — INIT DOM & OBSERVERS
    10. FLASH MEDIA — CONFIG & VALIDATION
    11. FLASH MEDIA — LECTURE 
    12. FLASH MEDIA — ARRÊT 
@@ -436,8 +436,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // =========================================================================
 
     let veilleTimeout;
+    let veilleActive = false;
 
     function lancerVeille() {
+        veilleActive = true;
         flashResetConfig();
         flashConfig.video = "../videos/cinema.mp4";
         flashConfig.duree = "inf";
@@ -445,9 +447,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function setVeille() {
-        flashStop();
+        if (veilleActive) flashStop();
         clearTimeout(veilleTimeout);
         veilleTimeout = setTimeout(lancerVeille, 120000);
+        veilleActive = false;
     }
 
     ["pointermove", "pointerdown", "keydown", "scroll", "wheel"].forEach(event => {
