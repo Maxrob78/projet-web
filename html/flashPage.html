@@ -10,16 +10,14 @@
     <style>
         /* --- flash --- */
         #flashMedia {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100vw;
             height: 100vh;
-            display: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            overflow: hidden;
             background-color: rgba(0, 0, 0, 0.6);
         }
 
@@ -259,7 +257,7 @@
 </head>
 <body>
     <!-- Flash Container -->
-    <div id="flashMedia">
+    <div id="flashMedia" popover="manual">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
             <img id="flashImg" src="../images/blank.png" alt="">
@@ -501,7 +499,7 @@
             if (!hasTexte) flashTitre.style.visibility = "hidden";
             if (!isReload) {
                 flash.style.visibility = "hidden";
-                flash.style.display    = "flex";
+                flash.showPopover();
             }
 
             if (hasTexte) {
@@ -620,7 +618,7 @@
 
             if (ch[0] != 0) {
                 flash._sessionId = null;
-                flash.style.display = "none";
+                flash.hidePopover();
             }
             if (ch[1] != 0) {
                 clearTimeout(flashTimeout);

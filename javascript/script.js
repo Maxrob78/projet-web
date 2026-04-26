@@ -652,7 +652,7 @@ async function flashStart(isReload = false) {
     if (!hasTexte) flashTitre.style.visibility = "hidden";
     if (!isReload) {
         flash.style.visibility = "hidden";
-        flash.style.display    = "flex";
+        flash.showPopover();
     }
 
     if (hasTexte) {
@@ -771,7 +771,7 @@ function flashStop(code) {
 
     if (ch[0] !== 0) {
         flash._sessionId = null;
-        flash.style.display = "none";
+        flash.hidePopover();
     }
     if (ch[1] !== 0) {
         clearTimeout(flashTimeout);

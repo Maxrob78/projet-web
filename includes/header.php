@@ -28,7 +28,7 @@
         </nav>
         <button id="theme-toggle" class="menu-btn" style="font-size: 20px; margin-left: auto;">🌙</button>
     </header>
-    <div id="flashMedia">
+    <div id="flashMedia" popover="manual">
         <div class="mediaWrapper">
             <video id="flashVideo"></video>
             <img id="flashImg" src="../images/blank.png" alt="">
