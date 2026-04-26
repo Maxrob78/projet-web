@@ -191,6 +191,7 @@ header.scrolled nav a {
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
 }
+#flashMedia:popover-open { display: flex; }
 
 .mediaWrapper {
     --w: var(--natW, 1);
